@@ -27,5 +27,14 @@ namespace eComSolution.API.Controllers
 
             return Ok(token);
         }
+
+        [HttpPost("register")]
+        public async Task<IActionResult> Register(RegisterRequest request)
+        {
+            var token = await _userService.Register(request);
+            if(token==null) return BadRequest("Username is existed!");
+
+            return Ok(token);
+        }
     }
 }
