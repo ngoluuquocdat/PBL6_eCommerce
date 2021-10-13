@@ -8,7 +8,7 @@ namespace eComSolution.Service.System.Users
 {
     public interface IUserService
     {
-        bool Register(RegisterRequest request);
+        Task<string> Register(RegisterRequest request);
 
         Task<string> Login(LoginRequest request);
         
