@@ -16,6 +16,7 @@ using Microsoft.EntityFrameworkCore;
 using eComSolution.Service.System.Token;
 using eComSolution.Service.System.Users;
 using eComSolution.Service.Catalog.Products;
+using eComSolution.Service.Common;
 
 namespace eComSolution.API
 {
@@ -35,7 +36,7 @@ namespace eComSolution.API
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "eComSolution.API", Version = "v1" });
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "eComSolution.API", Version = "v1" }); 
             });
             services.AddDbContext<EComDbContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("Default")));
@@ -52,6 +53,7 @@ namespace eComSolution.API
             //             };
             //         });
 
+            services.AddScoped<IStorageService, StorageService>();
             services.AddScoped<ITokenService, TokenService>();
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IProductService, ProductService>();
@@ -68,6 +70,8 @@ namespace eComSolution.API
             }
 
             app.UseHttpsRedirection();
+
+            app.UseStaticFiles();
 
             app.UseRouting();
 
