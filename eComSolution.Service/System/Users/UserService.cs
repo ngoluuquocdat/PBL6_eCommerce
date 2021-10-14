@@ -24,10 +24,10 @@ namespace eComSolution.Service.System.Users
             _tokenService = tokenService;
         }
 
-        public async Task<ApiResult<LoginRequest>> Login(LoginRequest request)
+        public async Task<ApiResult<string>> Login(LoginRequest request)
         {
             var user =  await _context.Users.FirstOrDefaultAsync(u => u.Username == request.Username);
-            if(user == null) return new ApiResult<LoginRequest>(false);   // return Unauthorized("Invalid Username.");
+            if(user == null) return new ApiResult<string>(false, "Invalid username!");   // return Unauthorized("Invalid Username.");
 
             using var hmac = new HMACSHA512(user.PasswordSalt);
             var computedHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(request.Password));
@@ -35,17 +35,17 @@ namespace eComSolution.Service.System.Users
             // so sánh 2 mảng byte: password hash từ request VS p   assword hash của user trong Db
             for(int i = 0; i<computedHash.Length; i++)
             {
-                if(computedHash[i] != user.PasswordHash[i]) return null; //Unauthorized("Invalid Password.");
+                if(computedHash[i] != user.PasswordHash[i]) return new ApiResult<string>(false, "Invalid password!");; //Unauthorized("Invalid Password.");
             }
 
-            return new ApiResult<LoginRequest>(true, "Successed Login!");
+            return new ApiResult<string>(true, ResultObj : _tokenService.CreateToken(user));
         }
 
-        public async Task<ApiResult<RegisterRequest>> Register(RegisterRequest request)
+        public async Task<ApiResult<string>> Register(RegisterRequest request)
         {
            if(_context.Users.Any(u => u.Username == request.Username.ToLower()))
             {
-                return new ApiResult<RegisterRequest>(false);
+                return new ApiResult<string>(false, "Username is exist!");
             }
 
             using var hmac = new HMACSHA512();
@@ -62,12 +62,12 @@ namespace eComSolution.Service.System.Users
             _context.Users.Add(new_user);
             await _context.SaveChangesAsync();
 
-            return new ApiResult<RegisterRequest>(true, "Successed Register!");
+            return new ApiResult<string>(true, ResultObj : _tokenService.CreateToken(new_user));
         }
         public async Task<ApiResult<UserViewModel>> GetUserById(int UserId)
         {
             var user =  await _context.Users.FirstOrDefaultAsync(u => u.Id == UserId);
-            if(user == null) return new ApiResult<UserViewModel>(false);
+            if(user == null) return new ApiResult<UserViewModel>(false, "User is not exist!");
 
             var userViewModel = new UserViewModel 
             {

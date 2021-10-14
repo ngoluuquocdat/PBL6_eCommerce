@@ -23,10 +23,10 @@ namespace eComSolution.API.Controllers
         [HttpGet("{UserId}")]
         public async Task<IActionResult> GetUserBuId(int UserId)
         {
-            var user = await _userService.GetUserById(UserId);
-            if(user.IsSuccessed == false) return Unauthorized("User is not exist!");
+            var result = await _userService.GetUserById(UserId);
+            if(result.IsSuccessed == false) return BadRequest(result.Message);
 
-            return Ok(user);
+            return Ok(result);
         }
     }
 }
