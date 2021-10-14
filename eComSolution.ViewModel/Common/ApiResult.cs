@@ -16,11 +16,15 @@ namespace eShopSolution.ViewModels.Common
         {
             this.IsSuccessed = IsSuccessed;
         }
+
+        // cho trường hợp Failed, gởi ra 1 message 
         public ApiResult(bool IsSuccessed, string Message)
         {
             this.IsSuccessed = IsSuccessed;
             this.Message = Message;
         }
+
+        // cho trường hợp Success, gởi ra ResultObj
         public ApiResult(bool IsSuccessed, T ResultObj)
         {
             this.IsSuccessed = IsSuccessed;
