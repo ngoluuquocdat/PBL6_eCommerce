@@ -22,19 +22,19 @@ namespace eComSolution.API.Controllers
         [HttpPost("login")]
         public async Task<IActionResult> Login(LoginRequest request)
         {
-            var token = await _userService.Login(request);
-            if(token.IsSuccessed == false) return Unauthorized("Username or Password invalid!");
+            var result = await _userService.Login(request);
+            if(result.IsSuccessed == false) return Unauthorized(result.Message);
 
-            return Ok(token);
+            return Ok(result);
         }
 
         [HttpPost("register")]
         public async Task<IActionResult> Register(RegisterRequest request)
         {
-            var token = await _userService.Register(request);
-            if(token.IsSuccessed == false) return BadRequest("Username is existed!");
+            var result = await _userService.Register(request);
+            if(result.IsSuccessed == false) return BadRequest(result.Message);
 
-            return Ok(token);
+            return Ok(result);
         }
     }
 }

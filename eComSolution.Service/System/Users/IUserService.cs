@@ -9,9 +9,9 @@ namespace eComSolution.Service.System.Users
 {
     public interface IUserService
     {
-        Task<ApiResult<RegisterRequest>> Register(RegisterRequest request);
+        Task<ApiResult<string>> Register(RegisterRequest request);
 
-        Task<ApiResult<LoginRequest>> Login(LoginRequest request);
+        Task<ApiResult<string>> Login(LoginRequest request);
 
         Task<ApiResult<UserViewModel>> GetUserById(int UserId);
         
