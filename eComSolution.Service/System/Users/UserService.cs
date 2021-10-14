@@ -8,6 +8,7 @@ using eComSolution.Data.EF;
 using eComSolution.Data.Entities;
 using eComSolution.Service.System.Token;
 using eComSolution.ViewModel.System.Users;
+using eShopSolution.ViewModels.Common;
 using Microsoft.EntityFrameworkCore;
 
 namespace eComSolution.Service.System.Users
@@ -23,10 +24,10 @@ namespace eComSolution.Service.System.Users
             _tokenService = tokenService;
         }
 
-        public async Task<string> Login(LoginRequest request)
+        public async Task<ApiResult<LoginRequest>> Login(LoginRequest request)
         {
             var user =  await _context.Users.FirstOrDefaultAsync(u => u.Username == request.Username);
-            if(user == null) return null;   // return Unauthorized("Invalid Username.");
+            if(user == null) return new ApiResult<LoginRequest>(false);   // return Unauthorized("Invalid Username.");
 
             using var hmac = new HMACSHA512(user.PasswordSalt);
             var computedHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(request.Password));
@@ -37,14 +38,14 @@ namespace eComSolution.Service.System.Users
                 if(computedHash[i] != user.PasswordHash[i]) return null; //Unauthorized("Invalid Password.");
             }
 
-            return _tokenService.CreateToken(user);
+            return new ApiResult<LoginRequest>(true, "Successed Login!");
         }
 
-        public async Task<string> Register(RegisterRequest request)
+        public async Task<ApiResult<RegisterRequest>> Register(RegisterRequest request)
         {
            if(_context.Users.Any(u => u.Username == request.Username.ToLower()))
             {
-                return null;
+                return new ApiResult<RegisterRequest>(false);
             }
 
             using var hmac = new HMACSHA512();
@@ -61,8 +62,25 @@ namespace eComSolution.Service.System.Users
             _context.Users.Add(new_user);
             await _context.SaveChangesAsync();
 
-            return _tokenService.CreateToken(new_user);
+            return new ApiResult<RegisterRequest>(true, "Successed Register!");
         }
+        public async Task<ApiResult<UserViewModel>> GetUserById(int UserId)
+        {
+            var user =  await _context.Users.FirstOrDefaultAsync(u => u.Id == UserId);
+            if(user == null) return new ApiResult<UserViewModel>(false);
+
+            var userViewModel = new UserViewModel 
+            {
+                Id = user.Id,
+                Fullname = user.Fullname,
+                Email = user.Email,
+                PhoneNumber = user.PhoneNumber
+            };
+
+            return new ApiResult<UserViewModel>(true, userViewModel);
+        }
+
+
 
     }
 }

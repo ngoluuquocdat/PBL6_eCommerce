@@ -23,7 +23,7 @@ namespace eComSolution.API.Controllers
         public async Task<IActionResult> Login(LoginRequest request)
         {
             var token = await _userService.Login(request);
-            if(token==null) return Unauthorized("Username or Password invalid!");
+            if(token.IsSuccessed == false) return Unauthorized("Username or Password invalid!");
 
             return Ok(token);
         }
@@ -32,7 +32,7 @@ namespace eComSolution.API.Controllers
         public async Task<IActionResult> Register(RegisterRequest request)
         {
             var token = await _userService.Register(request);
-            if(token==null) return BadRequest("Username is existed!");
+            if(token.IsSuccessed == false) return BadRequest("Username is existed!");
 
             return Ok(token);
         }
