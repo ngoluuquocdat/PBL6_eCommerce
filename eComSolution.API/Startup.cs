@@ -15,6 +15,7 @@ using Microsoft.OpenApi.Models;
 using Microsoft.EntityFrameworkCore;
 using eComSolution.Service.System.Token;
 using eComSolution.Service.System.Users;
+using eComSolution.Service.Catalog.Products;
 
 namespace eComSolution.API
 {
@@ -53,6 +54,7 @@ namespace eComSolution.API
 
             services.AddScoped<ITokenService, TokenService>();
             services.AddScoped<IUserService, UserService>();
+            services.AddScoped<IProductService, ProductService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
