@@ -28,5 +28,13 @@ namespace eComSolution.API.Controllers
 
             return Ok(result);
         }
+        [HttpGet("permission/{UserId}")]
+        public async Task<IActionResult> GetPermissions(int UserId)
+        {
+            var result = await _userService.GetPermissions(UserId);
+            if(result.IsSuccessed == false) return Unauthorized(result.Message);
+
+            return Ok(result);
+        }
     }
 }
