@@ -11,7 +11,6 @@ namespace eComSolution.ViewModel.System.Users
     {
         public int Id { get; set; }
 
-        public List<Permission> Permissions { get; set; }
-
+        public List<string> Permissions { get; set; }
     }
 }

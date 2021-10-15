@@ -43,9 +43,25 @@ namespace eComSolution.Service.System.Users
 
         public async Task<ApiResult<string>> Register(RegisterRequest request)
         {
-           if(_context.Users.Any(u => u.Username == request.Username.ToLower()))
+            string message = string.Empty;
+            bool check = false;
+            if(_context.Users.Any(u => u.Username == request.Username.ToLower()))
             {
-                return new ApiResult<string>(false, "Username is exist!");
+                check = true;
+                message += "Username is exist! \n";
+            }
+            if(_context.Users.Any(u => u.Email == request.Email.ToLower()))
+            {
+                check = true;
+                message += "Email is exist! \n";
+            }
+            if(_context.Users.Any(u => u.PhoneNumber == request.PhoneNumber))
+            {
+                check = true;
+                message += "Phonenumber is exist! \n";
+            }
+            if(check){
+                return new ApiResult<string>(false, message);
             }
 
             using var hmac = new HMACSHA512();
@@ -78,6 +94,26 @@ namespace eComSolution.Service.System.Users
             };
 
             return new ApiResult<UserViewModel>(true, userViewModel);
+        }
+
+        public async Task<ApiResult<UserPermission>> GetPermissions(int UserId){
+            var user =  await _context.Users.FirstOrDefaultAsync(u => u.Id == UserId);
+            if(user == null) return new ApiResult<UserPermission>(false, "User is not exist!");
+
+            var query = from _user in _context.Users
+            join _groupuser in _context.GroupUsers on _user.Id equals _groupuser.UserId
+            join _permission in _context.Permissions on _groupuser.GroupId equals _permission.GroupId
+            join _function in _context.Functions on _permission.FunctionId equals _function.Id
+            where _user.Id == UserId
+            select new { 
+                function = _function.ActionName
+            }.ToString(); 
+
+            var userPermission = new UserPermission{
+                Id = UserId,
+                Permissions = query.Distinct().ToList()
+            };
+            return new ApiResult<UserPermission>(true, userPermission);
         }
 
 
