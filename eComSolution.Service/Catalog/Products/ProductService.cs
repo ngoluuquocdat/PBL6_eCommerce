@@ -243,6 +243,11 @@ namespace eComSolution.Service.Catalog.Products
             var product = await _context.Products.FindAsync(productId);
             if(product == null)
                 return new ApiResult<ProductVm>(false, Message:"No product with this Id found!");
+            
+            // tăng view count cho product
+            product.ViewCount +=1;
+            await _context.SaveChangesAsync();
+            // lấy thông tin để hiển thị
             var productVm = new ProductVm()
             {
                 Id = product.Id,
