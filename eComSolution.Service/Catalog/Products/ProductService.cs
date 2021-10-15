@@ -237,5 +237,27 @@ namespace eComSolution.Service.Catalog.Products
             await _storageService.SaveFileAsync(file.OpenReadStream(), fileName);
             return fileName;
         }
+
+        public async Task<ApiResult<ProductVm>> GetProductById(int productId)
+        {
+            var product = await _context.Products.FindAsync(productId);
+            if(product == null)
+                return new ApiResult<ProductVm>(false, Message:"No product with this Id found!");
+            var productVm = new ProductVm()
+            {
+                Id = product.Id,
+                Name = product.Name,
+                Description = product.Description,
+                Price = product.Price,
+                OriginalPrice = product.OriginalPrice,
+                ViewCount = product.ViewCount,
+                DateCreated = product.DateCreated, 
+                Details = await GetProductDetails(product.Id),
+                Images = await GetProductImages(product.Id)
+            };
+            productVm.TotalStock = productVm.Details.Sum(d => d.Stock);
+
+            return new ApiResult<ProductVm>(true, ResultObj:productVm);
+        }
     }
 }

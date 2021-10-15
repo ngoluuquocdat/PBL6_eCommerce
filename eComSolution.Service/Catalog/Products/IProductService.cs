@@ -17,6 +17,8 @@ namespace eComSolution.Service.Catalog.Products
 
         Task<List<ProductImageVm>> GetProductImages(int productId);
 
+        Task<ApiResult<ProductVm>> GetProductById(int productId);
+
         Task<ApiResult<int>> Create(CreateProductRequest request);
 
         Task<ApiResult<int>> AddImage(int productId, CreateProductImageRequest request);

@@ -27,7 +27,15 @@ namespace eComSolution.API.Controllers
         {
             var result = await _productService.GetProductPaging(request);
             return Ok(result);
-        }    
+        }  
+
+        [HttpGet("{productId}")]
+        public async Task<IActionResult> GetProductById(int productId)
+        {
+            var result = await _productService.GetProductById(productId);
+            if(result.IsSuccessed==false)   return BadRequest(result.Message);
+            return Ok(result);
+        }  
 
         [HttpPost]
         //[Consumes("multipart/form-data")]
