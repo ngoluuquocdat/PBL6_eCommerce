@@ -14,6 +14,8 @@ namespace eComSolution.Service.System.Users
         Task<ApiResult<string>> Login(LoginRequest request);
 
         Task<ApiResult<UserViewModel>> GetUserById(int UserId);
+
+        Task<ApiResult<UserPermission>> GetPermissions(int UserId);
         
     }
 }
