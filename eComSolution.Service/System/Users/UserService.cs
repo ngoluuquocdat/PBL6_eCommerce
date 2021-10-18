@@ -115,8 +115,5 @@ namespace eComSolution.Service.System.Users
             };
             return new ApiResult<UserPermission>(true, userPermission);
         }
-
-
-
     }
 }

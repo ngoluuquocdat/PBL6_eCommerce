@@ -7,12 +7,14 @@ using eComSolution.Service.System.Users;
 using eComSolution.ViewModel.Catalog.ProductImages;
 using eComSolution.ViewModel.Catalog.Products;
 using eComSolution.ViewModel.System.Users;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace eComSolution.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class ProductsController : ControllerBase
     {
         private readonly IProductService _productService;
@@ -23,6 +25,7 @@ namespace eComSolution.API.Controllers
         }
 
         [HttpGet("paging")]
+        [AllowAnonymous]
         public async Task<IActionResult> GetProductPaging([FromQuery]GetProductsRequest request)
         {
             var result = await _productService.GetProductPaging(request);
@@ -30,6 +33,7 @@ namespace eComSolution.API.Controllers
         }  
 
         [HttpGet("{productId}")]
+        //[AllowAnonymous]
         public async Task<IActionResult> GetProductById(int productId)
         {
             var result = await _productService.GetProductById(productId);
@@ -55,13 +59,12 @@ namespace eComSolution.API.Controllers
         {
             // if (!ModelState.IsValid)
             //     return BadRequest(ModelState);
-
+            
             var result = await _productService.AddImage(productId, request);
             if (result.IsSuccessed == false)
                 return BadRequest(result.Message);
 
             return Ok(result);
         }
-
     }
 }
