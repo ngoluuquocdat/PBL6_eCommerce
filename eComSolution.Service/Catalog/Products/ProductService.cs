@@ -275,5 +275,83 @@ namespace eComSolution.Service.Catalog.Products
 
             return new ApiResult<int>(true, ResultObj:await _context.SaveChangesAsync()); 
         }
+
+        public async Task<ApiResult<int>> Update(UpdateProductRequest request)
+        {
+            // 1. update các thông tin của product
+            var product = await _context.Products.FindAsync(request.Id);
+            product.Name = request.Name;
+            product.Description = request.Description;
+            product.OriginalPrice = request.OriginalPrice;
+            product.Price = request.Price;
+            product.CategoryId = request.CategoryId;
+
+            // 2. update list product details
+            //var current_details = product.ProductDetails;
+            var current_details = _context.ProductDetails.Where(x=>x.ProductId==product.Id).ToList();
+            var addList = new List<ProductDetailVm>();
+            var deleteList = new List<ProductDetail>();
+            var updateList = new List<ProductDetailVm>();
+            // // duyệt qua list_request, tìm add list, update list
+            foreach(var dto in request.Details)
+            {
+                if(current_details.Any(x=>x.Color==dto.Color&&x.Size==dto.Size))
+                {
+                    // update
+                    await UpdateDetail(product.Id, dto);                       
+                } 
+                else
+                {
+                    // add
+                    await AddDetail(product.Id, dto);
+                }
+            }
+            // // duyệt qua list_current, tìm delete list
+            foreach(var pd in current_details)
+            {
+                if(!request.Details.Any(x=>x.Color==pd.Color&&x.Size==pd.Size))
+                {
+                    // delete
+                    await DeleteDetail(product.Id, pd.Color, pd.Size);
+                }
+            }
+
+            return new ApiResult<int>(true, Message:"Update product successful!");
+        }
+
+        public async Task<int> UpdateDetail(int productId, ProductDetailVm dto)
+        {
+            // chỉ update stock của product detail
+            var product_detail = _context.ProductDetails    
+                    .Where(x=>x.ProductId==productId && x.Color==dto.Color && x.Size==dto.Size)
+                    .FirstOrDefault();
+            product_detail.Stock = dto.Stock;
+            _context.ProductDetails.Update(product_detail);
+            return await _context.SaveChangesAsync();
+        }
+
+        public async Task<int> AddDetail(int productId, ProductDetailVm dto)
+        {
+            var product_detail = new ProductDetail
+            {
+                ProductId = productId,
+                Color = dto.Color,
+                Size = dto.Size,
+                Stock = dto.Stock
+            };
+            _context.Add(product_detail);
+            return await _context.SaveChangesAsync();
+        }
+
+        public async Task<int> DeleteDetail(int productId, string color, string size)
+        {
+            var product_detail = _context.ProductDetails    
+                    .Where(x=>x.ProductId==productId && x.Color==color && x.Size==size)
+                    .FirstOrDefault();
+            // xóa mềm
+            product_detail.IsDeleted = true;
+            _context.ProductDetails.Update(product_detail);
+            return await _context.SaveChangesAsync();
+        }
     }
 }

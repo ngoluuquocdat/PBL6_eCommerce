@@ -33,7 +33,7 @@ namespace eComSolution.API.Controllers
         }  
 
         [HttpGet("{productId}")]
-        //[AllowAnonymous]
+        [AllowAnonymous]
         public async Task<IActionResult> GetProductById(int productId)
         {
             var result = await _productService.GetProductById(productId);
@@ -60,6 +60,18 @@ namespace eComSolution.API.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
             var result = await _productService.Delete(productId);
+            if (result.IsSuccessed == false)
+                return BadRequest(result.Message);    
+
+            return Ok(result);
+        }
+
+        [HttpPut]
+        public async Task<IActionResult> Update([FromBody]UpdateProductRequest request) 
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+            var result = await _productService.Update(request);
             if (result.IsSuccessed == false)
                 return BadRequest(result.Message);    
 
