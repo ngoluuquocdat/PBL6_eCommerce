@@ -21,6 +21,8 @@ namespace eComSolution.Service.Catalog.Products
 
         Task<ApiResult<int>> Create(CreateProductRequest request);
 
+        Task<ApiResult<int>> Delete(int productId);
+
         Task<ApiResult<int>> AddImage(int productId, CreateProductImageRequest request);
 
     }
