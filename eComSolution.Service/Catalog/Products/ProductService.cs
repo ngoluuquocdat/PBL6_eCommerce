@@ -241,7 +241,7 @@ namespace eComSolution.Service.Catalog.Products
         public async Task<ApiResult<ProductVm>> GetProductById(int productId)
         {
             var product = await _context.Products.FindAsync(productId);
-            if(product == null)
+            if(product == null || product.IsDeleted == true)
                 return new ApiResult<ProductVm>(false, Message:"No product with this Id found!");
             
             // tăng view count cho product
@@ -263,6 +263,17 @@ namespace eComSolution.Service.Catalog.Products
             productVm.TotalStock = productVm.Details.Sum(d => d.Stock);
 
             return new ApiResult<ProductVm>(true, ResultObj:productVm);
+        }
+
+        public async Task<ApiResult<int>> Delete(int productId)
+        {
+            var product = await _context.Products.FindAsync(productId);
+            if(product == null || product.IsDeleted == true)
+                return new ApiResult<int>(false, Message:"No product with this Id found!"); 
+            // xóa mềm product
+            product.IsDeleted = true;
+
+            return new ApiResult<int>(true, ResultObj:await _context.SaveChangesAsync()); 
         }
     }
 }

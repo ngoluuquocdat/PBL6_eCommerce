@@ -14,7 +14,7 @@ namespace eComSolution.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize]
+    //[Authorize]
     public class ProductsController : ControllerBase
     {
         private readonly IProductService _productService;
@@ -48,6 +48,18 @@ namespace eComSolution.API.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
             var result = await _productService.Create(request);
+            if (result.IsSuccessed == false)
+                return BadRequest(result.Message);    
+
+            return Ok(result);
+        }
+
+        [HttpDelete]
+        public async Task<IActionResult> Delete(int productId) 
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+            var result = await _productService.Delete(productId);
             if (result.IsSuccessed == false)
                 return BadRequest(result.Message);    
 
