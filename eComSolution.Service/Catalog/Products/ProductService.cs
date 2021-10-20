@@ -242,7 +242,7 @@ namespace eComSolution.Service.Catalog.Products
         {
             var product = await _context.Products.FindAsync(productId);
             if(product == null || product.IsDeleted == true)
-                return new ApiResult<ProductVm>(false, Message:"No product with this Id found!");
+                return new ApiResult<ProductVm>(false, Message:$"Cannot find product with id: {productId}");
             
             // tăng view count cho product
             product.ViewCount +=1;
@@ -269,7 +269,7 @@ namespace eComSolution.Service.Catalog.Products
         {
             var product = await _context.Products.FindAsync(productId);
             if(product == null || product.IsDeleted == true)
-                return new ApiResult<int>(false, Message:"No product with this Id found!"); 
+                return new ApiResult<int>(false, Message:$"Cannot find product with id: {productId}"); 
             // xóa mềm product
             product.IsDeleted = true;
 
@@ -287,7 +287,6 @@ namespace eComSolution.Service.Catalog.Products
             product.CategoryId = request.CategoryId;
 
             // 2. update list product details
-            //var current_details = product.ProductDetails;
             var current_details = _context.ProductDetails.Where(x=>x.ProductId==product.Id).ToList();
             var addList = new List<ProductDetailVm>();
             var deleteList = new List<ProductDetail>();
@@ -297,13 +296,13 @@ namespace eComSolution.Service.Catalog.Products
             {
                 if(current_details.Any(x=>x.Color==dto.Color&&x.Size==dto.Size))
                 {
-                    // update
-                    await UpdateDetail(product.Id, dto);                       
+                    if(await UpdateDetail(product.Id, dto)==0)
+                        return new ApiResult<int>(false, Message:"An Error when update detail!");                        
                 } 
                 else
                 {
-                    // add
-                    await AddDetail(product.Id, dto);
+                    if(await AddDetail(product.Id, dto) == 0)
+                        return new ApiResult<int>(false, Message:"An Error when add detail!");
                 }
             }
             // // duyệt qua list_current, tìm delete list
@@ -311,8 +310,8 @@ namespace eComSolution.Service.Catalog.Products
             {
                 if(!request.Details.Any(x=>x.Color==pd.Color&&x.Size==pd.Size))
                 {
-                    // delete
-                    await DeleteDetail(product.Id, pd.Color, pd.Size);
+                    if(await DeleteDetail(product.Id, pd.Color, pd.Size) == 0)
+                        return new ApiResult<int>(false, Message:"An Error when delete detail!");
                 }
             }
 
@@ -352,6 +351,19 @@ namespace eComSolution.Service.Catalog.Products
             product_detail.IsDeleted = true;
             _context.ProductDetails.Update(product_detail);
             return await _context.SaveChangesAsync();
+        }
+
+        public async Task<ApiResult<int>> RemoveImage(int imageId)
+        {
+            var productImage = await _context.ProductImages.FindAsync(imageId);
+            if (productImage == null)
+                return new ApiResult<int>(false, Message:$"Cannot find image with id: {imageId}");
+            // xóa file vật lý
+            await _storageService.DeleteFileAsync(productImage.ImagePath);
+            // xóa record trong db
+            _context.ProductImages.Remove(productImage);
+            await _context.SaveChangesAsync();
+            return new ApiResult<int>(true, Message:"Remove product image successful!");
         }
     }
 }
