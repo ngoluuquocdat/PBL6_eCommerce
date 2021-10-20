@@ -17,5 +17,7 @@ namespace eComSolution.Service.System.Users
 
         Task<ApiResult<UserPermission>> GetPermissions(int UserId);
         
+        Task<ApiResult<string>> ChangePassword(int UserId, ChangePasswordVm request);
+        
     }
 }

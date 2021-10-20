@@ -115,5 +115,22 @@ namespace eComSolution.Service.System.Users
             };
             return new ApiResult<UserPermission>(true, userPermission);
         }
+        public async Task<ApiResult<string>> ChangePassword(int UserId, ChangePasswordVm request){
+            var user =  await _context.Users.FirstOrDefaultAsync(u => u.Id == UserId);
+            using var hmac = new HMACSHA512(user.PasswordSalt);
+            var computedHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(request.CurrentPassword));
+
+            // so sánh 2 mảng byte: password hash từ request VS p   assword hash của user trong Db
+            for(int i = 0; i<computedHash.Length; i++)
+            {
+                if(computedHash[i] != user.PasswordHash[i]) return new ApiResult<string>(false, "Invalid password!");; //Unauthorized("Invalid Password.");
+            }
+            user.PasswordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(request.ComfirmPassword));
+            _context.Update(user);
+            if(await _context.SaveChangesAsync() > 0)
+            return new ApiResult<string>(true, Message: "Success change password!");
+            else
+            return new ApiResult<string>(true, Message: "Fail! Please try again.");
+        }
     }
 }
