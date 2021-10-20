@@ -20,7 +20,7 @@ namespace eComSolution.Service.Catalog.Histories
 
         public async Task<int> AddHistory(int userId, int productId)
         {
-            var current_history = await _context.Histories.Where(x => x.ProductId == productId).FirstOrDefaultAsync();
+            var current_history = await _context.Histories.Where(x => x.ProductId == productId && x.UserId==userId).FirstOrDefaultAsync();
             if(current_history!=null)
             {
                 current_history.Date = DateTime.Now;
