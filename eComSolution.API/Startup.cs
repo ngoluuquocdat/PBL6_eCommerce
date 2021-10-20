@@ -20,6 +20,7 @@ using eComSolution.Service.Common;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using eComSolution.Service.Catalog.Histories;
 
 namespace eComSolution.API
 {
@@ -36,7 +37,9 @@ namespace eComSolution.API
         public void ConfigureServices(IServiceCollection services)
         {
 
-            services.AddControllers();
+            services.AddControllers()
+                    .AddNewtonsoftJson(options =>
+    options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "eComSolution.API", Version = "v1" }); 
@@ -77,8 +80,9 @@ namespace eComSolution.API
                         {
                             ValidateIssuer = false,
                             ValidateAudience = false,
-                            ValidateLifetime = false, // nếu true thì có valid cái thời gian hết hạn
+                            ValidateLifetime = true, // nếu true thì có valid cái thời gian hết hạn
                             ValidateIssuerSigningKey = true, // có valid cái key của JWT
+                            ClockSkew = TimeSpan.Zero,
                             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("super secret key"))
                         };
                     });
@@ -87,6 +91,7 @@ namespace eComSolution.API
             services.AddScoped<ITokenService, TokenService>();
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IProductService, ProductService>();
+            services.AddScoped<IHistoryService, HistoryService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

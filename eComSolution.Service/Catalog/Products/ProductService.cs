@@ -102,6 +102,32 @@ namespace eComSolution.Service.Catalog.Products
             
             return new ApiResult<PagedResult<ProductVm>>(true, ResultObj:pagedResult);
         }
+        public async Task<ApiResult<ProductVm>> GetProductById(int productId)
+        {
+            var product = await _context.Products.FindAsync(productId);
+            if(product == null || product.IsDeleted == true)
+                return new ApiResult<ProductVm>(false, Message:$"Cannot find product with id: {productId}");
+            
+            // tăng view count cho product
+            product.ViewCount +=1;
+            await _context.SaveChangesAsync();
+            // lấy thông tin để hiển thị
+            var productVm = new ProductVm()
+            {
+                Id = product.Id,
+                Name = product.Name,
+                Description = product.Description,
+                Price = product.Price,
+                OriginalPrice = product.OriginalPrice,
+                ViewCount = product.ViewCount,
+                DateCreated = product.DateCreated, 
+                Details = await GetProductDetails(product.Id),
+                Images = await GetProductImages(product.Id)
+            };
+            productVm.TotalStock = productVm.Details.Sum(d => d.Stock);
+
+            return new ApiResult<ProductVm>(true, ResultObj:productVm);
+        }
 
         public async Task<List<ProductDetailVm>> GetProductDetails(int productId)
         {
@@ -238,32 +264,7 @@ namespace eComSolution.Service.Catalog.Products
             return fileName;
         }
 
-        public async Task<ApiResult<ProductVm>> GetProductById(int productId)
-        {
-            var product = await _context.Products.FindAsync(productId);
-            if(product == null || product.IsDeleted == true)
-                return new ApiResult<ProductVm>(false, Message:$"Cannot find product with id: {productId}");
-            
-            // tăng view count cho product
-            product.ViewCount +=1;
-            await _context.SaveChangesAsync();
-            // lấy thông tin để hiển thị
-            var productVm = new ProductVm()
-            {
-                Id = product.Id,
-                Name = product.Name,
-                Description = product.Description,
-                Price = product.Price,
-                OriginalPrice = product.OriginalPrice,
-                ViewCount = product.ViewCount,
-                DateCreated = product.DateCreated, 
-                Details = await GetProductDetails(product.Id),
-                Images = await GetProductImages(product.Id)
-            };
-            productVm.TotalStock = productVm.Details.Sum(d => d.Stock);
-
-            return new ApiResult<ProductVm>(true, ResultObj:productVm);
-        }
+        
 
         public async Task<ApiResult<int>> Delete(int productId)
         {
