@@ -90,5 +90,18 @@ namespace eComSolution.API.Controllers
 
             return Ok(result);
         }
+
+        [HttpDelete("{productId}/images/{imageId}")]
+        public async Task<IActionResult> DeleteImage(int imageId)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var result = await _productService.RemoveImage(imageId);
+            if (result.IsSuccessed == false)
+                return BadRequest(result.Message);
+
+            return Ok(result);
+        }
     }
 }

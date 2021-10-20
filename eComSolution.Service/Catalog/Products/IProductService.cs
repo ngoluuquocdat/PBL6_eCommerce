@@ -33,5 +33,7 @@ namespace eComSolution.Service.Catalog.Products
 
         Task<ApiResult<int>> AddImage(int productId, CreateProductImageRequest request);
 
+        Task<ApiResult<int>> RemoveImage(int imageId);
+
     }
 }
