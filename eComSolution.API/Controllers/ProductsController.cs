@@ -33,7 +33,7 @@ namespace eComSolution.API.Controllers
         }  
 
         [HttpGet("{productId}")]
-        // [AllowAnonymous]
+        [AllowAnonymous]
         public async Task<IActionResult> GetProductById(int productId)
         {
             var result = await _productService.GetProductById(productId);

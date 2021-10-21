@@ -21,6 +21,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using eComSolution.Service.Catalog.Histories;
+using eComSolution.Service.Catalog.Carts;
 
 namespace eComSolution.API
 {
@@ -93,6 +94,7 @@ namespace eComSolution.API
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IProductService, ProductService>();
             services.AddScoped<IHistoryService, HistoryService>();
+            services.AddScoped<ICartService, CartService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
