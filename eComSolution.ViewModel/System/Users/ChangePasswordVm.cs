@@ -9,6 +9,5 @@ namespace eComSolution.ViewModel.System.Users
     {
         public string CurrentPassword { get; set; }
         public string NewPassword { get; set; }
-        public string ComfirmPassword { get; set; }
     }
 }

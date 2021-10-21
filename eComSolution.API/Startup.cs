@@ -87,6 +87,7 @@ namespace eComSolution.API
                         };
                     });
 
+            services.AddScoped<IEmailService, EmailService>();
             services.AddScoped<IStorageService, StorageService>();
             services.AddScoped<ITokenService, TokenService>();
             services.AddScoped<IUserService, UserService>();
