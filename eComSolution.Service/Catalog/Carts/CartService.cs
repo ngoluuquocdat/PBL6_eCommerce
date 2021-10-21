@@ -104,5 +104,13 @@ namespace eComSolution.Service.Catalog.Carts
             
             return new ApiResult<List<CartItem>>(true, ResultObj:data);
         }
+
+        public async Task<ApiResult<int>> RemoveFromCart(int cartId)
+        {
+            var cart_item = await _context.Carts.Where(x=>x.Id == cartId).FirstOrDefaultAsync();
+            _context.Carts.Remove(cart_item);
+            await _context.SaveChangesAsync();
+            return new ApiResult<int>(true, Message:"Remove from cart successful");
+        }
     }
 }

@@ -13,5 +13,7 @@ namespace eComSolution.Service.Catalog.Carts
         Task<ApiResult<List<CartItem>>> GetCartItems(int userId);
 
         Task<ApiResult<int>> AddToCart(int userId, AddToCartRequest request);
+
+        Task<ApiResult<int>> RemoveFromCart(int cartId);
     }
 }

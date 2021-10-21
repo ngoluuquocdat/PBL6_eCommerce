@@ -47,5 +47,15 @@ namespace eComSolution.API.Controllers
            
             return Ok(result);
         }
+
+        [HttpDelete]
+        public async Task<IActionResult> Delete(int cartId)
+        {
+            // var claimsPrincipal = this.User;
+            // var userId = Int32.Parse(claimsPrincipal.FindFirst("id").Value);
+
+            var result = await _cartService.RemoveFromCart(cartId);
+            return Ok(result);
+        }
     }
 }
