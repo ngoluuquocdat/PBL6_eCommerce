@@ -136,6 +136,7 @@ namespace eComSolution.Service.Catalog.Products
 
             var data = await query.Select(x => new ProductDetailVm()
             {
+                Id = x.Id,
                 ProductId = x.ProductId,
                 Color = x.Color,
                 Size = x.Size,
