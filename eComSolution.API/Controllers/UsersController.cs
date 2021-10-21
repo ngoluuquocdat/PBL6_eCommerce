@@ -46,5 +46,29 @@ namespace eComSolution.API.Controllers
 
             return Ok(result);
         }
+        [HttpGet("{email}/forgetPassword")]
+        public async Task<IActionResult> ForgetPassword(string email)
+        {
+            var result = await _userService.ForgetPassword(email);
+            if(result.IsSuccessed == false) return Unauthorized(result.Message);
+
+            return Ok(result);
+        }
+        [HttpPost("resetPassword")]
+        public async Task<IActionResult> ResetPassword(string email, string password)
+        {
+            var result = await _userService.ResetPassword(email, password);
+            if(result.IsSuccessed == false) return Unauthorized(result.Message);
+
+            return Ok(result);
+        }
+        [HttpGet("ConfirmResetPass")]
+        public async Task<IActionResult> ConfirmResetPass(string email, string key)
+        {
+            var result = await _userService.ComfirmResetPassword(email, key);
+            if(result.IsSuccessed == false) return Unauthorized(result.Message);
+
+            return Ok(result);
+        }
     }
 }

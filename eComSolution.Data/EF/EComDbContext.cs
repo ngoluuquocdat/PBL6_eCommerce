@@ -36,6 +36,7 @@ namespace eComSolution.Data.EF
             modelBuilder.ApplyConfiguration(new HistoryConfiguration());
             modelBuilder.ApplyConfiguration(new OrderConfiguration());
             modelBuilder.ApplyConfiguration(new OrderDetailConfiguration());
+            modelBuilder.ApplyConfiguration(new ResetPassConfiguration());
 
             //Data seeding
             modelBuilder.Seed();
@@ -66,6 +67,7 @@ namespace eComSolution.Data.EF
         public DbSet<Cart> Carts { get; set; }
         public DbSet<History> Histories { get; set; }
         public DbSet<Order> Orders { get; set; }
-        public DbSet<OrderDetail> OrderDetails { get; set; }      
+        public DbSet<OrderDetail> OrderDetails { get; set; } 
+        public DbSet<ResetPass> ResetPasses { get; set; }     
     }
 }

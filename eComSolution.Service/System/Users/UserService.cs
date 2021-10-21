@@ -8,8 +8,13 @@ using eComSolution.Data.EF;
 using eComSolution.Data.Entities;
 using eComSolution.Service.System.Token;
 using eComSolution.ViewModel.System.Users;
+using EmailValidation;
 using eShopSolution.ViewModels.Common;
 using Microsoft.EntityFrameworkCore;
+using MimeKit;
+using MailKit.Net.Smtp;
+using Microsoft.Extensions.Configuration;
+using eComSolution.Service.Common;
 
 namespace eComSolution.Service.System.Users
 {
@@ -17,11 +22,13 @@ namespace eComSolution.Service.System.Users
     {
         private readonly EComDbContext _context;
         private readonly ITokenService _tokenService;
+        private readonly IEmailService _emailService;
 
-        public UserService(EComDbContext context, ITokenService tokenService)
+        public UserService(EComDbContext context, ITokenService tokenService, IEmailService emailService)
         {
             _context = context;
             _tokenService = tokenService;
+            _emailService = emailService;
         }
 
         public async Task<ApiResult<string>> Login(LoginRequest request)
@@ -40,6 +47,22 @@ namespace eComSolution.Service.System.Users
 
             return new ApiResult<string>(true, ResultObj : _tokenService.CreateToken(user));
         }
+
+        // public bool IsValidEmail(string email){
+        //     EmailValidator emailValidator = new EmailValidator();
+        //     EmailValidationResult result;
+
+        //     if (!emailValidator.Validate(email, out result))
+        //     {
+        //         Console.WriteLine("Unable to check email"); // no internet connection or mailserver is down / busy
+        //     }
+
+        //     if(result == EmailValidationResult.OK){
+        //         return true;
+        //     }else{
+        //         return false;
+        //     }
+        // }
 
         public async Task<ApiResult<string>> Register(RegisterRequest request)
         {
@@ -63,6 +86,10 @@ namespace eComSolution.Service.System.Users
             if(check){
                 return new ApiResult<string>(false, message);
             }
+            
+            // if(IsValidEmail(request.Email.ToLower()) == false){
+            //     return new ApiResult<string>(false, "Email is not exist!");
+            // }
 
             using var hmac = new HMACSHA512();
 
@@ -125,12 +152,115 @@ namespace eComSolution.Service.System.Users
             {
                 if(computedHash[i] != user.PasswordHash[i]) return new ApiResult<string>(false, "Invalid password!");; //Unauthorized("Invalid Password.");
             }
-            user.PasswordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(request.ComfirmPassword));
+            user.PasswordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(request.NewPassword));
             _context.Update(user);
             if(await _context.SaveChangesAsync() > 0)
             return new ApiResult<string>(true, Message: "Success change password!");
             else
-            return new ApiResult<string>(true, Message: "Fail! Please try again.");
+            return new ApiResult<string>(false, Message: "Fail! Please try again.");
+        }
+        public string GetUniqueKey(int size)
+        {
+            char[] chars =
+                "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890".ToCharArray();
+            byte[] data = new byte[size];
+            using (RNGCryptoServiceProvider crypto = new RNGCryptoServiceProvider())
+            {
+                crypto.GetBytes(data);
+            }
+            StringBuilder result = new StringBuilder(size);
+            foreach (byte b in data)
+            {
+                result.Append(chars[b % (chars.Length)]);
+            }
+            return result.ToString();
+        }
+        public string GetHash(string plainText)
+        {
+            MD5 md5 = new MD5CryptoServiceProvider();
+            md5.ComputeHash(ASCIIEncoding.ASCII.GetBytes(plainText));
+            byte[] result = md5.Hash;
+            StringBuilder strBuilder = new StringBuilder();
+            for (int i = 0; i < result.Length; i++)
+            {
+                strBuilder.Append(result[i].ToString("x2"));
+            }
+
+            return strBuilder.ToString();
+        }
+        public async Task<ApiResult<string>> ForgetPassword(string email){
+            // check email is exist?
+            var user =  await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
+            if(user == null) return new ApiResult<string>(false, "Your email is not correct!");
+
+            // random key with length = 16
+            var key = GetUniqueKey(16);
+            key = GetHash(key);
+            string emailhash = GetHash(email);
+            
+            string content = $"You have requested to reset your password \nLink reset pass: https://localhost:5001/api/Users/ConfirmResetPass?email={emailhash}&key={key}";
+
+            _emailService.SendEmail(email, content);
+
+            // nếu có record cùng gmail thì xóa 
+            var instance = await _context.ResetPasses.FirstOrDefaultAsync(u => u.Email == emailhash);
+            if(instance != null){
+                _context.ResetPasses.Remove(instance);
+            }
+            // insert record ResetPass
+            var x = new ResetPass{
+                Email = emailhash,
+                Token = key,
+                Time = DateTime.Now
+            };
+            _context.ResetPasses.Add(x);
+            await _context.SaveChangesAsync();
+
+            return new ApiResult<string>(true, Message: "We have sent password reset information to your email, please check your email and follow the instructions");
+        }
+        public async Task<ApiResult<string>> ResetPassword(string email, string password){
+            var user =  await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
+
+            using var hmac = new HMACSHA512(user.PasswordSalt);
+
+            user.PasswordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(password));
+            _context.Update(user);
+            if(await _context.SaveChangesAsync() > 0)
+            return new ApiResult<string>(true, Message: "Success reset password!");
+            else
+            return new ApiResult<string>(false, Message: "Fail! Please try again.");
+        }
+        public async Task<ApiResult<string>> ComfirmResetPassword(string email, string key){
+            var resetPass =  await _context.ResetPasses.FirstOrDefaultAsync(u => u.Email == email);
+            if(resetPass == null) return new ApiResult<string>(false, "No availble. Please press forget password again!");
+
+            // kiểm tra thời gian
+            var list = _context.ResetPasses.Where(x => DateTime.Now <= ((DateTime)x.Time).AddMinutes(1)).ToList();
+            foreach(ResetPass i in list){
+                if(i == resetPass){
+
+                    // nhập sai quá 3 lần thì xóa record
+                    if(resetPass.Numcheck > 2)
+                    {
+                        _context.ResetPasses.Remove(resetPass);
+                        _context.SaveChanges();
+                        return new ApiResult<string>(false, "You have entered the wrong number of times");
+                    }
+
+                    // sai key thì tăng numcheck lên 1
+                    if(resetPass.Token != key){
+                        resetPass.Numcheck += 1;
+                        _context.ResetPasses.Update(resetPass);
+                        _context.SaveChanges();
+                        return new ApiResult<string>(false, "Your key is not correct!");
+                    }
+                    
+                    // thời gian ok, key ok thì chuyển qua cho nhập pass mới
+                    return new ApiResult<string>(true, Message: "Kiểm tra ok rồi, cho chuyển qua đổi pass đi");
+                }
+            }
+
+            return new ApiResult<string>(false, Message: "mã quá hạn mẹ rồi!");
         }
     }
 }

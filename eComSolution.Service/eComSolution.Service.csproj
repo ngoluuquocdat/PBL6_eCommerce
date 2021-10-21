@@ -6,10 +6,13 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="EmailValidator.NET" Version="1.0.5" />
+    <PackageReference Include="MailKit" Version="2.15.0" />
     <PackageReference Include="Microsoft.AspNetCore.Hosting" Version="2.2.7" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.13.1" />
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
+    <PackageReference Include="System.Net.Mail" Version="1.0.0-rtm-00002" />
   </ItemGroup>
 
   <ItemGroup>

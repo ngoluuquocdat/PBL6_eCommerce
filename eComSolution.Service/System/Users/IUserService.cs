@@ -18,6 +18,12 @@ namespace eComSolution.Service.System.Users
         Task<ApiResult<UserPermission>> GetPermissions(int UserId);
         
         Task<ApiResult<string>> ChangePassword(int UserId, ChangePasswordVm request);
+
+        Task<ApiResult<string>> ForgetPassword(string email);
+
+        Task<ApiResult<string>> ResetPassword(string email, string password);
+
+        Task<ApiResult<string>> ComfirmResetPassword(string email, string key);
         
     }
 }
