@@ -57,5 +57,43 @@ namespace eComSolution.API.Controllers
             var result = await _cartService.RemoveFromCart(cartId);
             return Ok(result);
         }
+
+        [HttpPost("checkout")]
+        public async Task<IActionResult> CheckOut(List<CheckOutRequest> requests)
+        {
+            // foreach(var request in requests)
+            // {
+            //     var result = await _cartService.CheckOut(request.ShopId, request.ProductDetail_Ids);
+            // }
+            return null;
+        }
+
+        // [HttpPost("test")]
+        // public IActionResult CreateCheckOutRequests(List<CartItem> items)
+        // {
+        //     List<int> list_shopIds = new List<int>();
+
+        //     // get list of shopIds
+        //     foreach(var item in items)
+        //     {
+        //         if(!list_shopIds.Contains(item.ShopId))
+        //         {
+        //             list_shopIds.Add(item.ShopId);
+        //         }
+        //     }
+        //     // get list of check out requests
+        //     var list_checkouts = new List<CheckOutRequest>();
+        //     foreach(var shopId in list_shopIds)
+        //     {
+        //         list_checkouts.Add(new CheckOutRequest
+        //         {
+        //             ShopId = shopId,
+        //             ProductDetail_Ids = items
+        //                 .Where(x=>x.ShopId==shopId)
+        //                 .Select(x=>x.ProductDetail_Id).ToList()
+        //         });
+        //     }
+        //     return Ok(list_checkouts);
+        // }
     }
 }

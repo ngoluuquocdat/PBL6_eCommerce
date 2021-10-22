@@ -22,6 +22,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using eComSolution.Service.Catalog.Histories;
 using eComSolution.Service.Catalog.Carts;
+using eComSolution.Service.Catalog.Orders;
 
 namespace eComSolution.API
 {
@@ -95,6 +96,7 @@ namespace eComSolution.API
             services.AddScoped<IProductService, ProductService>();
             services.AddScoped<IHistoryService, HistoryService>();
             services.AddScoped<ICartService, CartService>();
+            services.AddScoped<IOrderService, OrderService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

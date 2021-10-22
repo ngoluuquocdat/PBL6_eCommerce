@@ -9,6 +9,7 @@ namespace eComSolution.ViewModel.Catalog.Carts
     {
         public int Id { get; set; }
         public int UserId { get; set; }
+        public int ProductId { get; set; }
         public int ProductDetail_Id { get; set; }
         public int ShopId { get; set; }
         public string ProductName { get; set; }
@@ -18,6 +19,6 @@ namespace eComSolution.ViewModel.Catalog.Carts
         public int Quantity { get; set; }   // số lượng đặt mua
         public int Stock { get; set; }      // số lượng tồn kho
         public int Price { get; set; }      // đơn giá
-        public string ThumbnailImage {get; set;}
+        public string Image {get; set;}
     }
 }

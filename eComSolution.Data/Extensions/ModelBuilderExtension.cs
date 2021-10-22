@@ -266,7 +266,7 @@ namespace eComSolution.Data.Extensions
                     OrderDate = DateTime.Now,
                     UserId = 4,
                     ShopId = 2,
-                    State = "Đang xử lý",
+                    State = "Chờ xử lý",
                     ShipName = "Đinh Công Tài",
                     ShipAddress = "123 Lê Duẩn, Thanh Khê, Đà Nẵng",
                     ShipPhone = "09053438847",                   
