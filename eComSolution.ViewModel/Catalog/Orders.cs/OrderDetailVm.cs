@@ -11,5 +11,9 @@ namespace eComSolution.ViewModel.Catalog.Orders
         public int ProductDetail_Id {get; set;}
         public int Price { get; set; }      // đơn giá
         public int Quantity {get; set;}
+        public string ProductName { get; set; }
+        public string Color { get; set; }
+        public string Size { get; set; }
+        public string Image {get; set;}
     }
 }

@@ -42,7 +42,17 @@ namespace eComSolution.API.Controllers
 
             return Ok(result);
         }
+        
+        [HttpGet]
+        public async Task<IActionResult> GetUserOrders(string state)
+        {
+            var claimsPrincipal = this.User;
+            var userId = Int32.Parse(claimsPrincipal.FindFirst("id").Value);
+            
+            var result = await _orderService.GetUserOrders(userId, state);
 
+            return Ok(result);
+        }
         
     }
 }
