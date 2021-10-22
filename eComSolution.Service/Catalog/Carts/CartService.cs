@@ -85,6 +85,7 @@ namespace eComSolution.Service.Catalog.Carts
                     .FirstOrDefaultAsync();
                 
                 if(image!=null) path = image.ImagePath;
+                
                 data.Add(new CartItem()
                 {
                     Id = record.c.Id,

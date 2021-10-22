@@ -82,7 +82,9 @@ namespace eComSolution.Service.Catalog.Products
                         Price = x.p.Price,
                         OriginalPrice = x.p.OriginalPrice,
                         ViewCount = x.p.ViewCount,
-                        DateCreated = x.p.DateCreated                              
+                        DateCreated = x.p.DateCreated,  
+                        ShopId = x.sh.Id,
+                        ShopName = x.sh.Name                            
                     }).ToListAsync();
 
             for(int i=0; i<data.Count; i++)
@@ -112,6 +114,7 @@ namespace eComSolution.Service.Catalog.Products
             product.ViewCount +=1;
             await _context.SaveChangesAsync();
             // lấy thông tin để hiển thị
+            var shop = await _context.Shops.Where(x=>x.Id==product.ShopId).FirstOrDefaultAsync();
             var productVm = new ProductVm()
             {
                 Id = product.Id,
@@ -121,6 +124,8 @@ namespace eComSolution.Service.Catalog.Products
                 OriginalPrice = product.OriginalPrice,
                 ViewCount = product.ViewCount,
                 DateCreated = product.DateCreated, 
+                ShopId = shop.Id,
+                ShopName = shop.Name,
                 Details = await GetProductDetails(product.Id),
                 Images = await GetProductImages(product.Id)
             };

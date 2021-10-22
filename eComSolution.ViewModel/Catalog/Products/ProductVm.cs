@@ -17,7 +17,8 @@ namespace eComSolution.ViewModel.Catalog.Products
         public int ViewCount { get; set; }
         public DateTime DateCreated { get; set; }
         //public string Category { get; set; }
-        //public int ShopId { get; set; }
+        public int ShopId { get; set; }
+        public string ShopName {get; set;}
         public int TotalStock {get; set;}
         public List<ProductDetailVm> Details {get; set;}
         public List<ProductImageVm> Images {get; set;}       
