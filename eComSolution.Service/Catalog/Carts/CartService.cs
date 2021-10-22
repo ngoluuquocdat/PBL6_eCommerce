@@ -89,6 +89,7 @@ namespace eComSolution.Service.Catalog.Carts
                 {
                     Id = record.c.Id,
                     UserId = record.c.UserId,
+                    ProductId = record.p.Id,
                     ProductDetail_Id = record.c.ProductDetail_Id,
                     ShopId = record.p.ShopId,
                     ProductName = record.p.Name,
@@ -98,7 +99,7 @@ namespace eComSolution.Service.Catalog.Carts
                     Quantity = record.c.Quantity,
                     Stock = record.pd.Stock,
                     Price = record.c.Price,
-                    ThumbnailImage = path
+                    Image = path
                 });
             }
             
@@ -112,5 +113,6 @@ namespace eComSolution.Service.Catalog.Carts
             await _context.SaveChangesAsync();
             return new ApiResult<int>(true, Message:"Remove from cart successful");
         }
+        
     }
 }
