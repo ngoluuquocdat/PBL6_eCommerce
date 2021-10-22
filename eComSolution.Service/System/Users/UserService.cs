@@ -11,9 +11,6 @@ using eComSolution.ViewModel.System.Users;
 using EmailValidation;
 using eShopSolution.ViewModels.Common;
 using Microsoft.EntityFrameworkCore;
-using MimeKit;
-using MailKit.Net.Smtp;
-using Microsoft.Extensions.Configuration;
 using eComSolution.Service.Common;
 
 namespace eComSolution.Service.System.Users
@@ -123,34 +120,34 @@ namespace eComSolution.Service.System.Users
             return new ApiResult<UserViewModel>(true, userViewModel);
         }
 
-        public async Task<ApiResult<UserPermission>> GetPermissions(int UserId){
-            var user =  await _context.Users.FirstOrDefaultAsync(u => u.Id == UserId);
+        public async Task<ApiResult<UserPermission>> GetPermissions(int userId){
+            var user =  await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
             if(user == null) return new ApiResult<UserPermission>(false, "User is not exist!");
 
             var query = from _user in _context.Users
             join _groupuser in _context.GroupUsers on _user.Id equals _groupuser.UserId
             join _permission in _context.Permissions on _groupuser.GroupId equals _permission.GroupId
             join _function in _context.Functions on _permission.FunctionId equals _function.Id
-            where _user.Id == UserId
+            where _user.Id == userId
             select new { 
                 function = _function.ActionName
             }.ToString(); 
 
             var userPermission = new UserPermission{
-                Id = UserId,
+                Id = userId,
                 Permissions = query.Distinct().ToList()
             };
             return new ApiResult<UserPermission>(true, userPermission);
         }
-        public async Task<ApiResult<string>> ChangePassword(int UserId, ChangePasswordVm request){
-            var user =  await _context.Users.FirstOrDefaultAsync(u => u.Id == UserId);
+        public async Task<ApiResult<string>> ChangePassword(int userId, ChangePasswordVm request){
+            var user =  await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
             using var hmac = new HMACSHA512(user.PasswordSalt);
             var computedHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(request.CurrentPassword));
 
             // so sánh 2 mảng byte: password hash từ request VS p   assword hash của user trong Db
             for(int i = 0; i<computedHash.Length; i++)
             {
-                if(computedHash[i] != user.PasswordHash[i]) return new ApiResult<string>(false, "Invalid password!");; //Unauthorized("Invalid Password.");
+                if(computedHash[i] != user.PasswordHash[i]) return new ApiResult<string>(false, "Your current password is incorrect!");; //Unauthorized("Invalid Password.");
             }
             user.PasswordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(request.NewPassword));
             _context.Update(user);
@@ -159,6 +156,8 @@ namespace eComSolution.Service.System.Users
             else
             return new ApiResult<string>(false, Message: "Fail! Please try again.");
         }
+
+        // tạo key cho chức năng quên mật khẩu
         public string GetUniqueKey(int size)
         {
             char[] chars =
@@ -175,6 +174,8 @@ namespace eComSolution.Service.System.Users
             }
             return result.ToString();
         }
+        
+        // hash md5
         public string GetHash(string plainText)
         {
             MD5 md5 = new MD5CryptoServiceProvider();
@@ -261,6 +262,21 @@ namespace eComSolution.Service.System.Users
             }
 
             return new ApiResult<string>(false, Message: "mã quá hạn mẹ rồi!");
+        }
+        public async Task<ApiResult<string>> UpdateUser(int userId, UpdateUserVm updateUser){
+            var user =  await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
+            if(user == null) return new ApiResult<string> (false, Message: "User is not exist!");
+
+            user.Fullname = updateUser.Fullname;
+            user.Email = updateUser.Email;
+            user.PhoneNumber = updateUser.PhoneNumber;
+
+            _context.Users.Update(user);
+
+            if(await _context.SaveChangesAsync() > 0)
+            return new ApiResult<string>(true, Message: "Success update user!");
+            else
+            return new ApiResult<string>(false, Message: "Fail! Please try again.");
         }
     }
 }
