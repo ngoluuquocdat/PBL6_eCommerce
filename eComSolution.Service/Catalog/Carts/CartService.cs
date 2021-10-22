@@ -18,7 +18,13 @@ namespace eComSolution.Service.Catalog.Carts
             _context = context;
         }
         public async Task<ApiResult<int>> AddToCart(int userId, AddToCartRequest request)
-        {            
+        {           
+            int stock = (await _context.ProductDetails
+                    .Where(x=>x.Id == request.ProductDetail_Id)
+                    .FirstOrDefaultAsync()).Stock; 
+
+            if(request.Quantity > stock )
+                return new ApiResult<int>(false, Message:"Out of stock");
 
             var current_item = await _context.Carts
                 .Where(x => x.ProductDetail_Id == request.ProductDetail_Id && x.UserId==userId)
@@ -26,10 +32,7 @@ namespace eComSolution.Service.Catalog.Carts
             
             if(current_item != null)
             {
-                current_item.Quantity += request.Quantity;
-                int stock = (await _context.ProductDetails
-                    .Where(x=>x.Id == request.ProductDetail_Id)
-                    .FirstOrDefaultAsync()).Stock;
+                current_item.Quantity += request.Quantity;               
 
                 if(current_item.Quantity > stock)
                 {

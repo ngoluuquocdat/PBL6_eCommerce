@@ -24,7 +24,7 @@ namespace eComSolution.API.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Show()
+        public async Task<IActionResult> Get()
         {
             var claimsPrincipal = this.User;
             var userId = Int32.Parse(claimsPrincipal.FindFirst("id").Value);
@@ -56,16 +56,6 @@ namespace eComSolution.API.Controllers
 
             var result = await _cartService.RemoveFromCart(cartId);
             return Ok(result);
-        }
-
-        [HttpPost("checkout")]
-        public async Task<IActionResult> CheckOut(List<CheckOutRequest> requests)
-        {
-            // foreach(var request in requests)
-            // {
-            //     var result = await _cartService.CheckOut(request.ShopId, request.ProductDetail_Ids);
-            // }
-            return null;
         }
 
         // [HttpPost("test")]

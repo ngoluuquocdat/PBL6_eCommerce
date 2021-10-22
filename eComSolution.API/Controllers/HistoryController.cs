@@ -22,7 +22,7 @@ namespace eComSolution.API.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Show()
+        public async Task<IActionResult> Get()
         {
             var claimsPrincipal = this.User;
             var userId = Int32.Parse(claimsPrincipal.FindFirst("id").Value);
