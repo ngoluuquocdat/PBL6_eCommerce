@@ -22,26 +22,40 @@ namespace eComSolution.API.Controllers
             _userService = userService;
         }
 
-        [HttpGet("{UserId}")]
-        public async Task<IActionResult> GetUserBuId(int UserId)
+        [HttpGet("{userId}")]
+        public async Task<IActionResult> GetUserBuId(int userId)
         {
-            var result = await _userService.GetUserById(UserId);
+            var result = await _userService.GetUserById(userId);
             if(result.IsSuccessed == false) return BadRequest(result.Message);
 
             return Ok(result);
         }
-        [HttpGet("permission/{UserId}")]
-        public async Task<IActionResult> GetPermissions(int UserId)
+        [HttpPost("Update")]
+        [Authorize]
+        public async Task<IActionResult> UpdateUser(UpdateUserVm updateUser)
         {
-            var result = await _userService.GetPermissions(UserId);
+            var claimsPrincipal = this.User;
+            var userId = Int32.Parse(claimsPrincipal.FindFirst("id").Value);
+            var result = await _userService.UpdateUser(userId, updateUser);
+            if(result.IsSuccessed == false) return BadRequest(result.Message);
+
+            return Ok(result);
+        }
+        [HttpGet("permission/{userId}")]
+        public async Task<IActionResult> GetPermissions(int userId)
+        {
+            var result = await _userService.GetPermissions(userId);
             if(result.IsSuccessed == false) return Unauthorized(result.Message);
 
             return Ok(result);
         }
-        [HttpPut("{UserId}/changePassword")]
-        public async Task<IActionResult> ChangePassword(int UserId, ChangePasswordVm request)
+        [HttpPut("changePassword")]
+        [Authorize]
+        public async Task<IActionResult> ChangePassword(ChangePasswordVm request)
         {
-            var result = await _userService.ChangePassword(UserId, request);
+            var claimsPrincipal = this.User;
+            var userId = Int32.Parse(claimsPrincipal.FindFirst("id").Value);
+            var result = await _userService.ChangePassword(userId, request);
             if(result.IsSuccessed == false) return Unauthorized(result.Message);
 
             return Ok(result);

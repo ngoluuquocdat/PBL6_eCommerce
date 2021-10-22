@@ -13,17 +13,19 @@ namespace eComSolution.Service.System.Users
 
         Task<ApiResult<string>> Login(LoginRequest request);
 
-        Task<ApiResult<UserViewModel>> GetUserById(int UserId);
+        Task<ApiResult<UserViewModel>> GetUserById(int userId);
 
-        Task<ApiResult<UserPermission>> GetPermissions(int UserId);
+        Task<ApiResult<UserPermission>> GetPermissions(int userId);
         
-        Task<ApiResult<string>> ChangePassword(int UserId, ChangePasswordVm request);
+        Task<ApiResult<string>> ChangePassword(int userId, ChangePasswordVm request);
 
         Task<ApiResult<string>> ForgetPassword(string email);
 
         Task<ApiResult<string>> ResetPassword(string email, string password);
 
         Task<ApiResult<string>> ComfirmResetPassword(string email, string key);
+
+        Task<ApiResult<string>> UpdateUser(int userId, UpdateUserVm updateUser);
         
     }
 }
