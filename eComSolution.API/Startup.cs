@@ -42,6 +42,10 @@ namespace eComSolution.API
             services.AddControllers()
                     .AddNewtonsoftJson(options =>
     options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
+
+            services.AddCors(option 
+                => option.AddPolicy("MyCorsPolicy", builder => builder.WithOrigins("http://localhost:4200")));
+
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "eComSolution.API", Version = "v1" }); 
@@ -114,6 +118,8 @@ namespace eComSolution.API
             app.UseStaticFiles();
 
             app.UseRouting();
+
+            app.UseCors("MyCorsPolicy");
 
             app.UseAuthentication();
 
