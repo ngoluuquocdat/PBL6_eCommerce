@@ -47,7 +47,10 @@ namespace eComSolution.Service.Catalog.Products
                 query = query.Where(x => x.p.Name.Contains(request.Keyword));
             // theo categoryId
             if(request.CategoryId != 0)
-                query = query.Where(x => x.p.CategoryId == request.CategoryId);           
+                query = query.Where(x => x.p.CategoryId == request.CategoryId); 
+            // theo gender
+            if(request.Gender != 0)
+                query = query.Where(x => x.p.Gender == request.Gender);           
             // theo shopId
             if(request.ShopId !=0 )
                 query = query.Where(x => x.p.ShopId == request.ShopId);
@@ -79,6 +82,7 @@ namespace eComSolution.Service.Catalog.Products
                         Id = x.p.Id,
                         Name = x.p.Name,
                         Description = x.p.Description,
+                        Gender = x.p.Gender,
                         Price = x.p.Price,
                         OriginalPrice = x.p.OriginalPrice,
                         ViewCount = x.p.ViewCount,
@@ -120,6 +124,7 @@ namespace eComSolution.Service.Catalog.Products
                 Id = product.Id,
                 Name = product.Name,
                 Description = product.Description,
+                Gender = product.Gender,
                 Price = product.Price,
                 OriginalPrice = product.OriginalPrice,
                 ViewCount = product.ViewCount,
@@ -224,6 +229,7 @@ namespace eComSolution.Service.Catalog.Products
             {
                 Name = request.Name,
                 Description = request.Description,
+                Gender = request.Gender,
                 OriginalPrice = request.OriginalPrice,
                 Price = request.Price,
                 ViewCount = 0,
@@ -289,6 +295,7 @@ namespace eComSolution.Service.Catalog.Products
             var product = await _context.Products.FindAsync(request.Id);
             product.Name = request.Name;
             product.Description = request.Description;
+            product.Gender = request.Gender;
             product.OriginalPrice = request.OriginalPrice;
             product.Price = request.Price;
             product.CategoryId = request.CategoryId;

@@ -23,6 +23,7 @@ namespace eComSolution.Data.Extensions
                     PhoneNumber = "0921231220",
                     Address = "123 DT605, Hòa Tiến, Hòa Vang, Đà Nẵng",
                     Description = "Cửa hàng áo quần chất lượng cao, giá cả phải chăng",
+                    DateModified = DateTime.Now,
                     Disable = false
                 },
                 new Shop
@@ -33,6 +34,7 @@ namespace eComSolution.Data.Extensions
                     PhoneNumber = "0905553859",
                     Address = "160 Trần Nhật Duật, Cẩm Châu, Hội An, Quảng Nam",
                     Description = "Cửa hàng áo quần nam",
+                    DateModified = DateTime.Now,
                     Disable = false
                 }
             );  
@@ -179,6 +181,7 @@ namespace eComSolution.Data.Extensions
                     Id = 1,
                     Name = "Áo thun SadBoiz",
                     Description="Mô tả sản phẩm:"+'\n'+" Chất liệu: 100% cotton"+'\n'+" Màu sắc : trắng & đen",
+                    Gender = 1, // nam
                     DateCreated = DateTime.Now,
                     OriginalPrice = 100000,
                     Price = 200000,
@@ -192,6 +195,7 @@ namespace eComSolution.Data.Extensions
                     Id = 2,
                     Name = "Quần lót Calvin Klein",
                     Description="Mô tả sản phẩm:"+'\n'+" Chất liệu: 100% cotton"+'\n'+" Màu sắc : đỏ & đen",
+                    Gender = 1, // nam
                     DateCreated = DateTime.Now,
                     OriginalPrice = 100000,
                     Price = 150000,
@@ -205,6 +209,7 @@ namespace eComSolution.Data.Extensions
                     Id = 3,
                     Name = "Áo thun trơn XFire",
                     Description="Mô tả sản phẩm:"+'\n'+" Brand: XFire"+'\n'+" Chất liệu : cotton co dãn",
+                    Gender = 3, // nam + nữ đều đc
                     DateCreated = DateTime.Now,
                     OriginalPrice = 150000,
                     Price = 250000,
@@ -218,6 +223,7 @@ namespace eComSolution.Data.Extensions
                     Id = 4,
                     Name = "Quần Jean ôm nam",
                     Description="Mô tả sản phẩm:"+'\n'+" Form: Fit"+'\n'+" Chất liệu : jean",
+                    Gender = 1, // nam 
                     DateCreated = DateTime.Now,
                     OriginalPrice = 150000,
                     Price = 250000,

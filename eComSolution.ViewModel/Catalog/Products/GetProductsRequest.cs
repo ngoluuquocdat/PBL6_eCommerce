@@ -11,6 +11,7 @@ namespace eComSolution.ViewModel.Catalog.Products
         public int PageSize { get; set; }   // kích cỡ của trang
         public string Keyword { get; set; }          // keyword để tìm kiếm
         public int CategoryId { get; set; }
+        public int Gender {get; set;}
         public int ShopId {get; set;}          // lấy sản phẩm của shop nào
         public string SortBy {get; set;}        // sắp xếp theo tiêu chí gì        
     }
