@@ -117,6 +117,42 @@ namespace eComSolution.Service.Catalog.Carts
             await _context.SaveChangesAsync();
             return new ApiResult<int>(true, Message:"Remove from cart successful");
         }
-        
+
+        public async Task<ApiResult<int>> RemoveMultiCarts(List<int> cartIds)
+        {
+            try
+            {
+                foreach(var id in cartIds)
+                {
+                    var cart_item = await _context.Carts.Where(x=>x.Id == id).FirstOrDefaultAsync();
+                    _context.Carts.Remove(cart_item);          
+                }
+            }
+            catch(Exception e)
+            {
+                return new ApiResult<int>(false, Message:"something went wrong, delete cart items failed");
+            }           
+            await _context.SaveChangesAsync();
+            return new ApiResult<int>(true, Message:"Remove cart items successful");
+        }
+
+        public async Task<ApiResult<int>> UpdateCartItem(UpdateCartItemRequest request)
+        {
+            var cart_item = await _context.Carts.Where(x=>x.Id==request.CartId).FirstOrDefaultAsync();
+            if(cart_item==null)
+                return new ApiResult<int>(false, Message:"cart item does not exist"); 
+
+            int stock = (await _context.ProductDetails
+                    .Where(x=>x.Id == cart_item.ProductDetail_Id)
+                    .FirstOrDefaultAsync()).Stock; 
+
+            if(request.Quantity > stock )
+                return new ApiResult<int>(false, Message:"Out of stock");
+
+            cart_item.Quantity = request.Quantity;
+            _context.Carts.Update(cart_item);
+            await _context.SaveChangesAsync();
+            return new ApiResult<int>(true, Message:"Update cart item successful");
+        }
     }
 }
