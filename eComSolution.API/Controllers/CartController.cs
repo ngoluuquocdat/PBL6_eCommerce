@@ -24,7 +24,7 @@ namespace eComSolution.API.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Get()
+        public async Task<IActionResult> GetCart()
         {
             var claimsPrincipal = this.User;
             var userId = Int32.Parse(claimsPrincipal.FindFirst("id").Value);
@@ -38,7 +38,7 @@ namespace eComSolution.API.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Add(AddToCartRequest request)
+        public async Task<IActionResult> AddCart(AddToCartRequest request)
         {
             var claimsPrincipal = this.User;
             var userId = Int32.Parse(claimsPrincipal.FindFirst("id").Value);
@@ -48,13 +48,27 @@ namespace eComSolution.API.Controllers
             return Ok(result);
         }
 
-        [HttpDelete]
-        public async Task<IActionResult> Delete(int cartId)
+        [HttpDelete("{cartId}")]
+        public async Task<IActionResult> DeleteCart(int cartId)
         {
             // var claimsPrincipal = this.User;
             // var userId = Int32.Parse(claimsPrincipal.FindFirst("id").Value);
 
             var result = await _cartService.RemoveFromCart(cartId);
+            return Ok(result);
+        }
+
+        [HttpDelete]
+        public async Task<IActionResult> DeleteMultiCarts(List<int> cartIds)
+        {
+            var result = await _cartService.RemoveMultiCarts(cartIds);       
+            return Ok(result);
+        }
+
+        [HttpPatch]
+        public async Task<IActionResult> UpdateCartItem(UpdateCartItemRequest request)
+        {
+            var result = await _cartService.UpdateCartItem(request);       
             return Ok(result);
         }
 

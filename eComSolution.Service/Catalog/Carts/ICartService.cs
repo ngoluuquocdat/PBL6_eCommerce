@@ -14,6 +14,11 @@ namespace eComSolution.Service.Catalog.Carts
 
         Task<ApiResult<int>> AddToCart(int userId, AddToCartRequest request);
 
+        Task<ApiResult<int>> UpdateCartItem(UpdateCartItemRequest request);
+
         Task<ApiResult<int>> RemoveFromCart(int cartId);
+
+        Task<ApiResult<int>> RemoveMultiCarts(List<int> cartIds);
+
     }
 }
