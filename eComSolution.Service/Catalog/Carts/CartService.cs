@@ -130,7 +130,7 @@ namespace eComSolution.Service.Catalog.Carts
             }
             catch(Exception e)
             {
-                return new ApiResult<int>(false, Message:"something went wrong, delete cart items failed");
+                return new ApiResult<int>(false, Message:"Delete cart items failed\n"+e.Message);
             }           
             await _context.SaveChangesAsync();
             return new ApiResult<int>(true, Message:"Remove cart items successful");
