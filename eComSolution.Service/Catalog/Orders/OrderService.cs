@@ -173,8 +173,38 @@ namespace eComSolution.Service.Catalog.Orders
                 });
             }
             return data;
-        }       
+        }
 
+        public async Task<ApiResult<int>> CancelOrder(int orderId)
+        {
+            var order = await _context.Orders.Where(x=>x.Id==orderId).FirstOrDefaultAsync();
+            if(order==null) return new ApiResult<int>(false, Message:$"Cannot find order with this id: {orderId}");
+            var order_details = await _context.OrderDetails
+                            .Where(x=>x.OrderId==orderId).ToListAsync();
+            try
+            {
+                // 1. chuyển trạng thái đơn hàng thành 'đã hủy'
+                order.State = "Đã hủy";
+                _context.Orders.Update(order);
+                // 2. cộng lại số lượng sản phẩm đã đặt vào stock
+                foreach(var order_detail in order_details)
+                {
+                    var product_detail = await _context.ProductDetails    
+                                        .Where(x=>x.Id==order_detail.ProductDetail_Id)
+                                        .FirstOrDefaultAsync();
+                    product_detail.Stock += order_detail.Quantity;
+                    _context.ProductDetails.Update(product_detail);
+                }
+                await _context.SaveChangesAsync();
+
+            }
+            catch(Exception e) 
+            {
+                return new ApiResult<int>(false, Message:"Cancel order failed:\n"+e.Message);
+            }
+            
+            return new ApiResult<int>(true, Message:"Cancel order successful");
+        }
     }
 }
 

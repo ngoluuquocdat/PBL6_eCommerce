@@ -53,6 +53,12 @@ namespace eComSolution.API.Controllers
 
             return Ok(result);
         }
-        
+
+        [HttpPatch]
+        public async Task<IActionResult> CancelOrder(int orderId)
+        {   
+            var result = await _orderService.CancelOrder(orderId);
+            return Ok(result);
+        }    
     }
 }
