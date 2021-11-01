@@ -26,9 +26,12 @@ namespace eComSolution.Service.Common
             message.From.Add(new MailboxAddress("eComPBL6", MyEmailAddress));
             message.To.Add(new MailboxAddress("Client", email));
             message.Subject = "Reset password";
-            message.Body = new TextPart("plain"){
-                Text = content
-            };
+
+            var bodyBuilder = new BodyBuilder();
+            bodyBuilder.HtmlBody = content;
+            bodyBuilder.TextBody = "This is some plain text";
+
+            message.Body = bodyBuilder.ToMessageBody();
             
             using (var client = new SmtpClient()){
                 client.Connect("smtp.gmail.com", 587, false);
