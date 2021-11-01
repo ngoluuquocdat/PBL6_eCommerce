@@ -126,8 +126,8 @@ namespace eComSolution.Data.Extensions
 
             // data seeding cho Functions
             modelBuilder.Entity<Function>().HasData(
-                new Function{ Id = 1, ActionName = "Register"},
-                new Function{ Id = 2, ActionName = "Login"}
+                new Function{ Id = 1, ActionName = "Accounts.Register"},
+                new Function{ Id = 2, ActionName = "Accounts.Login"}
             );
 
             // data seeding cho Permissions
@@ -171,6 +171,18 @@ namespace eComSolution.Data.Extensions
                     Id = 5,
                     Name = "Đồ lót",
                     SortOrder = 5                  
+                },
+                new Category
+                {
+                    Id = 6,
+                    Name = "Váy",
+                    SortOrder = 6                  
+                },
+                new Category
+                {
+                    Id = 7,
+                    Name = "Đầm",
+                    SortOrder = 7                  
                 }
             );
 
