@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using eComSolution.Data.Entities;
 using eComSolution.ViewModel.System.Users;
 using eShopSolution.ViewModels.Common;
 
@@ -15,7 +16,7 @@ namespace eComSolution.Service.System.Users
 
         Task<ApiResult<UserViewModel>> GetUserById(int userId);
 
-        Task<ApiResult<UserPermission>> GetPermissions(int userId);
+        Task<List<Function>> GetPermissions(int userId);
         
         Task<ApiResult<string>> ChangePassword(int userId, ChangePasswordVm request);
 

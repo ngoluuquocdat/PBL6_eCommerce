@@ -12,6 +12,7 @@ using EmailValidation;
 using eShopSolution.ViewModels.Common;
 using Microsoft.EntityFrameworkCore;
 using eComSolution.Service.Common;
+using System.IO;
 
 namespace eComSolution.Service.System.Users
 {
@@ -120,24 +121,26 @@ namespace eComSolution.Service.System.Users
             return new ApiResult<UserViewModel>(true, userViewModel);
         }
 
-        public async Task<ApiResult<UserPermission>> GetPermissions(int userId){
+        public async Task<List<Function>> GetPermissions(int userId){
             var user =  await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
-            if(user == null) return new ApiResult<UserPermission>(false, "User is not exist!");
+            if(user == null) return null;
 
             var query = from _user in _context.Users
             join _groupuser in _context.GroupUsers on _user.Id equals _groupuser.UserId
             join _permission in _context.Permissions on _groupuser.GroupId equals _permission.GroupId
             join _function in _context.Functions on _permission.FunctionId equals _function.Id
             where _user.Id == userId
-            select new { 
-                function = _function.ActionName
-            }.ToString(); 
+            select new Function { 
+                ActionName = _function.ActionName
+            }; 
 
-            var userPermission = new UserPermission{
-                Id = userId,
-                Permissions = query.Distinct().ToList()
-            };
-            return new ApiResult<UserPermission>(true, userPermission);
+            // var data = query.ToList();
+
+            // var userPermission = new UserPermission{
+            //     Id = userId,
+            //     Permissions = query.Distinct().ToList()
+            // };
+            return query.Distinct().ToList();
         }
         public async Task<ApiResult<string>> ChangePassword(int userId, ChangePasswordVm request){
             var user =  await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
@@ -193,16 +196,30 @@ namespace eComSolution.Service.System.Users
             // check email is exist?
             var user =  await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
             if(user == null) return new ApiResult<string>(false, "Your email is not correct!");
-
+            
             // random key with length = 16
             var key = GetUniqueKey(16);
             key = GetHash(key);
             string emailhash = GetHash(email);
+
+            string content = "";
+            string s = "<a href=" + $"https://localhost:5001/api/Users/ConfirmResetPass?email={emailhash}&key={key}" + @">
+            <button type='button'>Reset Password</button>
+            </a> ";
+            string[] readfile = File.ReadAllLines("C:/Users/ADMIN/Downloads/index.html");
+                foreach (string line in readfile)
+                {
+                    string test = line;
+                    string newtest = test.Trim();
+                    if (newtest.Equals("<a href=''><button></button></a>"))
+                    {
+                        newtest =  newtest.Replace(newtest, s);    
+                    }
+                    content += newtest;
+                }
             
-            string content = $"You have requested to reset your password \nLink reset pass: https://localhost:5001/api/Users/ConfirmResetPass?email={emailhash}&key={key}";
-
             _emailService.SendEmail(email, content);
-
+            
             // nếu có record cùng gmail thì xóa 
             var instance = await _context.ResetPasses.FirstOrDefaultAsync(u => u.Email == emailhash);
             if(instance != null){

@@ -23,6 +23,8 @@ using System.Text;
 using eComSolution.Service.Catalog.Histories;
 using eComSolution.Service.Catalog.Carts;
 using eComSolution.Service.Catalog.Orders;
+using Microsoft.AspNetCore.Http;
+using eComSolution.API.Middleware;
 
 namespace eComSolution.API
 {
@@ -92,7 +94,6 @@ namespace eComSolution.API
                             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("super secret key"))
                         };
                     });
-
             services.AddScoped<IEmailService, EmailService>();
             services.AddScoped<IStorageService, StorageService>();
             services.AddScoped<ITokenService, TokenService>();
@@ -126,6 +127,8 @@ namespace eComSolution.API
             app.UseAuthentication();
 
             app.UseAuthorization();
+
+            // app.UseMiddleware<MyMiddleware>();
 
             app.UseEndpoints(endpoints =>
             {
