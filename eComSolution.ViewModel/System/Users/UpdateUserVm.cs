@@ -18,6 +18,7 @@ namespace eComSolution.ViewModel.System.Users
 
         [Display(Name = "Số điện thoại")]
         public string PhoneNumber { get; set; }
+        public string Address { get; set; }
 
     }
 }

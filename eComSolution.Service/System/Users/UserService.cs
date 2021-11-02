@@ -120,6 +120,66 @@ namespace eComSolution.Service.System.Users
 
             return new ApiResult<UserViewModel>(true, userViewModel);
         }
+        public async Task<ApiResult<List<UserViewModel>>> GetAllUsers(){
+            var query = await _context.Users.ToListAsync();
+            List<UserViewModel> listUser = new List<UserViewModel>();
+            foreach (var user in query){
+                if(user.Id == 1) continue;
+                listUser.Add(new UserViewModel {Id = user.Id, Fullname = user.Fullname, Email = user.Email, PhoneNumber = user.PhoneNumber, Address = user.Address, Disable = user.Disable});
+            }
+            return new ApiResult<List<UserViewModel>>(true, listUser);
+        }
+        public async Task<ApiResult<List<UserViewModel>>> GetUserDisable(){
+            var query = await _context.Users.Where(user => user.Disable == true).ToListAsync();
+            List<UserViewModel> listUser = new List<UserViewModel>();
+            foreach (var user in query){
+                listUser.Add(new UserViewModel {Id = user.Id, Fullname = user.Fullname, Email = user.Email, PhoneNumber = user.PhoneNumber, Address = user.Address});
+            }
+            if(listUser.Count > 0){
+                return new ApiResult<List<UserViewModel>>(true, listUser);
+            }else{
+                return new ApiResult<List<UserViewModel>>(false, Message: "No users are disabled!");
+            }
+        }
+        
+        public async Task<ApiResult<string>> DisableUser(int userId){
+            var user =  await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
+            if(user == null) return new ApiResult<string>(false, "User is not exist!");
+
+            if(user.ShopId != null){
+                var shop = await _context.Shops.FirstOrDefaultAsync(s => s.Id == user.ShopId);
+                shop.Disable = true;
+                _context.Shops.Update(shop);
+            }
+
+            user.Disable = true;
+            _context.Users.Update(user);
+
+            if(await _context.SaveChangesAsync() > 0)
+            return new ApiResult<string>(true, Message: "Disable user successfully!");
+            else
+            return new ApiResult<string>(false, Message: "Fail! Please try again.");
+
+        }
+        public async Task<ApiResult<string>> EnableUser(int userId){
+            var user =  await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
+            if(user == null) return new ApiResult<string>(false, "User is not exist!");
+
+            if(user.ShopId != null){
+                var shop = await _context.Shops.FirstOrDefaultAsync(s => s.Id == user.ShopId);
+                shop.Disable = false;
+                _context.Shops.Update(shop);
+            }
+
+            user.Disable = false;
+            _context.Users.Update(user);
+
+            if(await _context.SaveChangesAsync() > 0)
+            return new ApiResult<string>(true, Message: "Enable user successfully!");
+            else
+            return new ApiResult<string>(false, Message: "Fail! Please try again.");
+
+        }
 
         public async Task<List<Function>> GetPermissions(int userId){
             var user =  await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);

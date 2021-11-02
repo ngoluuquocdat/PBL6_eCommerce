@@ -22,14 +22,55 @@ namespace eComSolution.API.Controllers
             _userService = userService;
         }
 
-        [HttpGet("{userId}")]
-        public async Task<IActionResult> GetUserBuId(int userId)
+        [HttpGet]
+        public async Task<IActionResult> GetUserById()
         {
+            var claimsPrincipal = this.User;
+            var userId = Int32.Parse(claimsPrincipal.FindFirst("id").Value);
             var result = await _userService.GetUserById(userId);
             if(result.IsSuccessed == false) return BadRequest(result.Message);
 
             return Ok(result);
         }
+        [HttpGet("getAllUsers")]
+        [Authorize]
+        public async Task<IActionResult> GetAllUsers()
+        {
+            var result = await _userService.GetAllUsers();
+            if(result.IsSuccessed == false) return BadRequest(result.Message);
+
+            return Ok(result);
+        }
+        [HttpGet("getUserDisable")]
+        [Authorize]
+        public async Task<IActionResult> GetUserDisable()
+        {
+            var result = await _userService.GetUserDisable();
+            if(result.IsSuccessed == false) return BadRequest(result.Message);
+
+            return Ok(result);
+        }
+
+        [HttpPatch("Disable")]
+        [Authorize]
+        public async Task<IActionResult> DisableUser(int userId)
+        {
+            var result = await _userService.DisableUser(userId);
+            if(result.IsSuccessed == false) return BadRequest(result.Message);
+
+            return Ok(result);
+        }
+
+        [HttpPatch("Enable")]
+        [Authorize]
+        public async Task<IActionResult> EnableUser(int userId)
+        {
+            var result = await _userService.EnableUser(userId);
+            if(result.IsSuccessed == false) return BadRequest(result.Message);
+
+            return Ok(result);
+        }
+
         [HttpPost("Update")]
         [Authorize]
         public async Task<IActionResult> UpdateUser(UpdateUserVm updateUser)
@@ -38,14 +79,6 @@ namespace eComSolution.API.Controllers
             var userId = Int32.Parse(claimsPrincipal.FindFirst("id").Value);
             var result = await _userService.UpdateUser(userId, updateUser);
             if(result.IsSuccessed == false) return BadRequest(result.Message);
-
-            return Ok(result);
-        }
-        [HttpGet("permission/{userId}")]
-        public async Task<IActionResult> GetPermissions(int userId)
-        {
-            var result = await _userService.GetPermissions(userId);
-            if(result.IsSuccessed == false) return Unauthorized(result.Message);
 
             return Ok(result);
         }
