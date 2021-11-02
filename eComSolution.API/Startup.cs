@@ -25,6 +25,7 @@ using eComSolution.Service.Catalog.Carts;
 using eComSolution.Service.Catalog.Orders;
 using Microsoft.AspNetCore.Http;
 using eComSolution.API.Middleware;
+using eComSolution.Service.Catalog.Shops;
 
 namespace eComSolution.API
 {
@@ -102,6 +103,7 @@ namespace eComSolution.API
             services.AddScoped<IHistoryService, HistoryService>();
             services.AddScoped<ICartService, CartService>();
             services.AddScoped<IOrderService, OrderService>();
+            services.AddScoped<IShopService, ShopService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

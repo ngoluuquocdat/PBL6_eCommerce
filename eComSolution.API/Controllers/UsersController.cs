@@ -32,7 +32,7 @@ namespace eComSolution.API.Controllers
 
             return Ok(result);
         }
-        [HttpGet("getAllUsers")]
+        [HttpGet("getAll")]
         [Authorize]
         public async Task<IActionResult> GetAllUsers()
         {
