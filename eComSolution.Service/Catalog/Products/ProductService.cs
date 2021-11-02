@@ -27,7 +27,7 @@ namespace eComSolution.Service.Catalog.Products
             _storageService = storageService;
         }
 
-        public async Task<ApiResult<PagedResult<ProductVm>>> GetProductPaging(GetProductsRequest request)
+        public async Task<ApiResult<PagedResult<ProductMainInfoVm>>> GetProductPaging(GetProductsRequest request)
         {
             // 1. join bảng
             // var query = from p in _context.Products
@@ -58,9 +58,12 @@ namespace eComSolution.Service.Catalog.Products
             // 3. sắp xếp theo SortBy
             switch(request.SortBy)
             {
+                case "popular":
+                    query = query.OrderByDescending(x => x.p.ViewCount);
+                    break;
                 case "latest":
                     query = query.OrderByDescending(x => x.p.DateCreated);
-                    break;
+                    break;    
                 case "priceUp":
                     query = query.OrderBy(x => x.p.Price);
                     break;    
@@ -68,7 +71,7 @@ namespace eComSolution.Service.Catalog.Products
                     query = query.OrderByDescending(x => x.p.Price);
                     break;
                 default:
-                    query = query.OrderByDescending(x => x.p.ViewCount); 
+                    query = query.OrderByDescending(x => x.p.DateCreated); 
                     break;    
             }
 
@@ -77,28 +80,32 @@ namespace eComSolution.Service.Catalog.Products
 
             var data = await query.Skip((request.PageIndex - 1)*request.PageSize)
                     .Take(request.PageSize)
-                    .Select(x => new ProductVm()
+                    .Select(x => new ProductMainInfoVm()
                     {
                         Id = x.p.Id,
                         Name = x.p.Name,
-                        Description = x.p.Description,
-                        Gender = x.p.Gender,
                         Price = x.p.Price,
-                        OriginalPrice = x.p.OriginalPrice,
-                        ViewCount = x.p.ViewCount,
-                        DateCreated = x.p.DateCreated,  
-                        ShopId = x.sh.Id,
-                        ShopName = x.sh.Name                            
+                        ViewCount = x.p.ViewCount                         
                     }).ToListAsync();
 
+            // lấy path của ảnh thumbnail + totalstock
             for(int i=0; i<data.Count; i++)
             {
-                data[i].Details = await GetProductDetails(data[i].Id);
-                data[i].Images = await GetProductImages(data[i].Id);
-                data[i].TotalStock = data[i].Details.Sum(d => d.Stock);
+                var thumbnail_image = await _context.ProductImages
+                    .Where(x=>x.ProductId==data[i].Id&&x.IsDefault==true)
+                    .FirstOrDefaultAsync();
+                if(thumbnail_image!=null)
+                {
+                    data[i].ThumbnailImage = "/storage/"+thumbnail_image.ImagePath;
+                }
+                else
+                {
+                    data[i].ThumbnailImage = "";
+                }
+                data[i].TotalStock =  (await GetProductDetails(data[i].Id)).Sum(d=>d.Stock);          
             }
             // 5. tạo paged result 
-            var pagedResult = new PagedResult<ProductVm>()
+            var pagedResult = new PagedResult<ProductMainInfoVm>()
             {
                 TotalRecords = totalRow,
                 PageIndex = request.PageIndex,
@@ -106,7 +113,7 @@ namespace eComSolution.Service.Catalog.Products
                 Items = data
             };
             
-            return new ApiResult<PagedResult<ProductVm>>(true, ResultObj:pagedResult);
+            return new ApiResult<PagedResult<ProductMainInfoVm>>(true, ResultObj:pagedResult);
         }
         public async Task<ApiResult<ProductVm>> GetProductById(int productId)
         {

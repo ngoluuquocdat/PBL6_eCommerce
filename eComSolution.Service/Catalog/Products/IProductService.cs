@@ -11,7 +11,7 @@ namespace eComSolution.Service.Catalog.Products
 {
     public interface IProductService
     {
-        Task<ApiResult<PagedResult<ProductVm>>> GetProductPaging(GetProductsRequest request);
+        Task<ApiResult<PagedResult<ProductMainInfoVm>>> GetProductPaging(GetProductsRequest request);
 
         Task<List<ProductDetailVm>> GetProductDetails(int productId);
 
