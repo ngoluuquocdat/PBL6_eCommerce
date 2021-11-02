@@ -17,6 +17,8 @@ namespace eComSolution.ViewModel.System.Users
         public string Email { get; set; }
         [Display(Name = "Số điện thoại")]
         public string PhoneNumber { get; set; }
+        public string Address { get; set; }
+        public bool Disable { get; set; }
         
         // [Display(Name = "Mã cửa hàng")]
         // public int ShopId { get; set; }
