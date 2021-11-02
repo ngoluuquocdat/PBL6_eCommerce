@@ -100,7 +100,17 @@ namespace eComSolution.Service.System.Users
                 Email = request.Email,
                 PhoneNumber = request.PhoneNumber
             };
+            
             _context.Users.Add(new_user);
+
+            await _context.SaveChangesAsync();
+
+            var  gu = new GroupUser{
+                GroupId = 1, 
+                UserId = new_user.Id,
+            };
+
+            _context.GroupUsers.Add(gu);
             await _context.SaveChangesAsync();
 
             return new ApiResult<string>(true, ResultObj : _tokenService.CreateToken(new_user));
