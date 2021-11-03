@@ -10,8 +10,8 @@ namespace eComSolution.Service.Catalog.Orders
 {
     public interface IOrderService
     {
-        Task<ApiResult<int>> CreateOrder(int userId, CheckOutRequest request);
-        Task<ApiResult<int>> CreateManyOrders(int userId, List<CheckOutRequest> requests);
+        Task<ApiResult<int>> CreateOrders(int userId, CheckOutRequest request);
+        //Task<ApiResult<int>> CreateOrderManyShop(int userId, CheckOutRequest request);
 
         // get order cho user xem lịch sử order
         Task<ApiResult<List<OrderVm>>> GetUserOrders(int userId, string state="");

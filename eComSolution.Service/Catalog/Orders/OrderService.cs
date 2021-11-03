@@ -19,58 +19,90 @@ namespace eComSolution.Service.Catalog.Orders
         {
             _context = context;
         }
-        public async Task<ApiResult<int>> CreateOrder(int userId, CheckOutRequest request)
+        // public async Task<ApiResult<int>> CreateOrder(int userId, CheckOutRequest request)
+        // {
+            // ****** bên web tự gom shopId với list cartIds*****
+            // // 1. tạo order mới
+            // var new_order = new Order
+            // {
+            //     OrderDate = DateTime.Now,
+            //     UserId = userId,
+            //     ShopId = request.ShopId,
+            //     ShipName = request.ShipName,
+            //     ShipAddress = request.ShipAddress,
+            //     ShipPhone = request.ShipPhone,
+            //     State = "Chờ xử lý"
+            // };
+            // // 2. tạo mới các order details
+            // var orderDetails = new List<OrderDetail>();
+            // foreach(var cartId in request.CartIds)
+            // {
+            //     // get cart item
+            //     var cartItem = await _context.Carts.Where(x=>x.Id==cartId).FirstOrDefaultAsync();
+            //     if(cartItem==null)  return new ApiResult<int>(false, Message:$"No cart item with this id: {cartId}");
+            //     // get product detail of cart item
+            //     var product_detail = await _context.ProductDetails.Where(x=>x.Id==cartItem.ProductDetail_Id).FirstOrDefaultAsync();
+            //     // add order detail mới vào list
+            //     orderDetails.Add(new OrderDetail
+            //     {
+            //         ProductDetail_Id = cartItem.ProductDetail_Id,
+            //         Quantity = cartItem.Quantity,
+            //         Price = cartItem.Price
+            //     });
+            //     // trừ số lượng ở Db
+            //     // var productDetail = await _context.ProductDetails
+            //     //     .Where(x=>x.Id==item.ProductDetail_Id)
+            //     //     .FirstOrDefaultAsync();
+            //     if(cartItem.Quantity > product_detail.Stock)
+            //     {
+            //         return new ApiResult<int>(false, Message:"Out of stock");
+            //     }
+            //     product_detail.Stock -= cartItem.Quantity;
+            //     _context.ProductDetails.Update(product_detail);
+            //     // xóa cart item tương ứng trong giỏ hàng
+            //     _context.Carts.Remove(cartItem);
+            // }
+            // // lưu thông tin 
+            // new_order.OrderDetails = orderDetails;
+            // _context.Orders.Add(new_order);
+            // await _context.SaveChangesAsync();
+
+        //      return new ApiResult<int>(true, Message:"Create order successful");
+        // }
+
+        public async Task<ApiResult<int>> CreateOrders(int userId, CheckOutRequest request)
         {
-            // 1. tạo order mới
-            var new_order = new Order
+            // ***** chỉ nhận vào input là list cartIds là đủ
+            // 1. tạo list gom các cart items lại theo shopId
+            List<ShopCartMap> shop_cart_maps = new List<ShopCartMap>();
+            foreach(var cartId in request.CartIds)
             {
-                OrderDate = DateTime.Now,
-                UserId = userId,
-                ShopId = request.ShopId,
-                ShipName = request.ShipName,
-                ShipAddress = request.ShipAddress,
-                ShipPhone = request.ShipPhone,
-                State = "Chờ xử lý"
-            };
-            // 2. tạo mới các order details
-            var orderDetails = new List<OrderDetail>();
-            foreach(var item in request.OrderDetails)
-            {
-                // add order detail mới vào list
-                orderDetails.Add(new OrderDetail
+                int shopId = await (from c in _context.Carts 
+                            join pd in _context.ProductDetails on c.ProductDetail_Id equals pd.Id
+                            join p in _context.Products on pd.ProductId equals p.Id
+                            where c.Id == cartId
+                            select p.ShopId).FirstOrDefaultAsync();
+                if(!shop_cart_maps.Any(x=>x.ShopId==shopId))   
                 {
-                    ProductDetail_Id = item.ProductDetail_Id,
-                    Quantity = item.Quantity,
-                    Price = item.Price
-                });
-                // trừ số lượng ở Db
-                var productDetail = await _context.ProductDetails
-                    .Where(x=>x.Id==item.ProductDetail_Id)
-                    .FirstOrDefaultAsync();
-                if(item.Quantity > productDetail.Stock)
+                    var new_shopCartMap = new ShopCartMap {ShopId=shopId, CartIds=new List<int>()};
+                    new_shopCartMap.CartIds.Add(cartId);
+                    shop_cart_maps.Add(new_shopCartMap);
+                }         
+                else
                 {
-                    return new ApiResult<int>(false, Message:"Out of stock");
+                    var checkOutModel = shop_cart_maps.Where(x=>x.ShopId==shopId).FirstOrDefault();
+                    checkOutModel.CartIds.Add(cartId);
                 }
-                productDetail.Stock -= item.Quantity;
-                _context.ProductDetails.Update(productDetail);
             }
-            new_order.OrderDetails = orderDetails;
-            _context.Orders.Add(new_order);
-            await _context.SaveChangesAsync();
 
-            return new ApiResult<int>(true, Message:"Create order successful");
-        }
-
-        public async Task<ApiResult<int>> CreateManyOrders(int userId, List<CheckOutRequest> requests)
-        {
-            foreach(var request in requests)
+            foreach(var shopCartMap in shop_cart_maps)
             {
-                // 1. tạo order mới
+                // 2. tạo order mới
                 var new_order = new Order
                 {
                     OrderDate = DateTime.Now,
                     UserId = userId,
-                    ShopId = request.ShopId,
+                    ShopId = shopCartMap.ShopId,
                     ShipName = request.ShipName,
                     ShipAddress = request.ShipAddress,
                     ShipPhone = request.ShipPhone,
@@ -78,33 +110,40 @@ namespace eComSolution.Service.Catalog.Orders
                 };
                 // 2. tạo mới các order details
                 var orderDetails = new List<OrderDetail>();
-                foreach(var item in request.OrderDetails)
+                foreach(var cartId in shopCartMap.CartIds)
                 {
+                    // get cart item
+                    var cartItem = await _context.Carts.Where(x=>x.Id==cartId).FirstOrDefaultAsync();
+                    if(cartItem==null)  return new ApiResult<int>(false, Message:$"No cart item with this id: {cartId}");
+                    // get product detail of cart item
+                    var product_detail = await _context.ProductDetails.Where(x=>x.Id==cartItem.ProductDetail_Id).FirstOrDefaultAsync();
                     // add order detail mới vào list
                     orderDetails.Add(new OrderDetail
                     {
-                        ProductDetail_Id = item.ProductDetail_Id,
-                        Quantity = item.Quantity,
-                        Price = item.Price
+                        ProductDetail_Id = cartItem.ProductDetail_Id,
+                        Quantity = cartItem.Quantity,
+                        Price = cartItem.Price
                     });
                     // trừ số lượng ở Db
-                    var productDetail = await _context.ProductDetails
-                        .Where(x=>x.Id==item.ProductDetail_Id)
-                        .FirstOrDefaultAsync();
-                    if(item.Quantity > productDetail.Stock)
+                    if(cartItem.Quantity > product_detail.Stock)
                     {
                         return new ApiResult<int>(false, Message:"Out of stock");
                     }
-                    productDetail.Stock -= item.Quantity;
-                    _context.ProductDetails.Update(productDetail);
+                    product_detail.Stock -= cartItem.Quantity;
+                    _context.ProductDetails.Update(product_detail);
+                    // xóa cart item tương ứng trong giỏ hàng
+                    _context.Carts.Remove(cartItem);
                 }
+                // thêm order và orderdetails vào context 
                 new_order.OrderDetails = orderDetails;
                 _context.Orders.Add(new_order);
             }
+            // lưu data mới
             await _context.SaveChangesAsync();
 
             return new ApiResult<int>(true, Message:"Create order successful");
         } 
+
         public async Task<ApiResult<List<OrderVm>>> GetUserOrders(int userId, string state = "")
         {
             var query = from o in _context.Orders 
@@ -136,7 +175,7 @@ namespace eComSolution.Service.Catalog.Orders
             for(int i=0; i<data.Count; i++)
             {
                 data[i].OrderDetails = await GetOrderDetails(data[i].Id);
-                data[i].TotalPrice = data[i].OrderDetails.Sum(d => d.Price);
+                data[i].TotalPrice = data[i].OrderDetails.Sum(d => d.Price*d.Quantity);
             }
                         
             return new ApiResult<List<OrderVm>>(true, ResultObj:data);
@@ -205,6 +244,47 @@ namespace eComSolution.Service.Catalog.Orders
             
             return new ApiResult<int>(true, Message:"Cancel order successful");
         }
+        // public async Task<ApiResult<int>> CreateOrder(int userId, CheckOutRequest request)
+        // {
+        //     // 1. tạo order mới
+        //     var new_order = new Order
+        //     {
+        //         OrderDate = DateTime.Now,
+        //         UserId = userId,
+        //         ShopId = request.ShopId,
+        //         ShipName = request.ShipName,
+        //         ShipAddress = request.ShipAddress,
+        //         ShipPhone = request.ShipPhone,
+        //         State = "Chờ xử lý"
+        //     };
+        //     // 2. tạo mới các order details
+        //     var orderDetails = new List<OrderDetail>();
+        //     foreach(var item in request.OrderDetails)
+        //     {
+        //         // add order detail mới vào list
+        //         orderDetails.Add(new OrderDetail
+        //         {
+        //             ProductDetail_Id = item.ProductDetail_Id,
+        //             Quantity = item.Quantity,
+        //             Price = item.Price
+        //         });
+        //         // trừ số lượng ở Db
+        //         var productDetail = await _context.ProductDetails
+        //             .Where(x=>x.Id==item.ProductDetail_Id)
+        //             .FirstOrDefaultAsync();
+        //         if(item.Quantity > productDetail.Stock)
+        //         {
+        //             return new ApiResult<int>(false, Message:"Out of stock");
+        //         }
+        //         productDetail.Stock -= item.Quantity;
+        //         _context.ProductDetails.Update(productDetail);
+        //     }
+        //     new_order.OrderDetails = orderDetails;
+        //     _context.Orders.Add(new_order);
+        //     await _context.SaveChangesAsync();
+
+        //     return new ApiResult<int>(true, Message:"Create order successful");
+        // }
     }
 }
 

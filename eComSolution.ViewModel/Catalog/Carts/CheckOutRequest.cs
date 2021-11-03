@@ -11,8 +11,8 @@ namespace eComSolution.ViewModel.Catalog.Carts
     public class CheckOutRequest
     {
         //public int UserId { get; set; }
-        public int ShopId { get; set; }
-        public List<OrderDetailVm> OrderDetails { get; set; } 
+        //public int ShopId { get; set; }
+        public List<int> CartIds { get; set; } 
         public string ShipName { get; set; }
         public string ShipAddress { get; set; }
         public string ShipPhone { get; set; }
