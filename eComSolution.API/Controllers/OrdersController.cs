@@ -21,24 +21,13 @@ namespace eComSolution.API.Controllers
             _orderService = orderService;
         }
 
-        [HttpPost("order")]
+        [HttpPost()]
         public async Task<IActionResult> Create(CheckOutRequest request)
         {
             var claimsPrincipal = this.User;
             var userId = Int32.Parse(claimsPrincipal.FindFirst("id").Value);
             
-            var result = await _orderService.CreateOrder(userId, request);
-
-            return Ok(result);
-        }
-
-        [HttpPost("orders")]
-        public async Task<IActionResult> CreateManyOrders(List<CheckOutRequest> requests)
-        {
-            var claimsPrincipal = this.User;
-            var userId = Int32.Parse(claimsPrincipal.FindFirst("id").Value);
-            
-            var result = await _orderService.CreateManyOrders(userId, requests);
+            var result = await _orderService.CreateOrders(userId, request);
 
             return Ok(result);
         }
