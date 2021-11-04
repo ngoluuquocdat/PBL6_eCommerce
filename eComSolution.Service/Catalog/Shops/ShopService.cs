@@ -36,9 +36,12 @@ namespace eComSolution.Service.System.Users
             var user =  await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
             if(user == null) return new ApiResult<ShopVm>(false, "User is not exist!");
 
-            if(user.ShopId == null){
+            if(user.ShopId == null)
+            {
                 return new ApiResult<ShopVm>(false, "You haven't registered shop yet!");
-            }else{
+            }
+            else
+            {
                 var shop = await _context.Shops.FirstOrDefaultAsync(s => s.Id == user.ShopId);
                 var shopInfo = new ShopVm{
                     Name = shop.Name,
@@ -46,8 +49,8 @@ namespace eComSolution.Service.System.Users
                     PhoneNumber = shop.PhoneNumber,
                     Address = shop.Address,
                     Description = shop.Description,
-                    DateCreated = shop.DateCreated
-
+                    DateCreated = shop.DateCreated,
+                    DateModified = shop.DateModified
                 };
                 return new ApiResult<ShopVm>(true, shopInfo);
             }
@@ -64,7 +67,8 @@ namespace eComSolution.Service.System.Users
                     PhoneNumber = request.PhoneNumber,
                     Address = request.Address,
                     Description = request.Description,
-                    DateCreated = DateTime.Now
+                    DateCreated = DateTime.Now,
+                    DateModified = DateTime.Now
                 };  
 
                 _context.Shops.Add(shop);
@@ -102,7 +106,7 @@ namespace eComSolution.Service.System.Users
             if(listShop.Count > 0){
                 return new ApiResult<List<ShopVm>>(true, listShop);
             }else{
-                return new ApiResult<List<ShopVm>>(false, "No any shop exist!");
+                return new ApiResult<List<ShopVm>>(false, "Can't find any shop!");
             }
 
         }
@@ -146,6 +150,7 @@ namespace eComSolution.Service.System.Users
                 shop.PhoneNumber = request.PhoneNumber;
                 shop.Address = request.Address;
                 shop.Description = request.Description;
+                shop.DateModified = DateTime.Now;
 
                 _context.Shops.Update(shop);
 

@@ -23,6 +23,7 @@ namespace eComSolution.Data.Extensions
                     PhoneNumber = "0921231220",
                     Address = "123 DT605, Hòa Tiến, Hòa Vang, Đà Nẵng",
                     Description = "Cửa hàng áo quần chất lượng cao, giá cả phải chăng",
+                    DateCreated = DateTime.Now,
                     DateModified = DateTime.Now,
                     Disable = false
                 },
@@ -34,6 +35,7 @@ namespace eComSolution.Data.Extensions
                     PhoneNumber = "0905553859",
                     Address = "160 Trần Nhật Duật, Cẩm Châu, Hội An, Quảng Nam",
                     Description = "Cửa hàng áo quần nam",
+                    DateCreated = DateTime.Now,
                     DateModified = DateTime.Now,
                     Disable = false
                 }
@@ -64,6 +66,7 @@ namespace eComSolution.Data.Extensions
                     Username = "quoctuan",
                     PasswordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes("Quoctuan123!")),
                     PasswordSalt = hmac.Key,
+                    Address = "123 DT605, Hòa Tiến, Hòa Vang, Đà Nẵng",
                     ShopId = 1,
                     Disable = false
                 },
@@ -76,6 +79,7 @@ namespace eComSolution.Data.Extensions
                     Username = "quocdat",
                     PasswordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes("Quocdat123!")),
                     PasswordSalt = hmac.Key,
+                    Address = "160 Trần Nhật Duật, Hội An, Quảng Nam",
                     ShopId = 2,
                     Disable = false
                 },
@@ -88,6 +92,7 @@ namespace eComSolution.Data.Extensions
                     Username = "congtai",
                     PasswordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes("Congtai123!")),
                     PasswordSalt = hmac.Key,
+                    Address = "123 Lê Duẩn, Thanh Khê, Đà Nẵng",
                     ShopId = null,
                     Disable = false
                 }
