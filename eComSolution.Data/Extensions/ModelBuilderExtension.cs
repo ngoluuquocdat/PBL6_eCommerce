@@ -287,6 +287,7 @@ namespace eComSolution.Data.Extensions
                 {
                     Id = 1,
                     OrderDate = DateTime.Now,
+                    DateModified = DateTime.Now,
                     UserId = 4,
                     ShopId = 2,
                     State = "Chờ xử lý",
