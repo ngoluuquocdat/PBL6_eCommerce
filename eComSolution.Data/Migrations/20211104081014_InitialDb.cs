@@ -274,9 +274,11 @@ namespace eComSolution.Data.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     OrderDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    DateModified = table.Column<DateTime>(type: "datetime2", nullable: false),
                     UserId = table.Column<int>(type: "int", nullable: false),
                     ShopId = table.Column<int>(type: "int", nullable: false),
                     State = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    CancelReason = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     ShipName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     ShipAddress = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     ShipPhone = table.Column<string>(type: "nvarchar(15)", maxLength: 15, nullable: false)
@@ -391,8 +393,8 @@ namespace eComSolution.Data.Migrations
                 columns: new[] { "Id", "Address", "Avatar", "DateCreated", "DateModified", "Description", "Disable", "Name", "PhoneNumber" },
                 values: new object[,]
                 {
-                    { 1, "123 DT605, Hòa Tiến, Hòa Vang, Đà Nẵng", "", new DateTime(2021, 11, 4, 8, 37, 39, 49, DateTimeKind.Local).AddTicks(620), new DateTime(2021, 11, 4, 8, 37, 39, 50, DateTimeKind.Local).AddTicks(2113), "Cửa hàng áo quần chất lượng cao, giá cả phải chăng", false, "Tuấn's Fashion", "0921231220" },
-                    { 2, "160 Trần Nhật Duật, Cẩm Châu, Hội An, Quảng Nam", "", new DateTime(2021, 11, 4, 8, 37, 39, 50, DateTimeKind.Local).AddTicks(3213), new DateTime(2021, 11, 4, 8, 37, 39, 50, DateTimeKind.Local).AddTicks(3220), "Cửa hàng áo quần nam", false, "Đạt's Clothes", "0905553859" }
+                    { 1, "123 DT605, Hòa Tiến, Hòa Vang, Đà Nẵng", "", new DateTime(2021, 11, 4, 15, 10, 13, 704, DateTimeKind.Local).AddTicks(5936), new DateTime(2021, 11, 4, 15, 10, 13, 705, DateTimeKind.Local).AddTicks(5635), "Cửa hàng áo quần chất lượng cao, giá cả phải chăng", false, "Tuấn's Fashion", "0921231220" },
+                    { 2, "160 Trần Nhật Duật, Cẩm Châu, Hội An, Quảng Nam", "", new DateTime(2021, 11, 4, 15, 10, 13, 705, DateTimeKind.Local).AddTicks(6396), new DateTime(2021, 11, 4, 15, 10, 13, 705, DateTimeKind.Local).AddTicks(6402), "Cửa hàng áo quần nam", false, "Đạt's Clothes", "0905553859" }
                 });
 
             migrationBuilder.InsertData(
@@ -400,8 +402,8 @@ namespace eComSolution.Data.Migrations
                 columns: new[] { "Id", "Address", "Disable", "Email", "Fullname", "PasswordHash", "PasswordSalt", "PhoneNumber", "ShopId", "Username" },
                 values: new object[,]
                 {
-                    { 1, null, false, "tuandang29042000@gmail.com", "admin", new byte[] { 22, 168, 128, 70, 137, 56, 251, 54, 75, 237, 251, 152, 193, 30, 14, 23, 96, 238, 63, 141, 103, 146, 171, 87, 5, 27, 250, 49, 164, 61, 63, 137, 42, 43, 86, 230, 116, 40, 50, 110, 222, 24, 156, 227, 94, 124, 169, 143, 31, 206, 247, 211, 226, 18, 208, 31, 249, 107, 196, 110, 178, 157, 204, 200 }, new byte[] { 217, 99, 111, 254, 97, 160, 15, 152, 104, 227, 62, 226, 191, 250, 205, 210, 118, 8, 139, 134, 75, 71, 140, 23, 195, 107, 8, 11, 159, 187, 13, 80, 74, 80, 102, 249, 186, 15, 241, 21, 155, 65, 134, 212, 250, 97, 161, 149, 52, 125, 153, 245, 116, 87, 182, 150, 82, 86, 101, 135, 158, 7, 68, 159, 39, 49, 240, 202, 181, 228, 71, 121, 63, 16, 246, 84, 75, 132, 249, 0, 174, 246, 199, 238, 89, 50, 173, 103, 213, 72, 31, 177, 199, 255, 248, 41, 172, 222, 62, 83, 231, 125, 198, 64, 137, 26, 66, 233, 193, 61, 14, 180, 163, 233, 62, 177, 170, 210, 119, 189, 238, 196, 214, 201, 126, 221, 85, 81 }, "0921231220", null, "admin" },
-                    { 4, "123 Lê Duẩn, Thanh Khê, Đà Nẵng", false, "badding@gmail.com", "Đinh Công Tài", new byte[] { 30, 145, 14, 49, 35, 217, 55, 99, 231, 242, 85, 110, 134, 6, 250, 68, 225, 15, 30, 251, 176, 235, 55, 171, 30, 5, 180, 57, 69, 255, 52, 168, 110, 198, 14, 252, 137, 52, 130, 74, 107, 27, 149, 51, 126, 89, 240, 189, 68, 251, 55, 102, 179, 161, 148, 97, 183, 57, 141, 209, 45, 170, 160, 46 }, new byte[] { 217, 99, 111, 254, 97, 160, 15, 152, 104, 227, 62, 226, 191, 250, 205, 210, 118, 8, 139, 134, 75, 71, 140, 23, 195, 107, 8, 11, 159, 187, 13, 80, 74, 80, 102, 249, 186, 15, 241, 21, 155, 65, 134, 212, 250, 97, 161, 149, 52, 125, 153, 245, 116, 87, 182, 150, 82, 86, 101, 135, 158, 7, 68, 159, 39, 49, 240, 202, 181, 228, 71, 121, 63, 16, 246, 84, 75, 132, 249, 0, 174, 246, 199, 238, 89, 50, 173, 103, 213, 72, 31, 177, 199, 255, 248, 41, 172, 222, 62, 83, 231, 125, 198, 64, 137, 26, 66, 233, 193, 61, 14, 180, 163, 233, 62, 177, 170, 210, 119, 189, 238, 196, 214, 201, 126, 221, 85, 81 }, "090553859", null, "congtai" }
+                    { 1, null, false, "tuandang29042000@gmail.com", "admin", new byte[] { 126, 208, 99, 57, 66, 169, 170, 241, 7, 93, 187, 165, 142, 88, 104, 27, 229, 39, 13, 165, 135, 29, 70, 90, 1, 60, 19, 146, 167, 249, 198, 66, 92, 172, 209, 200, 33, 212, 146, 38, 53, 196, 150, 96, 89, 67, 213, 102, 190, 217, 42, 190, 118, 14, 221, 208, 2, 110, 135, 157, 231, 163, 248, 42 }, new byte[] { 249, 45, 232, 251, 29, 246, 235, 13, 23, 88, 254, 193, 249, 127, 88, 249, 36, 255, 234, 35, 78, 124, 210, 73, 15, 89, 34, 101, 249, 52, 50, 12, 131, 252, 78, 53, 152, 225, 124, 24, 91, 127, 78, 194, 71, 100, 43, 92, 181, 89, 93, 18, 129, 200, 50, 246, 254, 106, 134, 117, 155, 94, 144, 169, 35, 245, 213, 100, 55, 65, 42, 126, 109, 90, 122, 7, 255, 63, 53, 134, 77, 106, 80, 147, 203, 11, 13, 131, 232, 172, 203, 137, 18, 56, 188, 58, 92, 248, 124, 71, 182, 181, 17, 36, 11, 177, 189, 108, 61, 209, 212, 38, 223, 244, 48, 166, 90, 244, 98, 30, 186, 180, 85, 37, 175, 200, 100, 75 }, "0921231220", null, "admin" },
+                    { 4, "123 Lê Duẩn, Thanh Khê, Đà Nẵng", false, "badding@gmail.com", "Đinh Công Tài", new byte[] { 121, 134, 2, 14, 214, 150, 158, 119, 1, 205, 184, 43, 33, 189, 138, 85, 13, 103, 99, 15, 62, 234, 119, 81, 66, 109, 109, 130, 74, 215, 197, 240, 51, 168, 210, 208, 17, 25, 125, 128, 25, 255, 215, 18, 229, 48, 232, 110, 26, 163, 50, 205, 60, 11, 178, 237, 108, 161, 148, 33, 8, 63, 68, 208 }, new byte[] { 249, 45, 232, 251, 29, 246, 235, 13, 23, 88, 254, 193, 249, 127, 88, 249, 36, 255, 234, 35, 78, 124, 210, 73, 15, 89, 34, 101, 249, 52, 50, 12, 131, 252, 78, 53, 152, 225, 124, 24, 91, 127, 78, 194, 71, 100, 43, 92, 181, 89, 93, 18, 129, 200, 50, 246, 254, 106, 134, 117, 155, 94, 144, 169, 35, 245, 213, 100, 55, 65, 42, 126, 109, 90, 122, 7, 255, 63, 53, 134, 77, 106, 80, 147, 203, 11, 13, 131, 232, 172, 203, 137, 18, 56, 188, 58, 92, 248, 124, 71, 182, 181, 17, 36, 11, 177, 189, 108, 61, 209, 212, 38, 223, 244, 48, 166, 90, 244, 98, 30, 186, 180, 85, 37, 175, 200, 100, 75 }, "090553859", null, "congtai" }
                 });
 
             migrationBuilder.InsertData(
@@ -417,8 +419,8 @@ namespace eComSolution.Data.Migrations
 
             migrationBuilder.InsertData(
                 table: "Orders",
-                columns: new[] { "Id", "OrderDate", "ShipAddress", "ShipName", "ShipPhone", "ShopId", "State", "UserId" },
-                values: new object[] { 1, new DateTime(2021, 11, 4, 8, 37, 39, 57, DateTimeKind.Local).AddTicks(2316), "123 Lê Duẩn, Thanh Khê, Đà Nẵng", "Đinh Công Tài", "09053438847", 2, "Chờ xử lý", 4 });
+                columns: new[] { "Id", "CancelReason", "DateModified", "OrderDate", "ShipAddress", "ShipName", "ShipPhone", "ShopId", "State", "UserId" },
+                values: new object[] { 1, null, new DateTime(2021, 11, 4, 15, 10, 13, 711, DateTimeKind.Local).AddTicks(1884), new DateTime(2021, 11, 4, 15, 10, 13, 711, DateTimeKind.Local).AddTicks(1500), "123 Lê Duẩn, Thanh Khê, Đà Nẵng", "Đinh Công Tài", "09053438847", 2, "Chờ xử lý", 4 });
 
             migrationBuilder.InsertData(
                 table: "Permissions",
@@ -438,10 +440,10 @@ namespace eComSolution.Data.Migrations
                 columns: new[] { "Id", "CategoryId", "DateCreated", "Description", "Gender", "Name", "OriginalPrice", "Price", "ShopId" },
                 values: new object[,]
                 {
-                    { 1, 1, new DateTime(2021, 11, 4, 8, 37, 39, 56, DateTimeKind.Local).AddTicks(3276), "Mô tả sản phẩm:\n Chất liệu: 100% cotton\n Màu sắc : trắng & đen", 1, "Áo thun SadBoiz", 100000, 200000, 1 },
-                    { 2, 5, new DateTime(2021, 11, 4, 8, 37, 39, 56, DateTimeKind.Local).AddTicks(5227), "Mô tả sản phẩm:\n Chất liệu: 100% cotton\n Màu sắc : đỏ & đen", 1, "Quần lót Calvin Klein", 100000, 150000, 1 },
-                    { 3, 1, new DateTime(2021, 11, 4, 8, 37, 39, 56, DateTimeKind.Local).AddTicks(5234), "Mô tả sản phẩm:\n Brand: XFire\n Chất liệu : cotton co dãn", 3, "Áo thun trơn XFire", 150000, 250000, 2 },
-                    { 4, 4, new DateTime(2021, 11, 4, 8, 37, 39, 56, DateTimeKind.Local).AddTicks(5237), "Mô tả sản phẩm:\n Form: Fit\n Chất liệu : jean", 1, "Quần Jean ôm nam", 150000, 250000, 2 }
+                    { 1, 1, new DateTime(2021, 11, 4, 15, 10, 13, 710, DateTimeKind.Local).AddTicks(3429), "Mô tả sản phẩm:\n Chất liệu: 100% cotton\n Màu sắc : trắng & đen", 1, "Áo thun SadBoiz", 100000, 200000, 1 },
+                    { 2, 5, new DateTime(2021, 11, 4, 15, 10, 13, 710, DateTimeKind.Local).AddTicks(5312), "Mô tả sản phẩm:\n Chất liệu: 100% cotton\n Màu sắc : đỏ & đen", 1, "Quần lót Calvin Klein", 100000, 150000, 1 },
+                    { 3, 1, new DateTime(2021, 11, 4, 15, 10, 13, 710, DateTimeKind.Local).AddTicks(5320), "Mô tả sản phẩm:\n Brand: XFire\n Chất liệu : cotton co dãn", 3, "Áo thun trơn XFire", 150000, 250000, 2 },
+                    { 4, 4, new DateTime(2021, 11, 4, 15, 10, 13, 710, DateTimeKind.Local).AddTicks(5322), "Mô tả sản phẩm:\n Form: Fit\n Chất liệu : jean", 1, "Quần Jean ôm nam", 150000, 250000, 2 }
                 });
 
             migrationBuilder.InsertData(
@@ -449,8 +451,8 @@ namespace eComSolution.Data.Migrations
                 columns: new[] { "Id", "Address", "Disable", "Email", "Fullname", "PasswordHash", "PasswordSalt", "PhoneNumber", "ShopId", "Username" },
                 values: new object[,]
                 {
-                    { 3, "160 Trần Nhật Duật, Hội An, Quảng Nam", false, "ngoluuquocdat@gmail.com", "Ngô Lưu Quốc Đạt", new byte[] { 192, 28, 123, 191, 88, 105, 139, 30, 168, 18, 244, 218, 123, 74, 98, 54, 195, 192, 22, 121, 28, 55, 195, 35, 167, 214, 98, 35, 216, 208, 101, 196, 159, 188, 224, 177, 235, 43, 118, 140, 166, 64, 181, 211, 240, 111, 141, 215, 222, 46, 240, 187, 184, 194, 21, 88, 21, 177, 159, 217, 43, 28, 182, 91 }, new byte[] { 217, 99, 111, 254, 97, 160, 15, 152, 104, 227, 62, 226, 191, 250, 205, 210, 118, 8, 139, 134, 75, 71, 140, 23, 195, 107, 8, 11, 159, 187, 13, 80, 74, 80, 102, 249, 186, 15, 241, 21, 155, 65, 134, 212, 250, 97, 161, 149, 52, 125, 153, 245, 116, 87, 182, 150, 82, 86, 101, 135, 158, 7, 68, 159, 39, 49, 240, 202, 181, 228, 71, 121, 63, 16, 246, 84, 75, 132, 249, 0, 174, 246, 199, 238, 89, 50, 173, 103, 213, 72, 31, 177, 199, 255, 248, 41, 172, 222, 62, 83, 231, 125, 198, 64, 137, 26, 66, 233, 193, 61, 14, 180, 163, 233, 62, 177, 170, 210, 119, 189, 238, 196, 214, 201, 126, 221, 85, 81 }, "090553859", 2, "quocdat" },
-                    { 2, "123 DT605, Hòa Tiến, Hòa Vang, Đà Nẵng", false, "tuandang29042000@gmail.com", "Đặng Quốc Tuấn", new byte[] { 39, 18, 226, 144, 140, 16, 198, 248, 189, 10, 100, 28, 208, 227, 89, 87, 134, 155, 127, 3, 34, 15, 145, 199, 53, 171, 123, 155, 154, 49, 26, 46, 148, 57, 182, 32, 21, 74, 117, 253, 213, 236, 145, 62, 137, 179, 169, 129, 240, 208, 35, 52, 105, 215, 47, 114, 193, 106, 170, 32, 43, 119, 129, 179 }, new byte[] { 217, 99, 111, 254, 97, 160, 15, 152, 104, 227, 62, 226, 191, 250, 205, 210, 118, 8, 139, 134, 75, 71, 140, 23, 195, 107, 8, 11, 159, 187, 13, 80, 74, 80, 102, 249, 186, 15, 241, 21, 155, 65, 134, 212, 250, 97, 161, 149, 52, 125, 153, 245, 116, 87, 182, 150, 82, 86, 101, 135, 158, 7, 68, 159, 39, 49, 240, 202, 181, 228, 71, 121, 63, 16, 246, 84, 75, 132, 249, 0, 174, 246, 199, 238, 89, 50, 173, 103, 213, 72, 31, 177, 199, 255, 248, 41, 172, 222, 62, 83, 231, 125, 198, 64, 137, 26, 66, 233, 193, 61, 14, 180, 163, 233, 62, 177, 170, 210, 119, 189, 238, 196, 214, 201, 126, 221, 85, 81 }, "0921231220", 1, "quoctuan" }
+                    { 3, "160 Trần Nhật Duật, Hội An, Quảng Nam", false, "ngoluuquocdat@gmail.com", "Ngô Lưu Quốc Đạt", new byte[] { 88, 153, 80, 29, 204, 114, 112, 42, 206, 222, 90, 108, 170, 155, 105, 187, 214, 157, 81, 117, 44, 202, 173, 132, 105, 249, 62, 1, 186, 219, 155, 210, 82, 177, 223, 21, 122, 143, 47, 244, 224, 41, 244, 114, 60, 166, 196, 189, 143, 217, 81, 42, 31, 217, 230, 26, 121, 221, 149, 134, 249, 124, 244, 43 }, new byte[] { 249, 45, 232, 251, 29, 246, 235, 13, 23, 88, 254, 193, 249, 127, 88, 249, 36, 255, 234, 35, 78, 124, 210, 73, 15, 89, 34, 101, 249, 52, 50, 12, 131, 252, 78, 53, 152, 225, 124, 24, 91, 127, 78, 194, 71, 100, 43, 92, 181, 89, 93, 18, 129, 200, 50, 246, 254, 106, 134, 117, 155, 94, 144, 169, 35, 245, 213, 100, 55, 65, 42, 126, 109, 90, 122, 7, 255, 63, 53, 134, 77, 106, 80, 147, 203, 11, 13, 131, 232, 172, 203, 137, 18, 56, 188, 58, 92, 248, 124, 71, 182, 181, 17, 36, 11, 177, 189, 108, 61, 209, 212, 38, 223, 244, 48, 166, 90, 244, 98, 30, 186, 180, 85, 37, 175, 200, 100, 75 }, "090553859", 2, "quocdat" },
+                    { 2, "123 DT605, Hòa Tiến, Hòa Vang, Đà Nẵng", false, "tuandang29042000@gmail.com", "Đặng Quốc Tuấn", new byte[] { 158, 231, 143, 223, 29, 20, 180, 98, 78, 129, 63, 67, 17, 204, 90, 62, 85, 236, 110, 161, 148, 151, 121, 108, 201, 196, 234, 116, 78, 229, 204, 104, 115, 33, 113, 153, 119, 34, 244, 68, 140, 206, 241, 58, 69, 44, 164, 41, 127, 26, 165, 161, 117, 175, 147, 199, 110, 36, 106, 237, 217, 13, 105, 184 }, new byte[] { 249, 45, 232, 251, 29, 246, 235, 13, 23, 88, 254, 193, 249, 127, 88, 249, 36, 255, 234, 35, 78, 124, 210, 73, 15, 89, 34, 101, 249, 52, 50, 12, 131, 252, 78, 53, 152, 225, 124, 24, 91, 127, 78, 194, 71, 100, 43, 92, 181, 89, 93, 18, 129, 200, 50, 246, 254, 106, 134, 117, 155, 94, 144, 169, 35, 245, 213, 100, 55, 65, 42, 126, 109, 90, 122, 7, 255, 63, 53, 134, 77, 106, 80, 147, 203, 11, 13, 131, 232, 172, 203, 137, 18, 56, 188, 58, 92, 248, 124, 71, 182, 181, 17, 36, 11, 177, 189, 108, 61, 209, 212, 38, 223, 244, 48, 166, 90, 244, 98, 30, 186, 180, 85, 37, 175, 200, 100, 75 }, "0921231220", 1, "quoctuan" }
                 });
 
             migrationBuilder.InsertData(
@@ -469,9 +471,9 @@ namespace eComSolution.Data.Migrations
                 columns: new[] { "Id", "Count", "Date", "ProductId", "UserId" },
                 values: new object[,]
                 {
-                    { 1, 1, new DateTime(2021, 11, 4, 8, 37, 39, 56, DateTimeKind.Local).AddTicks(8639), 2, 4 },
-                    { 2, 1, new DateTime(2021, 11, 4, 8, 37, 39, 56, DateTimeKind.Local).AddTicks(9222), 4, 4 },
-                    { 3, 1, new DateTime(2021, 11, 4, 8, 37, 39, 56, DateTimeKind.Local).AddTicks(9227), 3, 4 }
+                    { 1, 1, new DateTime(2021, 11, 4, 15, 10, 13, 710, DateTimeKind.Local).AddTicks(8423), 2, 4 },
+                    { 2, 1, new DateTime(2021, 11, 4, 15, 10, 13, 710, DateTimeKind.Local).AddTicks(9006), 4, 4 },
+                    { 3, 1, new DateTime(2021, 11, 4, 15, 10, 13, 710, DateTimeKind.Local).AddTicks(9011), 3, 4 }
                 });
 
             migrationBuilder.InsertData(

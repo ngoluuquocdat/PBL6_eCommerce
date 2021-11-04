@@ -125,7 +125,8 @@ namespace eComSolution.Service.System.Users
                 Id = user.Id,
                 Fullname = user.Fullname,
                 Email = user.Email,
-                PhoneNumber = user.PhoneNumber
+                PhoneNumber = user.PhoneNumber,
+                Address = user.Address
             };
 
             return new ApiResult<UserViewModel>(true, userViewModel);
@@ -143,7 +144,7 @@ namespace eComSolution.Service.System.Users
             var query = await _context.Users.Where(user => user.Disable == true).ToListAsync();
             List<UserViewModel> listUser = new List<UserViewModel>();
             foreach (var user in query){
-                listUser.Add(new UserViewModel {Id = user.Id, Fullname = user.Fullname, Email = user.Email, PhoneNumber = user.PhoneNumber, Address = user.Address});
+                listUser.Add(new UserViewModel {Id = user.Id, Fullname = user.Fullname, Email = user.Email, PhoneNumber = user.PhoneNumber, Address = user.Address, Disable = user.Disable});
             }
             if(listUser.Count > 0){
                 return new ApiResult<List<UserViewModel>>(true, listUser);
