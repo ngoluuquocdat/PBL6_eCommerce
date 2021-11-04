@@ -19,56 +19,6 @@ namespace eComSolution.Service.Catalog.Orders
         {
             _context = context;
         }
-        // public async Task<ApiResult<int>> CreateOrder(int userId, CheckOutRequest request)
-        // {
-            // ****** bên web tự gom shopId với list cartIds*****
-            // // 1. tạo order mới
-            // var new_order = new Order
-            // {
-            //     OrderDate = DateTime.Now,
-            //     UserId = userId,
-            //     ShopId = request.ShopId,
-            //     ShipName = request.ShipName,
-            //     ShipAddress = request.ShipAddress,
-            //     ShipPhone = request.ShipPhone,
-            //     State = "Chờ xử lý"
-            // };
-            // // 2. tạo mới các order details
-            // var orderDetails = new List<OrderDetail>();
-            // foreach(var cartId in request.CartIds)
-            // {
-            //     // get cart item
-            //     var cartItem = await _context.Carts.Where(x=>x.Id==cartId).FirstOrDefaultAsync();
-            //     if(cartItem==null)  return new ApiResult<int>(false, Message:$"No cart item with this id: {cartId}");
-            //     // get product detail of cart item
-            //     var product_detail = await _context.ProductDetails.Where(x=>x.Id==cartItem.ProductDetail_Id).FirstOrDefaultAsync();
-            //     // add order detail mới vào list
-            //     orderDetails.Add(new OrderDetail
-            //     {
-            //         ProductDetail_Id = cartItem.ProductDetail_Id,
-            //         Quantity = cartItem.Quantity,
-            //         Price = cartItem.Price
-            //     });
-            //     // trừ số lượng ở Db
-            //     // var productDetail = await _context.ProductDetails
-            //     //     .Where(x=>x.Id==item.ProductDetail_Id)
-            //     //     .FirstOrDefaultAsync();
-            //     if(cartItem.Quantity > product_detail.Stock)
-            //     {
-            //         return new ApiResult<int>(false, Message:"Out of stock");
-            //     }
-            //     product_detail.Stock -= cartItem.Quantity;
-            //     _context.ProductDetails.Update(product_detail);
-            //     // xóa cart item tương ứng trong giỏ hàng
-            //     _context.Carts.Remove(cartItem);
-            // }
-            // // lưu thông tin 
-            // new_order.OrderDetails = orderDetails;
-            // _context.Orders.Add(new_order);
-            // await _context.SaveChangesAsync();
-
-        //      return new ApiResult<int>(true, Message:"Create order successful");
-        // }
 
         public async Task<ApiResult<int>> CreateOrders(int userId, CheckOutRequest request)
         {
@@ -101,12 +51,14 @@ namespace eComSolution.Service.Catalog.Orders
                 var new_order = new Order
                 {
                     OrderDate = DateTime.Now,
+                    DateModified = DateTime.Now,
                     UserId = userId,
                     ShopId = shopCartMap.ShopId,
                     ShipName = request.ShipName,
                     ShipAddress = request.ShipAddress,
                     ShipPhone = request.ShipPhone,
                     State = "Chờ xử lý"
+                    //CancelReason=""
                 };
                 // 2. tạo mới các order details
                 var orderDetails = new List<OrderDetail>();
@@ -163,13 +115,15 @@ namespace eComSolution.Service.Catalog.Orders
             {
                 Id = x.o.Id,
                 OrderDate = x.o.OrderDate,
+                DateModified = x.o.DateModified,
                 UserId = x.o.UserId,
                 ShopId = x.o.ShopId,
                 ShopName = x.sh.Name,
                 ShipName = x.o.ShipName,
                 ShipAddress = x.o.ShipAddress,
                 ShipPhone = x.o.ShipPhone,
-                State = x.o.State
+                State = x.o.State,
+                CancelReason = x.o.CancelReason
             }).ToListAsync();
 
             for(int i=0; i<data.Count; i++)
@@ -244,6 +198,58 @@ namespace eComSolution.Service.Catalog.Orders
             
             return new ApiResult<int>(true, Message:"Cancel order successful");
         }
+
+        // public async Task<ApiResult<int>> CreateOrder(int userId, CheckOutRequest request)
+        // {
+            // ****** bên web tự gom shopId với list cartIds*****
+            // // 1. tạo order mới
+            // var new_order = new Order
+            // {
+            //     OrderDate = DateTime.Now,
+            //     UserId = userId,
+            //     ShopId = request.ShopId,
+            //     ShipName = request.ShipName,
+            //     ShipAddress = request.ShipAddress,
+            //     ShipPhone = request.ShipPhone,
+            //     State = "Chờ xử lý"
+            // };
+            // // 2. tạo mới các order details
+            // var orderDetails = new List<OrderDetail>();
+            // foreach(var cartId in request.CartIds)
+            // {
+            //     // get cart item
+            //     var cartItem = await _context.Carts.Where(x=>x.Id==cartId).FirstOrDefaultAsync();
+            //     if(cartItem==null)  return new ApiResult<int>(false, Message:$"No cart item with this id: {cartId}");
+            //     // get product detail of cart item
+            //     var product_detail = await _context.ProductDetails.Where(x=>x.Id==cartItem.ProductDetail_Id).FirstOrDefaultAsync();
+            //     // add order detail mới vào list
+            //     orderDetails.Add(new OrderDetail
+            //     {
+            //         ProductDetail_Id = cartItem.ProductDetail_Id,
+            //         Quantity = cartItem.Quantity,
+            //         Price = cartItem.Price
+            //     });
+            //     // trừ số lượng ở Db
+            //     // var productDetail = await _context.ProductDetails
+            //     //     .Where(x=>x.Id==item.ProductDetail_Id)
+            //     //     .FirstOrDefaultAsync();
+            //     if(cartItem.Quantity > product_detail.Stock)
+            //     {
+            //         return new ApiResult<int>(false, Message:"Out of stock");
+            //     }
+            //     product_detail.Stock -= cartItem.Quantity;
+            //     _context.ProductDetails.Update(product_detail);
+            //     // xóa cart item tương ứng trong giỏ hàng
+            //     _context.Carts.Remove(cartItem);
+            // }
+            // // lưu thông tin 
+            // new_order.OrderDetails = orderDetails;
+            // _context.Orders.Add(new_order);
+            // await _context.SaveChangesAsync();
+
+        //      return new ApiResult<int>(true, Message:"Create order successful");
+        // }
+
         // public async Task<ApiResult<int>> CreateOrder(int userId, CheckOutRequest request)
         // {
         //     // 1. tạo order mới
