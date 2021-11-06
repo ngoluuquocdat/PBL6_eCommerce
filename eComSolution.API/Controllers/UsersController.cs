@@ -12,7 +12,6 @@ namespace eComSolution.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize]
     public class UsersController : ControllerBase
     {
         private readonly IUserService _userService;
@@ -113,6 +112,30 @@ namespace eComSolution.API.Controllers
         public async Task<IActionResult> ConfirmResetPass(string email, string key)
         {
             var result = await _userService.ComfirmResetPassword(email, key);
+            if(result.IsSuccessed == false) return Unauthorized(result.Message);
+
+            return Ok(result);
+        }
+        [HttpGet("Checkusername")]
+        public async Task<IActionResult> CheckUsername(string username)
+        {
+            var result = await _userService.CheckUsername(username);
+            if(result.IsSuccessed == false) return Unauthorized(result.Message);
+
+            return Ok(result);
+        }
+        [HttpGet("CheckEmail")]
+        public async Task<IActionResult> CheckEmail(string email)
+        {
+            var result = await _userService.CheckEmail(email);
+            if(result.IsSuccessed == false) return Unauthorized(result.Message);
+
+            return Ok(result);
+        }
+        [HttpGet("CheckPhone")]
+        public async Task<IActionResult> CheckPhone(string phone)
+        {
+            var result = await _userService.CheckPhone(phone);
             if(result.IsSuccessed == false) return Unauthorized(result.Message);
 
             return Ok(result);

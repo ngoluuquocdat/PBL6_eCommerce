@@ -101,7 +101,7 @@ namespace eComSolution.Service.System.Users
             List<ShopVm> listShop = new List<ShopVm>();
             foreach (var shop in query){
                 listShop.Add(new ShopVm {Name = shop.Name, Avatar = shop.Avatar, PhoneNumber = shop.PhoneNumber, 
-                                        Address = shop.Address, Description = shop.Description, Disable = shop.Disable});
+                                        Address = shop.Address, Description = shop.Description, DateCreated = shop.DateCreated, Disable = shop.Disable});
             }
             if(listShop.Count > 0){
                 return new ApiResult<List<ShopVm>>(true, listShop);

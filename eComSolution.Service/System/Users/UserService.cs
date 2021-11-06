@@ -46,48 +46,42 @@ namespace eComSolution.Service.System.Users
             return new ApiResult<string>(true, ResultObj : _tokenService.CreateToken(user));
         }
 
-        // public bool IsValidEmail(string email){
-        //     EmailValidator emailValidator = new EmailValidator();
-        //     EmailValidationResult result;
+        public bool IsValidEmail(string email){
+            EmailValidator emailValidator = new EmailValidator();
+            EmailValidationResult result;
 
-        //     if (!emailValidator.Validate(email, out result))
-        //     {
-        //         Console.WriteLine("Unable to check email"); // no internet connection or mailserver is down / busy
-        //     }
+            if (!emailValidator.Validate(email, out result))
+            {
+                Console.WriteLine("Unable to check email"); // no internet connection or mailserver is down / busy
+            }
 
-        //     if(result == EmailValidationResult.OK){
-        //         return true;
-        //     }else{
-        //         return false;
-        //     }
-        // }
+            if(result == EmailValidationResult.OK){
+                return true;
+            }else{
+                return false;
+            }
+        }
+        public async Task<ApiResult<string>> CheckUsername(string username){
+            var user =  await _context.Users.FirstOrDefaultAsync(u => u.Username == username);
+            if(user == null) return new ApiResult<string>(true, "Valid username!");
+            else return new ApiResult<string>(false, "Username is exist. Please try with a different username");
+        }
+        public async Task<ApiResult<string>> CheckEmail(string email){
+            var user =  await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
+            if(user == null) return new ApiResult<string>(true, "Valid email!");
+            else return new ApiResult<string>(false, "Email is exist. Please try with a different email");
+        }
+        public async Task<ApiResult<string>> CheckPhone(string phonenumber){
+            var user =  await _context.Users.FirstOrDefaultAsync(u => u.PhoneNumber == phonenumber);
+            if(user == null) return new ApiResult<string>(true, "Valid phonenumber!");
+            else return new ApiResult<string>(false, "Phonenumber is exist. Please try with a different phonenumber");
+        }
 
         public async Task<ApiResult<string>> Register(RegisterRequest request)
-        {
-            string message = string.Empty;
-            bool check = false;
-            if(_context.Users.Any(u => u.Username == request.Username.ToLower()))
-            {
-                check = true;
-                message += "Username is exist! \n";
+        {   
+            if(IsValidEmail(request.Email.ToLower()) == false){
+                return new ApiResult<string>(false, "Email is not exist!");
             }
-            if(_context.Users.Any(u => u.Email == request.Email.ToLower()))
-            {
-                check = true;
-                message += "Email is exist! \n";
-            }
-            if(_context.Users.Any(u => u.PhoneNumber == request.PhoneNumber))
-            {
-                check = true;
-                message += "Phonenumber is exist! \n";
-            }
-            if(check){
-                return new ApiResult<string>(false, message);
-            }
-            
-            // if(IsValidEmail(request.Email.ToLower()) == false){
-            //     return new ApiResult<string>(false, "Email is not exist!");
-            // }
 
             using var hmac = new HMACSHA512();
 
@@ -204,13 +198,6 @@ namespace eComSolution.Service.System.Users
             select new Function { 
                 ActionName = _function.ActionName
             }; 
-
-            // var data = query.ToList();
-
-            // var userPermission = new UserPermission{
-            //     Id = userId,
-            //     Permissions = query.Distinct().ToList()
-            // };
             return query.Distinct().ToList();
         }
         public async Task<ApiResult<string>> ChangePassword(int userId, ChangePasswordVm request){
@@ -277,7 +264,7 @@ namespace eComSolution.Service.System.Users
             string s = "<a href=" + $"https://localhost:5001/api/Users/ConfirmResetPass?email={emailhash}&key={key}" + @">
             <button type='button'>Reset Password</button>
             </a> ";
-            string[] readfile = File.ReadAllLines("C:/Users/ADMIN/Downloads/index.html");
+            string[] readfile = File.ReadAllLines("./wwwroot/index.html");
                 foreach (string line in readfile)
                 {
                     string test = line;
@@ -354,6 +341,10 @@ namespace eComSolution.Service.System.Users
         public async Task<ApiResult<string>> UpdateUser(int userId, UpdateUserVm updateUser){
             var user =  await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
             if(user == null) return new ApiResult<string> (false, Message: "User is not exist!");
+
+            if(IsValidEmail(updateUser.Email.ToLower()) == false){
+                return new ApiResult<string>(false, "Email is not exist!");
+            }
 
             user.Fullname = updateUser.Fullname;
             user.Email = updateUser.Email;

@@ -35,6 +35,12 @@ namespace eComSolution.Service.System.Users
         Task<ApiResult<string>> DisableUser(int userId);
 
         Task<ApiResult<string>> EnableUser(int userId);
+
+        Task<ApiResult<string>> CheckUsername(string username);
+
+        Task<ApiResult<string>> CheckEmail(string email);
+        
+        Task<ApiResult<string>> CheckPhone(string phonenumber);
         
     }
 }
