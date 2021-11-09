@@ -312,7 +312,8 @@ namespace eComSolution.Service.Catalog.Products
         public async Task<ApiResult<int>> Update(UpdateProductRequest request)
         {
             // 1. update các thông tin của product
-            var product = await _context.Products.FindAsync(request.Id);
+            var product = await _context.Products.Where(x=>x.Id==request.Id&&x.IsDeleted==false).FirstOrDefaultAsync();
+            if(product==null) return new ApiResult<int>(false, Message:$"Cannot find product with id: {request.Id}");
             product.Name = request.Name;
             product.Description = request.Description;
             product.Gender = request.Gender;
