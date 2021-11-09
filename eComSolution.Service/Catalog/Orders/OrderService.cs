@@ -57,7 +57,7 @@ namespace eComSolution.Service.Catalog.Orders
                     ShipName = request.ShipName,
                     ShipAddress = request.ShipAddress,
                     ShipPhone = request.ShipPhone,
-                    State = "Chờ xử lý"
+                    State = "Chờ xác nhận"
                     //CancelReason=""
                 };
                 // 2. tạo mới các order details
@@ -168,18 +168,27 @@ namespace eComSolution.Service.Catalog.Orders
             return data;
         }
 
-        public async Task<ApiResult<int>> CancelOrder(int orderId)
+        public async Task<ApiResult<int>> CancelUnconfirmedOrder(int orderId, string cancelReason)
         {
             var order = await _context.Orders.Where(x=>x.Id==orderId).FirstOrDefaultAsync();
             if(order==null) return new ApiResult<int>(false, Message:$"Cannot find order with this id: {orderId}");
+            
+            if(!String.Equals(order.State, "Chờ xác nhận")) 
+                return new ApiResult<int>(false, Message:$"Member can only cancel unconfirmed orders");
+
             var order_details = await _context.OrderDetails
                             .Where(x=>x.OrderId==orderId).ToListAsync();
+
+            if(String.IsNullOrEmpty(cancelReason))  cancelReason = "Lý do khác";
+            
             try
             {
                 // 1. chuyển trạng thái đơn hàng thành 'đã hủy'
                 order.State = "Đã hủy";
+                // 2. cập nhật lý do hủy đơn
+                order.CancelReason = cancelReason;
                 _context.Orders.Update(order);
-                // 2. cộng lại số lượng sản phẩm đã đặt vào stock
+                // 3. cộng lại số lượng sản phẩm đã đặt vào stock
                 foreach(var order_detail in order_details)
                 {
                     var product_detail = await _context.ProductDetails    

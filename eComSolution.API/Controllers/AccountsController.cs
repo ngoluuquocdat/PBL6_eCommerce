@@ -23,7 +23,7 @@ namespace eComSolution.API.Controllers
         public async Task<IActionResult> Login(LoginRequest request)
         {
             var result = await _userService.Login(request);
-            if(result.IsSuccessed == false) return Unauthorized(result.Message);
+            if(result.IsSuccessed == false) return Unauthorized(result);
 
             return Ok(result);
         }
@@ -32,7 +32,7 @@ namespace eComSolution.API.Controllers
         public async Task<IActionResult> Register(RegisterRequest request)
         {
             var result = await _userService.Register(request);
-            if(result.IsSuccessed == false) return BadRequest(result.Message);
+            if(result.IsSuccessed == false) return BadRequest(result);
 
             return Ok(result);
         }

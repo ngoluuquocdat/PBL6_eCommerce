@@ -44,9 +44,9 @@ namespace eComSolution.API.Controllers
         }
 
         [HttpPatch]
-        public async Task<IActionResult> CancelOrder(int orderId)
+        public async Task<IActionResult> CancelUnconfirmedOrder(int orderId, string cancelReason)
         {   
-            var result = await _orderService.CancelOrder(orderId);
+            var result = await _orderService.CancelUnconfirmedOrder(orderId, cancelReason);
             return Ok(result);
         }    
     }

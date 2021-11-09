@@ -111,7 +111,7 @@ namespace eComSolution.API.Controllers
         [HttpGet("ConfirmResetPass")]
         public async Task<IActionResult> ConfirmResetPass(string email, string key)
         {
-            var result = await _userService.ComfirmResetPassword(email, key);
+            var result = await _userService.ComfirmResetPassword(email, key);   
             if(result.IsSuccessed == false) return Unauthorized(result.Message);
 
             return Ok(result);
