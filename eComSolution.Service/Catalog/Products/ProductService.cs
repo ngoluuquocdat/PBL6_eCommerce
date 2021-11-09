@@ -287,13 +287,26 @@ namespace eComSolution.Service.Catalog.Products
 
         public async Task<ApiResult<int>> Delete(int productId)
         {
-            var product = await _context.Products.FindAsync(productId);
+            var product = await _context.Products.Where(x=>x.Id==productId).FirstOrDefaultAsync();
             if(product == null || product.IsDeleted == true)
                 return new ApiResult<int>(false, Message:$"Cannot find product with id: {productId}"); 
-            // xóa mềm product
+            // 1. xóa mềm product
             product.IsDeleted = true;
+            _context.Products.Update(product);
+            // 2. xóa các product details
+            var product_details = await _context.ProductDetails.Where(x=>x.ProductId==productId).ToListAsync();
+            foreach(var product_detail in product_details)
+            {
+                if(product_detail.IsDeleted == false)
+                {
+                    product_detail.IsDeleted = true;
+                    _context.ProductDetails.Update(product_detail);
+                }           
+            }
+            // 3. lưu thay đổi
+            await _context.SaveChangesAsync();
 
-            return new ApiResult<int>(true, ResultObj:await _context.SaveChangesAsync()); 
+            return new ApiResult<int>(true, Message:"Delete product successful"); 
         }
 
         public async Task<ApiResult<int>> Update(UpdateProductRequest request)
@@ -312,18 +325,34 @@ namespace eComSolution.Service.Catalog.Products
             var addList = new List<ProductDetailVm>();
             var deleteList = new List<ProductDetail>();
             var updateList = new List<ProductDetailVm>();
-            // // duyệt qua list_request, tìm add list, update list
+            // // duyệt qua list details của request, tìm update list, add list
             foreach(var dto in request.Details)
             {
                 if(current_details.Any(x=>x.Color==dto.Color&&x.Size==dto.Size))
                 {
-                    if(await UpdateDetail(product.Id, dto)==0)
-                        return new ApiResult<int>(false, Message:"An Error when update detail!");                        
+                    // if(await UpdateDetail(product.Id, dto)==0)
+                    //     return new ApiResult<int>(false, Message:"An Error when update detail!");
+                    // update stock, is delete của product detail
+                    var product_detail = _context.ProductDetails    
+                        .Where(x=>x.ProductId==product.Id && x.Color==dto.Color && x.Size==dto.Size)
+                        .FirstOrDefault();
+                    product_detail.Stock = dto.Stock;
+                    product_detail.IsDeleted = false;
+                    _context.ProductDetails.Update(product_detail);  
+                                          
                 } 
                 else
                 {
-                    if(await AddDetail(product.Id, dto) == 0)
-                        return new ApiResult<int>(false, Message:"An Error when add detail!");
+                    // if(await AddDetail(product.Id, dto) == 0)
+                    //     return new ApiResult<int>(false, Message:"An Error when add detail!");
+                    var product_detail = new ProductDetail
+                    {
+                        ProductId = product.Id,
+                        Color = dto.Color,
+                        Size = dto.Size,
+                        Stock = dto.Stock
+                    };
+                    _context.Add(product_detail);
                 }
             }
             // // duyệt qua list_current, tìm delete list
@@ -331,10 +360,17 @@ namespace eComSolution.Service.Catalog.Products
             {
                 if(!request.Details.Any(x=>x.Color==pd.Color&&x.Size==pd.Size))
                 {
-                    if(await DeleteDetail(product.Id, pd.Color, pd.Size) == 0)
-                        return new ApiResult<int>(false, Message:"An Error when delete detail!");
+                    // if(await DeleteDetail(product.Id, pd.Color, pd.Size) == 0)
+                    //     return new ApiResult<int>(false, Message:"An Error when delete detail!");
+                    var product_detail = _context.ProductDetails    
+                    .Where(x=>x.ProductId==product.Id && x.Color==pd.Color && x.Size==pd.Size)
+                    .FirstOrDefault();
+                    // xóa mềm
+                    product_detail.IsDeleted = true;
+                    _context.ProductDetails.Update(product_detail);
                 }
             }
+            await _context.SaveChangesAsync();
 
             return new ApiResult<int>(true, Message:"Update product successful!");
         }
