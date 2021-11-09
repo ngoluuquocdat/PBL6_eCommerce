@@ -17,7 +17,7 @@ namespace eComSolution.ViewModel.Catalog.Products
         public int OriginalPrice { get; set; }
         public int ViewCount { get; set; }
         public DateTime DateCreated { get; set; }
-        //public string Category { get; set; }
+        public string CategoryName { get; set; }
         public int ShopId { get; set; }
         public string ShopName {get; set;}
         public int TotalStock {get; set;}
