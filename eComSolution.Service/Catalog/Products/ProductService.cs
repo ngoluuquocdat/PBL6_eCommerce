@@ -117,18 +117,19 @@ namespace eComSolution.Service.Catalog.Products
         }
         public async Task<ApiResult<ProductVm>> GetProductById(int productId)
         {
-            var product = await _context.Products.FindAsync(productId);
+            var product = await _context.Products.Where(x=>x.Id==productId).FirstOrDefaultAsync();
             if(product == null || product.IsDeleted == true)
                 return new ApiResult<ProductVm>(false, Message:$"Cannot find product with id: {productId}");
             
             // tăng view count cho product
             product.ViewCount +=1;
             await _context.SaveChangesAsync();
-            // lấy thông tin để hiển thị
+            // lấy thông tin shop, category để hiển thị
             var shop = await _context.Shops.Where(x=>x.Id==product.ShopId).FirstOrDefaultAsync();
+            var category = await _context.Categories.Where(x=>x.Id==product.CategoryId).FirstOrDefaultAsync();
             var productVm = new ProductVm()
             {
-                Id = product.Id,
+                Id = product.Id,                
                 Name = product.Name,
                 Description = product.Description,
                 Gender = product.Gender,
@@ -136,11 +137,13 @@ namespace eComSolution.Service.Catalog.Products
                 OriginalPrice = product.OriginalPrice,
                 ViewCount = product.ViewCount,
                 DateCreated = product.DateCreated, 
+                CategoryName = category.Name,
                 ShopId = shop.Id,
                 ShopName = shop.Name,
                 Details = await GetProductDetails(product.Id),
                 Images = await GetProductImages(product.Id)
             };
+            // tính tổng số lượng tồn kho 
             productVm.TotalStock = productVm.Details.Sum(d => d.Stock);
 
             return new ApiResult<ProductVm>(true, ResultObj:productVm);
@@ -323,17 +326,12 @@ namespace eComSolution.Service.Catalog.Products
 
             // 2. update list product details
             var current_details = _context.ProductDetails.Where(x=>x.ProductId==product.Id).ToList();
-            var addList = new List<ProductDetailVm>();
-            var deleteList = new List<ProductDetail>();
-            var updateList = new List<ProductDetailVm>();
             // // duyệt qua list details của request, tìm update list, add list
             foreach(var dto in request.Details)
             {
                 if(current_details.Any(x=>x.Color==dto.Color&&x.Size==dto.Size))
                 {
-                    // if(await UpdateDetail(product.Id, dto)==0)
-                    //     return new ApiResult<int>(false, Message:"An Error when update detail!");
-                    // update stock, is delete của product detail
+                    // update stock, isDelete của product detail
                     var product_detail = _context.ProductDetails    
                         .Where(x=>x.ProductId==product.Id && x.Color==dto.Color && x.Size==dto.Size)
                         .FirstOrDefault();
@@ -344,8 +342,7 @@ namespace eComSolution.Service.Catalog.Products
                 } 
                 else
                 {
-                    // if(await AddDetail(product.Id, dto) == 0)
-                    //     return new ApiResult<int>(false, Message:"An Error when add detail!");
+                    // add product detail mới
                     var product_detail = new ProductDetail
                     {
                         ProductId = product.Id,
@@ -353,7 +350,7 @@ namespace eComSolution.Service.Catalog.Products
                         Size = dto.Size,
                         Stock = dto.Stock
                     };
-                    _context.Add(product_detail);
+                    _context.ProductDetails.Add(product_detail);
                 }
             }
             // // duyệt qua list_current, tìm delete list
@@ -361,8 +358,6 @@ namespace eComSolution.Service.Catalog.Products
             {
                 if(!request.Details.Any(x=>x.Color==pd.Color&&x.Size==pd.Size))
                 {
-                    // if(await DeleteDetail(product.Id, pd.Color, pd.Size) == 0)
-                    //     return new ApiResult<int>(false, Message:"An Error when delete detail!");
                     var product_detail = _context.ProductDetails    
                     .Where(x=>x.ProductId==product.Id && x.Color==pd.Color && x.Size==pd.Size)
                     .FirstOrDefault();
@@ -371,6 +366,7 @@ namespace eComSolution.Service.Catalog.Products
                     _context.ProductDetails.Update(product_detail);
                 }
             }
+            // 3. lưu thay đổi
             await _context.SaveChangesAsync();
 
             return new ApiResult<int>(true, Message:"Update product successful!");
