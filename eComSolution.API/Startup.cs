@@ -47,7 +47,11 @@ namespace eComSolution.API
     options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
 
             services.AddCors(option 
-                => option.AddPolicy("MyCorsPolicy", builder => builder.WithOrigins("http://localhost:4200")));
+                => option.AddPolicy("MyCorsPolicy", builder => 
+                builder.WithOrigins("http://localhost:4200")
+                .AllowAnyMethod()
+                .AllowAnyHeader()
+                .SetIsOriginAllowed(origin => true)));
 
             services.AddSwaggerGen(c =>
             {
