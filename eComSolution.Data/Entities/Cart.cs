@@ -11,7 +11,7 @@ namespace eComSolution.Data.Entities
         public int UserId { get; set; }
         public int ProductDetail_Id { get; set; }
         public int Quantity { get; set; }
-        public int Price { get; set; }      // đơn giá lúc thêm vào giỏ
+        // public int Price { get; set; }      // đơn giá lúc thêm vào giỏ
 
 
         // navigation prop

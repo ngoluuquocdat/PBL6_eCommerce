@@ -278,7 +278,8 @@ namespace eComSolution.Data.Extensions
 
             // data seeding cho carts
             modelBuilder.Entity<Cart>().HasData(
-                new Cart{Id = 1, UserId = 4, ProductDetail_Id = 8, Quantity=10, Price=150000}
+                // new Cart{Id = 1, UserId = 4, ProductDetail_Id = 8, Quantity=10, Price=150000}
+                new Cart{Id = 1, UserId = 4, ProductDetail_Id = 8, Quantity=10}
             );
             
             // data seeding cho Order

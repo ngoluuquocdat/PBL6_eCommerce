@@ -28,9 +28,6 @@ namespace eComSolution.Data.Migrations
                         .HasAnnotation("SqlServer:IdentitySeed", 1)
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int>("Price")
-                        .HasColumnType("int");
-
                     b.Property<int>("ProductDetail_Id")
                         .HasColumnType("int");
 
@@ -52,7 +49,6 @@ namespace eComSolution.Data.Migrations
                         new
                         {
                             Id = 1,
-                            Price = 150000,
                             ProductDetail_Id = 8,
                             Quantity = 10,
                             UserId = 4
@@ -282,7 +278,7 @@ namespace eComSolution.Data.Migrations
                         {
                             Id = 1,
                             Count = 1,
-                            Date = new DateTime(2021, 11, 4, 15, 10, 13, 710, DateTimeKind.Local).AddTicks(8423),
+                            Date = new DateTime(2021, 11, 10, 10, 2, 51, 817, DateTimeKind.Local).AddTicks(7101),
                             ProductId = 2,
                             UserId = 4
                         },
@@ -290,7 +286,7 @@ namespace eComSolution.Data.Migrations
                         {
                             Id = 2,
                             Count = 1,
-                            Date = new DateTime(2021, 11, 4, 15, 10, 13, 710, DateTimeKind.Local).AddTicks(9006),
+                            Date = new DateTime(2021, 11, 10, 10, 2, 51, 817, DateTimeKind.Local).AddTicks(7558),
                             ProductId = 4,
                             UserId = 4
                         },
@@ -298,7 +294,7 @@ namespace eComSolution.Data.Migrations
                         {
                             Id = 3,
                             Count = 1,
-                            Date = new DateTime(2021, 11, 4, 15, 10, 13, 710, DateTimeKind.Local).AddTicks(9011),
+                            Date = new DateTime(2021, 11, 10, 10, 2, 51, 817, DateTimeKind.Local).AddTicks(7562),
                             ProductId = 3,
                             UserId = 4
                         });
@@ -358,8 +354,8 @@ namespace eComSolution.Data.Migrations
                         new
                         {
                             Id = 1,
-                            DateModified = new DateTime(2021, 11, 4, 15, 10, 13, 711, DateTimeKind.Local).AddTicks(1884),
-                            OrderDate = new DateTime(2021, 11, 4, 15, 10, 13, 711, DateTimeKind.Local).AddTicks(1500),
+                            DateModified = new DateTime(2021, 11, 10, 10, 2, 51, 817, DateTimeKind.Local).AddTicks(9896),
+                            OrderDate = new DateTime(2021, 11, 10, 10, 2, 51, 817, DateTimeKind.Local).AddTicks(9642),
                             ShipAddress = "123 Lê Duẩn, Thanh Khê, Đà Nẵng",
                             ShipName = "Đinh Công Tài",
                             ShipPhone = "09053438847",
@@ -521,7 +517,7 @@ namespace eComSolution.Data.Migrations
                         {
                             Id = 1,
                             CategoryId = 1,
-                            DateCreated = new DateTime(2021, 11, 4, 15, 10, 13, 710, DateTimeKind.Local).AddTicks(3429),
+                            DateCreated = new DateTime(2021, 11, 10, 10, 2, 51, 817, DateTimeKind.Local).AddTicks(3112),
                             Description = "Mô tả sản phẩm:\n Chất liệu: 100% cotton\n Màu sắc : trắng & đen",
                             Gender = 1,
                             IsDeleted = false,
@@ -535,7 +531,7 @@ namespace eComSolution.Data.Migrations
                         {
                             Id = 2,
                             CategoryId = 5,
-                            DateCreated = new DateTime(2021, 11, 4, 15, 10, 13, 710, DateTimeKind.Local).AddTicks(5312),
+                            DateCreated = new DateTime(2021, 11, 10, 10, 2, 51, 817, DateTimeKind.Local).AddTicks(4602),
                             Description = "Mô tả sản phẩm:\n Chất liệu: 100% cotton\n Màu sắc : đỏ & đen",
                             Gender = 1,
                             IsDeleted = false,
@@ -549,7 +545,7 @@ namespace eComSolution.Data.Migrations
                         {
                             Id = 3,
                             CategoryId = 1,
-                            DateCreated = new DateTime(2021, 11, 4, 15, 10, 13, 710, DateTimeKind.Local).AddTicks(5320),
+                            DateCreated = new DateTime(2021, 11, 10, 10, 2, 51, 817, DateTimeKind.Local).AddTicks(4607),
                             Description = "Mô tả sản phẩm:\n Brand: XFire\n Chất liệu : cotton co dãn",
                             Gender = 3,
                             IsDeleted = false,
@@ -563,7 +559,7 @@ namespace eComSolution.Data.Migrations
                         {
                             Id = 4,
                             CategoryId = 4,
-                            DateCreated = new DateTime(2021, 11, 4, 15, 10, 13, 710, DateTimeKind.Local).AddTicks(5322),
+                            DateCreated = new DateTime(2021, 11, 10, 10, 2, 51, 817, DateTimeKind.Local).AddTicks(4609),
                             Description = "Mô tả sản phẩm:\n Form: Fit\n Chất liệu : jean",
                             Gender = 1,
                             IsDeleted = false,
@@ -833,6 +829,9 @@ namespace eComSolution.Data.Migrations
                     b.Property<bool>("Disable")
                         .HasColumnType("bit");
 
+                    b.Property<string>("DisableReason")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(50)
@@ -853,8 +852,8 @@ namespace eComSolution.Data.Migrations
                             Id = 1,
                             Address = "123 DT605, Hòa Tiến, Hòa Vang, Đà Nẵng",
                             Avatar = "",
-                            DateCreated = new DateTime(2021, 11, 4, 15, 10, 13, 704, DateTimeKind.Local).AddTicks(5936),
-                            DateModified = new DateTime(2021, 11, 4, 15, 10, 13, 705, DateTimeKind.Local).AddTicks(5635),
+                            DateCreated = new DateTime(2021, 11, 10, 10, 2, 51, 812, DateTimeKind.Local).AddTicks(8087),
+                            DateModified = new DateTime(2021, 11, 10, 10, 2, 51, 813, DateTimeKind.Local).AddTicks(5408),
                             Description = "Cửa hàng áo quần chất lượng cao, giá cả phải chăng",
                             Disable = false,
                             Name = "Tuấn's Fashion",
@@ -865,8 +864,8 @@ namespace eComSolution.Data.Migrations
                             Id = 2,
                             Address = "160 Trần Nhật Duật, Cẩm Châu, Hội An, Quảng Nam",
                             Avatar = "",
-                            DateCreated = new DateTime(2021, 11, 4, 15, 10, 13, 705, DateTimeKind.Local).AddTicks(6396),
-                            DateModified = new DateTime(2021, 11, 4, 15, 10, 13, 705, DateTimeKind.Local).AddTicks(6402),
+                            DateCreated = new DateTime(2021, 11, 10, 10, 2, 51, 813, DateTimeKind.Local).AddTicks(6118),
+                            DateModified = new DateTime(2021, 11, 10, 10, 2, 51, 813, DateTimeKind.Local).AddTicks(6122),
                             Description = "Cửa hàng áo quần nam",
                             Disable = false,
                             Name = "Đạt's Clothes",
@@ -936,8 +935,8 @@ namespace eComSolution.Data.Migrations
                             Disable = false,
                             Email = "tuandang29042000@gmail.com",
                             Fullname = "admin",
-                            PasswordHash = new byte[] { 126, 208, 99, 57, 66, 169, 170, 241, 7, 93, 187, 165, 142, 88, 104, 27, 229, 39, 13, 165, 135, 29, 70, 90, 1, 60, 19, 146, 167, 249, 198, 66, 92, 172, 209, 200, 33, 212, 146, 38, 53, 196, 150, 96, 89, 67, 213, 102, 190, 217, 42, 190, 118, 14, 221, 208, 2, 110, 135, 157, 231, 163, 248, 42 },
-                            PasswordSalt = new byte[] { 249, 45, 232, 251, 29, 246, 235, 13, 23, 88, 254, 193, 249, 127, 88, 249, 36, 255, 234, 35, 78, 124, 210, 73, 15, 89, 34, 101, 249, 52, 50, 12, 131, 252, 78, 53, 152, 225, 124, 24, 91, 127, 78, 194, 71, 100, 43, 92, 181, 89, 93, 18, 129, 200, 50, 246, 254, 106, 134, 117, 155, 94, 144, 169, 35, 245, 213, 100, 55, 65, 42, 126, 109, 90, 122, 7, 255, 63, 53, 134, 77, 106, 80, 147, 203, 11, 13, 131, 232, 172, 203, 137, 18, 56, 188, 58, 92, 248, 124, 71, 182, 181, 17, 36, 11, 177, 189, 108, 61, 209, 212, 38, 223, 244, 48, 166, 90, 244, 98, 30, 186, 180, 85, 37, 175, 200, 100, 75 },
+                            PasswordHash = new byte[] { 121, 186, 32, 3, 50, 116, 233, 254, 3, 61, 56, 22, 58, 73, 141, 127, 60, 70, 128, 88, 143, 16, 20, 6, 201, 103, 73, 209, 200, 208, 110, 210, 229, 99, 39, 110, 186, 149, 245, 236, 152, 198, 159, 11, 73, 35, 115, 151, 101, 250, 45, 190, 232, 249, 72, 12, 115, 204, 181, 138, 138, 56, 216, 145 },
+                            PasswordSalt = new byte[] { 180, 66, 173, 108, 108, 108, 103, 196, 143, 173, 157, 3, 230, 163, 86, 85, 150, 89, 115, 199, 84, 56, 182, 56, 59, 248, 226, 208, 145, 84, 207, 178, 230, 104, 3, 39, 241, 230, 227, 82, 80, 236, 132, 157, 198, 146, 246, 239, 185, 117, 87, 228, 43, 228, 223, 181, 140, 111, 110, 217, 169, 231, 127, 178, 50, 255, 86, 189, 120, 41, 64, 173, 48, 60, 182, 245, 115, 143, 39, 101, 199, 5, 54, 230, 243, 97, 142, 252, 47, 30, 20, 82, 27, 93, 193, 16, 65, 45, 183, 75, 215, 97, 100, 111, 119, 125, 233, 123, 132, 51, 191, 112, 8, 207, 208, 30, 32, 85, 133, 210, 115, 141, 169, 97, 143, 87, 213, 8 },
                             PhoneNumber = "0921231220",
                             Username = "admin"
                         },
@@ -948,8 +947,8 @@ namespace eComSolution.Data.Migrations
                             Disable = false,
                             Email = "tuandang29042000@gmail.com",
                             Fullname = "Đặng Quốc Tuấn",
-                            PasswordHash = new byte[] { 158, 231, 143, 223, 29, 20, 180, 98, 78, 129, 63, 67, 17, 204, 90, 62, 85, 236, 110, 161, 148, 151, 121, 108, 201, 196, 234, 116, 78, 229, 204, 104, 115, 33, 113, 153, 119, 34, 244, 68, 140, 206, 241, 58, 69, 44, 164, 41, 127, 26, 165, 161, 117, 175, 147, 199, 110, 36, 106, 237, 217, 13, 105, 184 },
-                            PasswordSalt = new byte[] { 249, 45, 232, 251, 29, 246, 235, 13, 23, 88, 254, 193, 249, 127, 88, 249, 36, 255, 234, 35, 78, 124, 210, 73, 15, 89, 34, 101, 249, 52, 50, 12, 131, 252, 78, 53, 152, 225, 124, 24, 91, 127, 78, 194, 71, 100, 43, 92, 181, 89, 93, 18, 129, 200, 50, 246, 254, 106, 134, 117, 155, 94, 144, 169, 35, 245, 213, 100, 55, 65, 42, 126, 109, 90, 122, 7, 255, 63, 53, 134, 77, 106, 80, 147, 203, 11, 13, 131, 232, 172, 203, 137, 18, 56, 188, 58, 92, 248, 124, 71, 182, 181, 17, 36, 11, 177, 189, 108, 61, 209, 212, 38, 223, 244, 48, 166, 90, 244, 98, 30, 186, 180, 85, 37, 175, 200, 100, 75 },
+                            PasswordHash = new byte[] { 4, 150, 156, 46, 123, 214, 191, 29, 222, 48, 140, 244, 52, 206, 105, 89, 46, 36, 113, 239, 252, 104, 39, 148, 3, 90, 120, 162, 30, 201, 109, 234, 244, 140, 40, 47, 232, 36, 43, 83, 104, 181, 125, 198, 247, 22, 251, 74, 139, 91, 157, 249, 165, 100, 56, 139, 97, 81, 173, 110, 250, 196, 95, 185 },
+                            PasswordSalt = new byte[] { 180, 66, 173, 108, 108, 108, 103, 196, 143, 173, 157, 3, 230, 163, 86, 85, 150, 89, 115, 199, 84, 56, 182, 56, 59, 248, 226, 208, 145, 84, 207, 178, 230, 104, 3, 39, 241, 230, 227, 82, 80, 236, 132, 157, 198, 146, 246, 239, 185, 117, 87, 228, 43, 228, 223, 181, 140, 111, 110, 217, 169, 231, 127, 178, 50, 255, 86, 189, 120, 41, 64, 173, 48, 60, 182, 245, 115, 143, 39, 101, 199, 5, 54, 230, 243, 97, 142, 252, 47, 30, 20, 82, 27, 93, 193, 16, 65, 45, 183, 75, 215, 97, 100, 111, 119, 125, 233, 123, 132, 51, 191, 112, 8, 207, 208, 30, 32, 85, 133, 210, 115, 141, 169, 97, 143, 87, 213, 8 },
                             PhoneNumber = "0921231220",
                             ShopId = 1,
                             Username = "quoctuan"
@@ -961,8 +960,8 @@ namespace eComSolution.Data.Migrations
                             Disable = false,
                             Email = "ngoluuquocdat@gmail.com",
                             Fullname = "Ngô Lưu Quốc Đạt",
-                            PasswordHash = new byte[] { 88, 153, 80, 29, 204, 114, 112, 42, 206, 222, 90, 108, 170, 155, 105, 187, 214, 157, 81, 117, 44, 202, 173, 132, 105, 249, 62, 1, 186, 219, 155, 210, 82, 177, 223, 21, 122, 143, 47, 244, 224, 41, 244, 114, 60, 166, 196, 189, 143, 217, 81, 42, 31, 217, 230, 26, 121, 221, 149, 134, 249, 124, 244, 43 },
-                            PasswordSalt = new byte[] { 249, 45, 232, 251, 29, 246, 235, 13, 23, 88, 254, 193, 249, 127, 88, 249, 36, 255, 234, 35, 78, 124, 210, 73, 15, 89, 34, 101, 249, 52, 50, 12, 131, 252, 78, 53, 152, 225, 124, 24, 91, 127, 78, 194, 71, 100, 43, 92, 181, 89, 93, 18, 129, 200, 50, 246, 254, 106, 134, 117, 155, 94, 144, 169, 35, 245, 213, 100, 55, 65, 42, 126, 109, 90, 122, 7, 255, 63, 53, 134, 77, 106, 80, 147, 203, 11, 13, 131, 232, 172, 203, 137, 18, 56, 188, 58, 92, 248, 124, 71, 182, 181, 17, 36, 11, 177, 189, 108, 61, 209, 212, 38, 223, 244, 48, 166, 90, 244, 98, 30, 186, 180, 85, 37, 175, 200, 100, 75 },
+                            PasswordHash = new byte[] { 135, 116, 199, 203, 97, 178, 52, 219, 250, 139, 22, 56, 196, 191, 110, 29, 90, 168, 159, 185, 71, 64, 137, 139, 199, 72, 132, 230, 101, 1, 195, 235, 156, 111, 16, 60, 13, 1, 110, 86, 49, 235, 78, 124, 239, 74, 139, 18, 222, 11, 209, 15, 92, 97, 2, 134, 20, 34, 222, 237, 234, 183, 134, 223 },
+                            PasswordSalt = new byte[] { 180, 66, 173, 108, 108, 108, 103, 196, 143, 173, 157, 3, 230, 163, 86, 85, 150, 89, 115, 199, 84, 56, 182, 56, 59, 248, 226, 208, 145, 84, 207, 178, 230, 104, 3, 39, 241, 230, 227, 82, 80, 236, 132, 157, 198, 146, 246, 239, 185, 117, 87, 228, 43, 228, 223, 181, 140, 111, 110, 217, 169, 231, 127, 178, 50, 255, 86, 189, 120, 41, 64, 173, 48, 60, 182, 245, 115, 143, 39, 101, 199, 5, 54, 230, 243, 97, 142, 252, 47, 30, 20, 82, 27, 93, 193, 16, 65, 45, 183, 75, 215, 97, 100, 111, 119, 125, 233, 123, 132, 51, 191, 112, 8, 207, 208, 30, 32, 85, 133, 210, 115, 141, 169, 97, 143, 87, 213, 8 },
                             PhoneNumber = "090553859",
                             ShopId = 2,
                             Username = "quocdat"
@@ -974,8 +973,8 @@ namespace eComSolution.Data.Migrations
                             Disable = false,
                             Email = "badding@gmail.com",
                             Fullname = "Đinh Công Tài",
-                            PasswordHash = new byte[] { 121, 134, 2, 14, 214, 150, 158, 119, 1, 205, 184, 43, 33, 189, 138, 85, 13, 103, 99, 15, 62, 234, 119, 81, 66, 109, 109, 130, 74, 215, 197, 240, 51, 168, 210, 208, 17, 25, 125, 128, 25, 255, 215, 18, 229, 48, 232, 110, 26, 163, 50, 205, 60, 11, 178, 237, 108, 161, 148, 33, 8, 63, 68, 208 },
-                            PasswordSalt = new byte[] { 249, 45, 232, 251, 29, 246, 235, 13, 23, 88, 254, 193, 249, 127, 88, 249, 36, 255, 234, 35, 78, 124, 210, 73, 15, 89, 34, 101, 249, 52, 50, 12, 131, 252, 78, 53, 152, 225, 124, 24, 91, 127, 78, 194, 71, 100, 43, 92, 181, 89, 93, 18, 129, 200, 50, 246, 254, 106, 134, 117, 155, 94, 144, 169, 35, 245, 213, 100, 55, 65, 42, 126, 109, 90, 122, 7, 255, 63, 53, 134, 77, 106, 80, 147, 203, 11, 13, 131, 232, 172, 203, 137, 18, 56, 188, 58, 92, 248, 124, 71, 182, 181, 17, 36, 11, 177, 189, 108, 61, 209, 212, 38, 223, 244, 48, 166, 90, 244, 98, 30, 186, 180, 85, 37, 175, 200, 100, 75 },
+                            PasswordHash = new byte[] { 97, 75, 167, 213, 241, 173, 89, 32, 168, 199, 146, 143, 110, 85, 145, 182, 220, 160, 16, 151, 23, 248, 206, 236, 152, 58, 223, 231, 20, 167, 22, 136, 214, 64, 228, 212, 72, 81, 156, 162, 125, 184, 93, 85, 7, 102, 19, 233, 154, 220, 245, 14, 122, 85, 46, 148, 182, 235, 209, 96, 189, 235, 56, 44 },
+                            PasswordSalt = new byte[] { 180, 66, 173, 108, 108, 108, 103, 196, 143, 173, 157, 3, 230, 163, 86, 85, 150, 89, 115, 199, 84, 56, 182, 56, 59, 248, 226, 208, 145, 84, 207, 178, 230, 104, 3, 39, 241, 230, 227, 82, 80, 236, 132, 157, 198, 146, 246, 239, 185, 117, 87, 228, 43, 228, 223, 181, 140, 111, 110, 217, 169, 231, 127, 178, 50, 255, 86, 189, 120, 41, 64, 173, 48, 60, 182, 245, 115, 143, 39, 101, 199, 5, 54, 230, 243, 97, 142, 252, 47, 30, 20, 82, 27, 93, 193, 16, 65, 45, 183, 75, 215, 97, 100, 111, 119, 125, 233, 123, 132, 51, 191, 112, 8, 207, 208, 30, 32, 85, 133, 210, 115, 141, 169, 97, 143, 87, 213, 8 },
                             PhoneNumber = "090553859",
                             Username = "congtai"
                         });

@@ -20,7 +20,7 @@ namespace eComSolution.Data.Configurations
             builder.Property(x => x.UserId).IsRequired();
             builder.Property(x => x.ProductDetail_Id).IsRequired();
             builder.Property(x => x.Quantity).IsRequired();
-            builder.Property(x => x.Price).IsRequired();
+            // builder.Property(x => x.Price).IsRequired();
 
             // 1-n: ProductDetail - Carts
             builder.HasOne(cart => cart.ProductDetail)
