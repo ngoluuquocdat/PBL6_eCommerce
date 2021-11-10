@@ -51,7 +51,7 @@ namespace eComSolution.Service.Catalog.Histories
                         select new {h, p};
 
             if(query==null || query.Count()==0)
-                return new ApiResult<List<HistoryVm>>(false, Message:"History of this user is empty.");
+                return new ApiResult<List<HistoryVm>>(false, Message:"Bạn chưa xem sản phẩm nào!");
             
             var list_records = await query.OrderByDescending(x=>x.h.Date).ToListAsync();  
 

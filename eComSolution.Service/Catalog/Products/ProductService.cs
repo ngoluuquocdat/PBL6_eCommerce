@@ -119,7 +119,7 @@ namespace eComSolution.Service.Catalog.Products
         {
             var product = await _context.Products.Where(x=>x.Id==productId).FirstOrDefaultAsync();
             if(product == null || product.IsDeleted == true)
-                return new ApiResult<ProductVm>(false, Message:$"Cannot find product with id: {productId}");
+                return new ApiResult<ProductVm>(false, Message:$"Không tìm thấy sản phẩm có Id: {productId}");
             
             // tăng view count cho product
             product.ViewCount +=1;
@@ -191,7 +191,7 @@ namespace eComSolution.Service.Catalog.Products
             // 1. tạo list các product details
             var product_details = new List<ProductDetail>();
             if(request.Details==null || request.Details.Count==0)
-                return new ApiResult<int>(false, Message:"Details must not null");
+                return new ApiResult<int>(false, Message:"Chi tiết sản phẩm không được phép để trống!");
 
             foreach(var productDetailVm in request.Details)
             {
@@ -292,7 +292,7 @@ namespace eComSolution.Service.Catalog.Products
         {
             var product = await _context.Products.Where(x=>x.Id==productId).FirstOrDefaultAsync();
             if(product == null || product.IsDeleted == true)
-                return new ApiResult<int>(false, Message:$"Cannot find product with id: {productId}"); 
+                return new ApiResult<int>(false, Message:$"Không tìm thấy sản phẩm có Id: {productId}"); 
             // 1. xóa mềm product
             product.IsDeleted = true;
             _context.Products.Update(product);
@@ -309,14 +309,14 @@ namespace eComSolution.Service.Catalog.Products
             // 3. lưu thay đổi
             await _context.SaveChangesAsync();
 
-            return new ApiResult<int>(true, Message:"Delete product successful"); 
+            return new ApiResult<int>(true, Message:"Xóa sản phẩm thành công!"); 
         }
 
         public async Task<ApiResult<int>> Update(UpdateProductRequest request)
         {
             // 1. update các thông tin của product
             var product = await _context.Products.Where(x=>x.Id==request.Id&&x.IsDeleted==false).FirstOrDefaultAsync();
-            if(product==null) return new ApiResult<int>(false, Message:$"Cannot find product with id: {request.Id}");
+            if(product==null) return new ApiResult<int>(false, Message:$"Không tìm thấy sản phẩm có Id: {request.Id}");
             product.Name = request.Name;
             product.Description = request.Description;
             product.Gender = request.Gender;
@@ -369,7 +369,7 @@ namespace eComSolution.Service.Catalog.Products
             // 3. lưu thay đổi
             await _context.SaveChangesAsync();
 
-            return new ApiResult<int>(true, Message:"Update product successful!");
+            return new ApiResult<int>(true, Message:"Cập nhật sản phẩm thành công!");
         }
 
         public async Task<int> UpdateDetail(int productId, ProductDetailVm dto)
@@ -411,13 +411,13 @@ namespace eComSolution.Service.Catalog.Products
         {
             var productImage = await _context.ProductImages.FindAsync(imageId);
             if (productImage == null)
-                return new ApiResult<int>(false, Message:$"Cannot find image with id: {imageId}");
+                return new ApiResult<int>(false, Message:$"Không tìm thấy hình ảnh có Id: {imageId}");
             // xóa file vật lý
             await _storageService.DeleteFileAsync(productImage.ImagePath);
             // xóa record trong db
             _context.ProductImages.Remove(productImage);
             await _context.SaveChangesAsync();
-            return new ApiResult<int>(true, Message:"Remove product image successful!");
+            return new ApiResult<int>(true, Message:"Xóa hình ảnh thành công!");
         }
     }
 }

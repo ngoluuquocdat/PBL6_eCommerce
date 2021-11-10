@@ -21,7 +21,7 @@ namespace eComSolution.API.Controllers
             _shopService = shopService;
         }
         [HttpPost]
-        public async Task<IActionResult> create([FromForm]CreateShopVm request)
+        public async Task<IActionResult> Create([FromForm]CreateShopVm request)
         {
             var claimsPrincipal = this.User;
             var userId = Int32.Parse(claimsPrincipal.FindFirst("id").Value);
@@ -33,7 +33,7 @@ namespace eComSolution.API.Controllers
             return Ok(result);
         }
         [HttpPost("update")]
-        public async Task<IActionResult> update([FromForm]CreateShopVm request)
+        public async Task<IActionResult> Update([FromForm]CreateShopVm request)
         {
             var claimsPrincipal = this.User;
             var userId = Int32.Parse(claimsPrincipal.FindFirst("id").Value);
@@ -55,7 +55,15 @@ namespace eComSolution.API.Controllers
 
             return Ok(result);
         }
-        [HttpGet("getAll")]
+        [HttpGet("GetById")]
+        public async Task<ActionResult> GetById(int userId){
+            var result = await _shopService.Get(userId);
+            if (result.IsSuccessed == false)
+                return BadRequest(result.Message);    
+
+            return Ok(result);
+        }
+        [HttpGet("GetAll")]
         public async Task<ActionResult> GetAll(){
 
             var result = await _shopService.GetAll();

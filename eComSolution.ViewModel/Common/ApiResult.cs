@@ -25,7 +25,13 @@ namespace eShopSolution.ViewModels.Common
         }
 
         // cho trường hợp Success, gởi ra ResultObj
-        public ApiResult(bool IsSuccessed, T ResultObj)
+        public ApiResult(bool IsSuccessed, string Message, T ResultObj)
+        {
+            this.IsSuccessed = IsSuccessed;
+            this.Message = Message;
+            this.ResultObj = ResultObj;
+        }
+         public ApiResult(bool IsSuccessed, T ResultObj)
         {
             this.IsSuccessed = IsSuccessed;
             this.ResultObj = ResultObj;

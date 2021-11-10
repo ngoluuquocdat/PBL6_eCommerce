@@ -34,17 +34,18 @@ namespace eComSolution.Service.System.Users
         }
         public async Task<ApiResult<ShopVm>> Get(int userId){
             var user =  await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
-            if(user == null) return new ApiResult<ShopVm>(false, "User is not exist!");
+            if(user == null) return new ApiResult<ShopVm>(false, "Người dùng này không tồn tại trong hệ thống!");
 
             if(user.ShopId == null)
             {
-                return new ApiResult<ShopVm>(false, "You haven't registered shop yet!");
+                return new ApiResult<ShopVm>(false, "Bạn chưa đăng ký cửa hàng nào. Vui lòng tạo mới một cửa hàng vào thử lại!");
             }
             else
             {
                 var shop = await _context.Shops.FirstOrDefaultAsync(s => s.Id == user.ShopId);
                 var shopInfo = new ShopVm{
-                    Name = shop.Name,
+                    NameOfShop = shop.Name,
+                    NameOfUser = user.Fullname,
                     Avatar = "/storage/"+ shop.Avatar,
                     PhoneNumber = shop.PhoneNumber,
                     Address = shop.Address,
@@ -58,7 +59,7 @@ namespace eComSolution.Service.System.Users
         }
         public async Task<ApiResult<string>> Create(int userId, CreateShopVm request){
             var user =  await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
-            if(user == null) return new ApiResult<string>(false, "User is not exist!");
+            if(user == null) return new ApiResult<string>(false, "Người dùng này không tồn tại trong hệ thống!");
 
             if(user.ShopId == null){
                 Shop shop = new Shop{
@@ -84,64 +85,73 @@ namespace eComSolution.Service.System.Users
 
                     _context.Users.Update(user);
                     await _context.SaveChangesAsync();
-                    return new ApiResult<string>(true, Message: "Success create shop!");
+                    return new ApiResult<string>(true, Message: "Tạo mới cửa hàng thành công!");
                 }
                 else
-                return new ApiResult<string>(false, Message: "Fail! Please try again.");
+                return new ApiResult<string>(false, Message: "Đã xảy ra lỗi. Vui lòng thử lại!");
 
             }else{
-                return new ApiResult<string>(false, Message: "You have registered a shop before!");
+                return new ApiResult<string>(false, Message: "Bạn đã đăng ký 1 cửa hàng trước đó!");
             }
-
         }
 
         public async Task<ApiResult<List<ShopVm>>> GetAll(){
-            var query = await _context.Shops.ToArrayAsync();
+            var query = from sh in _context.Shops
+                        join u in _context.Users on sh.Id equals u.ShopId
+                        select new {sh, u};
 
-            List<ShopVm> listShop = new List<ShopVm>();
-            foreach (var shop in query){
-                listShop.Add(new ShopVm {Name = shop.Name, Avatar = shop.Avatar, PhoneNumber = shop.PhoneNumber, 
-                                        Address = shop.Address, Description = shop.Description, DateCreated = shop.DateCreated, Disable = shop.Disable});
-            }
-            if(listShop.Count > 0){
-                return new ApiResult<List<ShopVm>>(true, listShop);
+            var data = await query.Select(x => new ShopVm{
+                NameOfShop = x.sh.Name,
+                NameOfUser = x.u.Fullname,
+                Avatar = x.sh.Avatar,
+                PhoneNumber = x.sh.PhoneNumber, 
+                Address = x.sh.Address,
+                Description = x.sh.Description,
+                DateCreated = x.sh.DateCreated,
+                DateModified = x.sh.DateModified,
+                Disable = x.sh.Disable
+            }).ToListAsync();
+
+            if(data.Count > 0){
+                return new ApiResult<List<ShopVm>>(true, data);
             }else{
-                return new ApiResult<List<ShopVm>>(false, "Can't find any shop!");
+                return new ApiResult<List<ShopVm>>(false, "Chưa có cửa hàng nào được tạo!");
             }
 
         }
         public async Task<ApiResult<string>> DisableShop(int shopId){
             var shop = await _context.Shops.FirstOrDefaultAsync(s => s.Id == shopId);
-            if(shop == null) return new ApiResult<string>(false, "Shop is not exist!");
+            if(shop == null) return new ApiResult<string>(false, "Không tồn tại cửa hàng này!");
             
             shop.Disable = true;
+            // shop.DisableReason = "";
             _context.Shops.Update(shop);
 
             if(await _context.SaveChangesAsync() > 0)
-            return new ApiResult<string>(true, Message: "Disable shop successfully!");
+            return new ApiResult<string>(true, Message: "Đã vô hiệu hóa cửa hàng này!");
             else
-            return new ApiResult<string>(false, Message: "Fail! Please try again.");
+            return new ApiResult<string>(false, Message: "Đã xảy ra lỗi. Vui lòng thử lại!");
 
         }
         public async Task<ApiResult<string>> EnableShop(int shopId){
             var shop = await _context.Shops.FirstOrDefaultAsync(s => s.Id == shopId);
-            if(shop == null) return new ApiResult<string>(false, "Shop is not exist!");
+            if(shop == null) return new ApiResult<string>(false, "Không tồn tại cửa hàng này!");
 
             shop.Disable = false;
             _context.Shops.Update(shop);
 
             if(await _context.SaveChangesAsync() > 0)
-            return new ApiResult<string>(true, Message: "Enable shop successfully!");
+            return new ApiResult<string>(true, Message: "Bỏ vô hiệu hóa cửa hàng thành công!");
             else
-            return new ApiResult<string>(false, Message: "Fail! Please try again.");
+            return new ApiResult<string>(false, Message: "Đã xảy ra lỗi. Vui lòng thử lại!");
 
         }
         public async Task<ApiResult<string>> Update(int userId, CreateShopVm request){
             var user =  await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
-            if(user == null) return new ApiResult<string>(false, "User is not exist!");
+            if(user == null) return new ApiResult<string>(false, "Người dùng này không tồn tại trong hệ thống!");
 
             if(user.ShopId == null){
-                return new ApiResult<string>(false, "You haven't registered shop yet!");
+                return new ApiResult<string>(false, "Bạn chưa đăng ký cửa hàng nào. Vui lòng tạo mới một cửa hàng vào thử lại!");
             }else{
                 var shop = await _context.Shops.FirstOrDefaultAsync(s => s.Id == user.ShopId);
 
@@ -155,9 +165,9 @@ namespace eComSolution.Service.System.Users
                 _context.Shops.Update(shop);
 
                 if(await _context.SaveChangesAsync() > 0)
-                return new ApiResult<string>(true, Message: "Update shop successfully!");
+                return new ApiResult<string>(true, Message: "Cập nhật thông tin thành công!");
                 else
-                return new ApiResult<string>(false, Message: "Fail! Please try again.");
+                return new ApiResult<string>(false, Message: "Đã xảy ra lỗi. Vui lòng thử lại!");
             }
         }
         private async Task<string> SaveFile(IFormFile file)

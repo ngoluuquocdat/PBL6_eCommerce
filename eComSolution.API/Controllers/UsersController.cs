@@ -22,7 +22,8 @@ namespace eComSolution.API.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetUserById()
+        [Authorize]
+        public async Task<IActionResult> Get()  // get info of user (USER)
         {
             var claimsPrincipal = this.User;
             var userId = Int32.Parse(claimsPrincipal.FindFirst("id").Value);
@@ -31,9 +32,18 @@ namespace eComSolution.API.Controllers
 
             return Ok(result);
         }
+        [HttpGet("GetUserById")]     // get info of user (ADMIN) 
+        [Authorize]
+        public async Task<IActionResult> GetById(int userId)
+        {
+            var result = await _userService.GetUserById(userId);
+            if(result.IsSuccessed == false) return Unauthorized(result.Message);
+
+            return Ok(result);
+        }
         [HttpGet("getAll")]
         [Authorize]
-        public async Task<IActionResult> GetAllUsers()
+        public async Task<IActionResult> GetAll()
         {
             var result = await _userService.GetAllUsers();
             if(result.IsSuccessed == false) return BadRequest(result.Message);
@@ -100,7 +110,7 @@ namespace eComSolution.API.Controllers
 
             return Ok(result);
         }
-        [HttpPost("resetPassword")]
+        [HttpPost("ResetPassword")]
         public async Task<IActionResult> ResetPassword(string email, string password)
         {
             var result = await _userService.ResetPassword(email, password);

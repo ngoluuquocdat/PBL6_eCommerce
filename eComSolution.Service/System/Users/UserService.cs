@@ -32,7 +32,7 @@ namespace eComSolution.Service.System.Users
         public async Task<ApiResult<string>> Login(LoginRequest request)
         {
             var user =  await _context.Users.FirstOrDefaultAsync(u => u.Username == request.Username);
-            if(user == null) return new ApiResult<string>(false, "Invalid username!");   // return Unauthorized("Invalid Username.");
+            if(user == null) return new ApiResult<string>(false, "Tên đăng nhập không tồn tại!");   // return Unauthorized("Invalid Username.");
 
             using var hmac = new HMACSHA512(user.PasswordSalt);
             var computedHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(request.Password));
@@ -40,7 +40,7 @@ namespace eComSolution.Service.System.Users
             // so sánh 2 mảng byte: password hash từ request VS p   assword hash của user trong Db
             for(int i = 0; i<computedHash.Length; i++)
             {
-                if(computedHash[i] != user.PasswordHash[i]) return new ApiResult<string>(false, "Invalid password!");; //Unauthorized("Invalid Password.");
+                if(computedHash[i] != user.PasswordHash[i]) return new ApiResult<string>(false, "Mật khẩu không đúng. Hãy thử lại!");; //Unauthorized("Invalid Password.");
             }
 
             return new ApiResult<string>(true, ResultObj : _tokenService.CreateToken(user));
@@ -63,24 +63,24 @@ namespace eComSolution.Service.System.Users
         }
         public async Task<ApiResult<string>> CheckUsername(string username){
             var user =  await _context.Users.FirstOrDefaultAsync(u => u.Username == username);
-            if(user == null) return new ApiResult<string>(true, "Valid username!");
-            else return new ApiResult<string>(false, "Username is exist. Please try with a different username");
+            if(user == null) return new ApiResult<string>(true, "Tên đăng nhập hợp lệ!");
+            else return new ApiResult<string>(false, "Tên đăng nhập đã được sử dụng. Vui lòng thử với tên đăng nhập khác!");
         }
         public async Task<ApiResult<string>> CheckEmail(string email){
             var user =  await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
-            if(user == null) return new ApiResult<string>(true, "Valid email!");
-            else return new ApiResult<string>(false, "Email is exist. Please try with a different email");
+            if(user == null) return new ApiResult<string>(true, "Email hợp lệ!");
+            else return new ApiResult<string>(false, "Email đã được sử dụng. Vui lòng thử với email khác!");
         }
         public async Task<ApiResult<string>> CheckPhone(string phonenumber){
             var user =  await _context.Users.FirstOrDefaultAsync(u => u.PhoneNumber == phonenumber);
-            if(user == null) return new ApiResult<string>(true, "Valid phonenumber!");
-            else return new ApiResult<string>(false, "Phonenumber is exist. Please try with a different phonenumber");
+            if(user == null) return new ApiResult<string>(true, "Số điện thoại hợp lệ!");
+            else return new ApiResult<string>(false, "Số điện thoại này đã được sử dụng. Vui lòng thử với số điện thoại khác!");
         }
 
         public async Task<ApiResult<string>> Register(RegisterRequest request)
         {   
             if(IsValidEmail(request.Email.ToLower()) == false){
-                return new ApiResult<string>(false, "Email is not exist!");
+                return new ApiResult<string>(false, "Không thể xác thực Email này. Vui lòng nhập email khác và thử lại!");
             }
 
             using var hmac = new HMACSHA512();
@@ -107,12 +107,12 @@ namespace eComSolution.Service.System.Users
             _context.GroupUsers.Add(gu);
             await _context.SaveChangesAsync();
 
-            return new ApiResult<string>(true, ResultObj : _tokenService.CreateToken(new_user));
+            return new ApiResult<string>(true, Message: "Đăng kí tài khoản thành công!", ResultObj : _tokenService.CreateToken(new_user));
         }
         public async Task<ApiResult<UserViewModel>> GetUserById(int UserId)
         {
             var user =  await _context.Users.FirstOrDefaultAsync(u => u.Id == UserId);
-            if(user == null) return new ApiResult<UserViewModel>(false, "User is not exist!");
+            if(user == null) return new ApiResult<UserViewModel>(false, "Người dùng này không tồn tại trong hệ thống!");
 
             var userViewModel = new UserViewModel 
             {
@@ -143,13 +143,13 @@ namespace eComSolution.Service.System.Users
             if(listUser.Count > 0){
                 return new ApiResult<List<UserViewModel>>(true, listUser);
             }else{
-                return new ApiResult<List<UserViewModel>>(false, Message: "No users are disabled!");
+                return new ApiResult<List<UserViewModel>>(false, Message: "Không có người dùng nào bị vô hiệu hóa!");
             }
         }
         
         public async Task<ApiResult<string>> DisableUser(int userId){
             var user =  await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
-            if(user == null) return new ApiResult<string>(false, "User is not exist!");
+            if(user == null) return new ApiResult<string>(false, "Người dùng này không tồn tại trong hệ thống!");
 
             if(user.ShopId != null){
                 var shop = await _context.Shops.FirstOrDefaultAsync(s => s.Id == user.ShopId);
@@ -161,14 +161,14 @@ namespace eComSolution.Service.System.Users
             _context.Users.Update(user);
 
             if(await _context.SaveChangesAsync() > 0)
-            return new ApiResult<string>(true, Message: "Disable user successfully!");
+            return new ApiResult<string>(true, Message: "Đã vô hiệu hóa người dùng này!");
             else
-            return new ApiResult<string>(false, Message: "Fail! Please try again.");
+            return new ApiResult<string>(false, Message: "Đã xảy ra lỗi. Vui lòng thử lại!");
 
         }
         public async Task<ApiResult<string>> EnableUser(int userId){
             var user =  await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
-            if(user == null) return new ApiResult<string>(false, "User is not exist!");
+            if(user == null) return new ApiResult<string>(false, "Người dùng này không tồn tại trong hệ thống!");
 
             if(user.ShopId != null){
                 var shop = await _context.Shops.FirstOrDefaultAsync(s => s.Id == user.ShopId);
@@ -182,7 +182,7 @@ namespace eComSolution.Service.System.Users
             if(await _context.SaveChangesAsync() > 0)
             return new ApiResult<string>(true, Message: "Enable user successfully!");
             else
-            return new ApiResult<string>(false, Message: "Fail! Please try again.");
+            return new ApiResult<string>(false, Message: "Đã xảy ra lỗi. Vui lòng thử lại!");
 
         }
 
@@ -208,14 +208,14 @@ namespace eComSolution.Service.System.Users
             // so sánh 2 mảng byte: password hash từ request VS p   assword hash của user trong Db
             for(int i = 0; i<computedHash.Length; i++)
             {
-                if(computedHash[i] != user.PasswordHash[i]) return new ApiResult<string>(false, "Your current password is incorrect!");; //Unauthorized("Invalid Password.");
+                if(computedHash[i] != user.PasswordHash[i]) return new ApiResult<string>(false, "Mật khẩu hiện tại của bạn không đúng. Vui lòng thử lại!");; //Unauthorized("Invalid Password.");
             }
             user.PasswordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(request.NewPassword));
             _context.Update(user);
             if(await _context.SaveChangesAsync() > 0)
-            return new ApiResult<string>(true, Message: "Success change password!");
+            return new ApiResult<string>(true, Message: "Thay đổi mật khẩu thành công!");
             else
-            return new ApiResult<string>(false, Message: "Fail! Please try again.");
+            return new ApiResult<string>(false, Message: "Đã xảy ra lỗi. Vui lòng thử lại!");
         }
 
         // tạo key cho chức năng quên mật khẩu
@@ -253,7 +253,7 @@ namespace eComSolution.Service.System.Users
         public async Task<ApiResult<string>> ForgetPassword(string email){
             // check email is exist?
             var user =  await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
-            if(user == null) return new ApiResult<string>(false, "Your email is not correct!");
+            if(user == null) return new ApiResult<string>(false, "Email không đúng hoặc không tồn tại!");
             
             // random key with length = 16
             var key = GetUniqueKey(16);
@@ -292,7 +292,7 @@ namespace eComSolution.Service.System.Users
             _context.ResetPasses.Add(x);
             await _context.SaveChangesAsync();
 
-            return new ApiResult<string>(true, Message: "We have sent password reset information to your email, please check your email and follow the instructions");
+            return new ApiResult<string>(true, Message: "Chúng tôi đã gửi thông tin thông tin đặt lại mật khẩu đến email của bạn. Vui lòng kiểm tra email và làm theo hướng dẫn!");
         }
         public async Task<ApiResult<string>> ResetPassword(string email, string password){
             var user =  await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
@@ -302,16 +302,16 @@ namespace eComSolution.Service.System.Users
             user.PasswordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(password));
             _context.Update(user);
             if(await _context.SaveChangesAsync() > 0)
-            return new ApiResult<string>(true, Message: "Success reset password!");
+            return new ApiResult<string>(true, Message: "Đặt lại mật khẩu mới thành công!");
             else
-            return new ApiResult<string>(false, Message: "Fail! Please try again.");
+            return new ApiResult<string>(false, Message: "Đã xảy ra lỗi. Vui lòng thử lại!");
         }
         public async Task<ApiResult<string>> ComfirmResetPassword(string email, string key){
             var resetPass =  await _context.ResetPasses.FirstOrDefaultAsync(u => u.Email == email);
-            if(resetPass == null) return new ApiResult<string>(false, "No availble. Please press forget password again!");
+            if(resetPass == null) return new ApiResult<string>(false, "Không khả dụng. Vui lòng nhấn chọn 'quên mật khẩu'.");
 
             // kiểm tra thời gian
-            var list = _context.ResetPasses.Where(x => DateTime.Now <= ((DateTime)x.Time).AddMinutes(1)).ToList();
+            var list = _context.ResetPasses.Where(x => DateTime.Now <= ((DateTime)x.Time).AddMinutes(5)).ToList();
             foreach(ResetPass i in list){
                 if(i == resetPass){
 
@@ -320,7 +320,7 @@ namespace eComSolution.Service.System.Users
                     {
                         _context.ResetPasses.Remove(resetPass);
                         _context.SaveChanges();
-                        return new ApiResult<string>(false, "You have entered the wrong number of times");
+                        return new ApiResult<string>(false, "Bạn đã nhập sai quá số lần quy định!");
                     }
 
                     // sai key thì tăng numcheck lên 1
@@ -328,7 +328,7 @@ namespace eComSolution.Service.System.Users
                         resetPass.Numcheck += 1;
                         _context.ResetPasses.Update(resetPass);
                         _context.SaveChanges();
-                        return new ApiResult<string>(false, "Your key is not correct!");
+                        return new ApiResult<string>(false, "Mã xác thực không đúng!");
                     }
                     
                     // thời gian ok, key ok thì chuyển qua cho nhập pass mới
@@ -336,14 +336,14 @@ namespace eComSolution.Service.System.Users
                 }
             }
 
-            return new ApiResult<string>(false, Message: "mã quá hạn mẹ rồi!");
+            return new ApiResult<string>(false, Message: "Mã quá hạn! Vui lòng nhấn chọn lại 'Quên mật khẩu'.");
         }
         public async Task<ApiResult<string>> UpdateUser(int userId, UpdateUserVm updateUser){
             var user =  await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
-            if(user == null) return new ApiResult<string> (false, Message: "User is not exist!");
+            if(user == null) return new ApiResult<string> (false, Message: "Người dùng này không tồn tại trong hệ thống!");
 
             if(IsValidEmail(updateUser.Email.ToLower()) == false){
-                return new ApiResult<string>(false, "Email is not exist!");
+                return new ApiResult<string>(false, "Không thể xác thực email này. Vui lòng nhập email khác và thử lại!");
             }
 
             user.Fullname = updateUser.Fullname;
@@ -353,9 +353,9 @@ namespace eComSolution.Service.System.Users
             _context.Users.Update(user);
 
             if(await _context.SaveChangesAsync() > 0)
-            return new ApiResult<string>(true, Message: "Success update user!");
+            return new ApiResult<string>(true, Message: "Cập nhật thông tin cá nhân thành công!");
             else
-            return new ApiResult<string>(false, Message: "Fail! Please try again.");
+            return new ApiResult<string>(false, Message: "Đã xảy ra lỗi. Vui lòng thử lại!");
         }
     }
 }
