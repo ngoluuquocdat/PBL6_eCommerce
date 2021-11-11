@@ -21,7 +21,7 @@ namespace eComSolution.API.Controllers
             _orderService = orderService;
         }
 
-        [HttpPost()]
+        [HttpPost]
         public async Task<IActionResult> Create(CheckOutRequest request)
         {
             var claimsPrincipal = this.User;
@@ -32,7 +32,7 @@ namespace eComSolution.API.Controllers
             return Ok(result);
         }
         
-        [HttpGet]
+        [HttpGet("me")]
         public async Task<IActionResult> GetUserOrders(string state)
         {
             var claimsPrincipal = this.User;
@@ -43,7 +43,7 @@ namespace eComSolution.API.Controllers
             return Ok(result);
         }
 
-        [HttpPatch]
+        [HttpDelete("me")]
         public async Task<IActionResult> CancelUnconfirmedOrder(int orderId, string cancelReason)
         {   
             var result = await _orderService.CancelUnconfirmedOrder(orderId, cancelReason);

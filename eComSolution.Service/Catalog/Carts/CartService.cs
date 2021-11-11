@@ -112,7 +112,8 @@ namespace eComSolution.Service.Catalog.Carts
                     Price = record.p.Price,
                     Image = path,
                     IsShopAvailable = !record.sh.Disable,
-                    IsProductDetailAvailable = !record.pd.IsDeleted
+                    IsProductDetailAvailable = !record.pd.IsDeleted,
+                    IsRemainInStock = !(record.pd.Stock == 0)
                 });
             }
             

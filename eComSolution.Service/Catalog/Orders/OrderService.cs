@@ -23,6 +23,19 @@ namespace eComSolution.Service.Catalog.Orders
         public async Task<ApiResult<int>> CreateOrders(int userId, CheckOutRequest request)
         {
             // ***** chỉ nhận vào input là list cartIds là đủ
+            // check các cart items
+            switch(await CheckCartItems(request.CartIds))
+            {
+                case 1:
+                return new ApiResult<int>(false, Message:"Có shop đã ngừng hoạt động, vui lòng kiểm tra lại giỏ hàng");
+                case 2:
+                return new ApiResult<int>(false, Message:"Có phân loại hàng đã bị xóa, vui lòng kiểm tra lại giỏ hàng");
+                case 3:
+                return new ApiResult<int>(false, Message:"Có phân loại hàng đã hết hàng, vui lòng kiểm tra lại giỏ hàng");
+                case 4:
+                return new ApiResult<int>(false, Message:"Có sản phẩm đặt quá số lượng tồn, vui lòng kiểm tra lại giỏ hàng");
+            }
+            // cho phép tạo các đơn hàng
             // 1. tạo list gom các cart items lại theo shopId
             List<ShopCartMap> shop_cart_maps = new List<ShopCartMap>();
             foreach(var cartId in request.CartIds)
@@ -205,53 +218,88 @@ namespace eComSolution.Service.Catalog.Orders
             return new ApiResult<int>(true, Message:"Hủy đơn hàng thành công!");
         }
 
+        public async Task<int> CheckCartItems(List<int> cartIds)
+        {
+            foreach(var cartId in cartIds)
+            {
+                var query = await (from c in _context.Carts
+                        join pd in _context.ProductDetails on c.ProductDetail_Id equals pd.Id
+                        join p in _context.Products on pd.ProductId equals p.Id
+                        join sh in _context.Shops on p.ShopId equals sh.Id
+                        where c.Id == cartId
+                        select new {c, pd, p, sh}).FirstOrDefaultAsync();
+                if(query.sh.Disable==true)
+                {
+                    return 1;
+                    //throw(new Exception {Message = "Có shop đã ngừng hoạt động, vui lòng kiểm tra lại giỏ hàng"});
+                }
+                if(query.pd.IsDeleted==true)
+                {
+                    return 2;
+                    //return new ApiResult<int>(false, Message:"Có phân loại hàng đã bị xóa, vui lòng kiểm tra lại giỏ hàng");
+                }
+                if(query.pd.Stock==0)
+                {
+                    return 3;
+                    //return new ApiResult<int>(false, Message:"Có phân loại hàng đã hết hàng, vui lòng kiểm tra lại giỏ hàng");
+                }
+                if(query.c.Quantity > query.pd.Stock)
+                {
+                    return 4;
+                    //return new ApiResult<int>(false, Message:"Đặt quá số lượng tồn, vui lòng kiểm tra lại giỏ hàng");
+                }
+            }
+
+            return 5;
+        }
+
         // public async Task<ApiResult<int>> CreateOrder(int userId, CheckOutRequest request)
         // {
-            // ****** bên web tự gom shopId với list cartIds*****
-            // // 1. tạo order mới
-            // var new_order = new Order
-            // {
-            //     OrderDate = DateTime.Now,
-            //     UserId = userId,
-            //     ShopId = request.ShopId,
-            //     ShipName = request.ShipName,
-            //     ShipAddress = request.ShipAddress,
-            //     ShipPhone = request.ShipPhone,
-            //     State = "Chờ xử lý"
-            // };
-            // // 2. tạo mới các order details
-            // var orderDetails = new List<OrderDetail>();
-            // foreach(var cartId in request.CartIds)
-            // {
-            //     // get cart item
-            //     var cartItem = await _context.Carts.Where(x=>x.Id==cartId).FirstOrDefaultAsync();
-            //     if(cartItem==null)  return new ApiResult<int>(false, Message:$"No cart item with this id: {cartId}");
-            //     // get product detail of cart item
-            //     var product_detail = await _context.ProductDetails.Where(x=>x.Id==cartItem.ProductDetail_Id).FirstOrDefaultAsync();
-            //     // add order detail mới vào list
-            //     orderDetails.Add(new OrderDetail
-            //     {
-            //         ProductDetail_Id = cartItem.ProductDetail_Id,
-            //         Quantity = cartItem.Quantity,
-            //         Price = cartItem.Price
-            //     });
-            //     // trừ số lượng ở Db
-            //     // var productDetail = await _context.ProductDetails
-            //     //     .Where(x=>x.Id==item.ProductDetail_Id)
-            //     //     .FirstOrDefaultAsync();
-            //     if(cartItem.Quantity > product_detail.Stock)
-            //     {
-            //         return new ApiResult<int>(false, Message:"Out of stock");
-            //     }
-            //     product_detail.Stock -= cartItem.Quantity;
-            //     _context.ProductDetails.Update(product_detail);
-            //     // xóa cart item tương ứng trong giỏ hàng
-            //     _context.Carts.Remove(cartItem);
-            // }
-            // // lưu thông tin 
-            // new_order.OrderDetails = orderDetails;
-            // _context.Orders.Add(new_order);
-            // await _context.SaveChangesAsync();
+        // ****** bên web tự gom shopId với list cartIds*****
+        // // 1. tạo order mới
+        // var new_order = new Order
+        // {
+        //     OrderDate = DateTime.Now,
+        //     UserId = userId,
+        //     ShopId = request.ShopId,
+        //     ShipName = request.ShipName,
+        //     ShipAddress = request.ShipAddress,
+        //     ShipPhone = request.ShipPhone,
+        //     State = "Chờ xử lý"
+        // };
+        // // 2. tạo mới các order details
+        // var orderDetails = new List<OrderDetail>();
+        // foreach(var cartId in request.CartIds)
+        // {
+        //     // get cart item
+        //     var cartItem = await _context.Carts.Where(x=>x.Id==cartId).FirstOrDefaultAsync();
+        //     if(cartItem==null)  return new ApiResult<int>(false, Message:$"No cart item with this id: {cartId}");
+        //     // get product detail of cart item
+        //     var product_detail = await _context.ProductDetails.Where(x=>x.Id==cartItem.ProductDetail_Id).FirstOrDefaultAsync();
+        //     // add order detail mới vào list
+        //     orderDetails.Add(new OrderDetail
+        //     {
+        //         ProductDetail_Id = cartItem.ProductDetail_Id,
+        //         Quantity = cartItem.Quantity,
+        //         Price = cartItem.Price
+        //     });
+        //     // trừ số lượng ở Db
+        //     // var productDetail = await _context.ProductDetails
+        //     //     .Where(x=>x.Id==item.ProductDetail_Id)
+        //     //     .FirstOrDefaultAsync();
+        //     if(cartItem.Quantity > product_detail.Stock)
+        //     {
+        //         return new ApiResult<int>(false, Message:"Out of stock");
+        //     }
+        //     product_detail.Stock -= cartItem.Quantity;
+        //     _context.ProductDetails.Update(product_detail);
+        //     // xóa cart item tương ứng trong giỏ hàng
+        //     _context.Carts.Remove(cartItem);
+        // }
+        // // lưu thông tin 
+        // new_order.OrderDetails = orderDetails;
+        // _context.Orders.Add(new_order);
+        // await _context.SaveChangesAsync();
 
         //      return new ApiResult<int>(true, Message:"Create order successful");
         // }
