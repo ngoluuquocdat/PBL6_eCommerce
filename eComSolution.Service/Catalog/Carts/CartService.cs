@@ -59,6 +59,7 @@ namespace eComSolution.Service.Catalog.Carts
             return new ApiResult<int>(true, Message:"Thêm vào giỏ hàng thành công!");
         }
 
+
         public async Task<ApiResult<List<CartItem>>> GetCartItems(int userId)
         {
             List<CartItem> data = new List<CartItem>();
@@ -76,6 +77,12 @@ namespace eComSolution.Service.Catalog.Carts
 
             foreach(var record in list_records)
             {
+                //var cart_item = record.c;
+                if(record.c.Quantity > record.pd.Stock && record.pd.Stock>0)
+                {
+                    record.c.Quantity = record.pd.Stock;
+                    await _context.SaveChangesAsync();
+                }
                 string path = "";
                 int productId = record.p.Id;
                 // ảnh thumbnail
@@ -103,7 +110,9 @@ namespace eComSolution.Service.Catalog.Carts
                     Quantity = record.c.Quantity,
                     Stock = record.pd.Stock,
                     Price = record.p.Price,
-                    Image = path
+                    Image = path,
+                    IsShopAvailable = !record.sh.Disable,
+                    IsProductDetailAvailable = !record.pd.IsDeleted
                 });
             }
             

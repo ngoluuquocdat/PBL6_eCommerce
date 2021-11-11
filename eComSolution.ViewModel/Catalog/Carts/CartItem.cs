@@ -20,5 +20,7 @@ namespace eComSolution.ViewModel.Catalog.Carts
         public int Stock { get; set; }      // số lượng tồn kho
         public int Price { get; set; }      // đơn giá
         public string Image {get; set;}
+        public bool IsShopAvailable { get; set; }
+        public bool IsProductDetailAvailable { get; set; }
     }
 }
