@@ -20,5 +20,6 @@ namespace eComSolution.Service.Catalog.Carts
 
         Task<ApiResult<int>> RemoveMultiCarts(List<int> cartIds);
 
+        //Task<ApiResult<int>> CheckCartItems(List<int> cartIds);
     }
 }
