@@ -22,5 +22,6 @@ namespace eComSolution.ViewModel.Catalog.Carts
         public string Image {get; set;}
         public bool IsShopAvailable { get; set; }
         public bool IsProductDetailAvailable { get; set; }
+        public bool IsRemainInStock {get; set;}
     }
 }
