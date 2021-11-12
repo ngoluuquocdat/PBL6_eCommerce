@@ -92,7 +92,8 @@ namespace eComSolution.Service.System.Users
                 PasswordSalt = hmac.Key,
                 Fullname = request.Fullname,
                 Email = request.Email,
-                PhoneNumber = request.PhoneNumber
+                PhoneNumber = request.PhoneNumber, 
+                Address = request.Address
             };
             
             _context.Users.Add(new_user);
@@ -349,6 +350,7 @@ namespace eComSolution.Service.System.Users
             user.Fullname = updateUser.Fullname;
             user.Email = updateUser.Email;
             user.PhoneNumber = updateUser.PhoneNumber;
+            user.Address = updateUser.Address;
 
             _context.Users.Update(user);
 
