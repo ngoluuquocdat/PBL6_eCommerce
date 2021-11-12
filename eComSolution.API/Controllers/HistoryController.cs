@@ -21,7 +21,7 @@ namespace eComSolution.API.Controllers
             _historyService = historyService;
         }
 
-        [HttpGet]
+        [HttpGet("me")]
         public async Task<IActionResult> Get()
         {
             var claimsPrincipal = this.User;
@@ -35,18 +35,18 @@ namespace eComSolution.API.Controllers
             return Ok(result);
         }
 
-        [HttpPost]
-        public async Task<IActionResult> Add(int productId)
+        [HttpPost("me")]
+        public async Task<IActionResult> Add([FromBody]int productId)
         {
             var claimsPrincipal = this.User;
             var userId = Int32.Parse(claimsPrincipal.FindFirst("id").Value);
 
             var result = await _historyService.AddHistory(userId, productId);
 
-            if (result == 0)
-                return BadRequest("Error when add to history");
+            if (result.IsSuccessed == false)
+                return BadRequest(result.Message);
 
-            return Ok("add to history successful");
+            return Ok(result);
         }
     }
 }

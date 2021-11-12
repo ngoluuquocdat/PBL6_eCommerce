@@ -18,8 +18,14 @@ namespace eComSolution.Service.Catalog.Histories
             _context = context;
         }
 
-        public async Task<int> AddHistory(int userId, int productId)
+        public async Task<ApiResult<int>> AddHistory(int userId, int productId)
         {
+            // check product
+            var product = await _context.Products.Where(x=>x.Id==productId&&x.IsDeleted==false).FirstOrDefaultAsync();
+            if(product==null)
+            {
+                return new ApiResult<int>(false, Message:$"Không tìm thấy sản phẩm có Id: {productId}");
+            }
             var current_history = await _context.Histories.Where(x => x.ProductId == productId && x.UserId==userId).FirstOrDefaultAsync();
             if(current_history!=null)
             {
@@ -38,8 +44,8 @@ namespace eComSolution.Service.Catalog.Histories
                 };
                 _context.Histories.Add(history_item);
             }
-
-            return await _context.SaveChangesAsync();
+            await _context.SaveChangesAsync();
+            return new ApiResult<int>(true, Message:"Thêm vào lịch sử thành công");
         }
 
         public async Task<ApiResult<List<HistoryVm>>> GetHistory(int userId)

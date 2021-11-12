@@ -11,6 +11,6 @@ namespace eComSolution.Service.Catalog.Histories
     {
         Task<ApiResult<List<HistoryVm>>> GetHistory(int userId);
 
-        Task<int> AddHistory(int userId, int productId);
+        Task<ApiResult<int>> AddHistory(int userId, int productId);
     }
 }
