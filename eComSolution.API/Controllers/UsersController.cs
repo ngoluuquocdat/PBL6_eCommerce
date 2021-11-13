@@ -41,7 +41,7 @@ namespace eComSolution.API.Controllers
 
             return Ok(result);
         }
-        [HttpGet("getAll")]
+        [HttpGet("GetAll")]
         [Authorize]
         public async Task<IActionResult> GetAll()
         {
@@ -50,7 +50,7 @@ namespace eComSolution.API.Controllers
 
             return Ok(result);
         }
-        [HttpGet("getUserDisable")]
+        [HttpGet("GetUserDisable")]
         [Authorize]
         public async Task<IActionResult> GetUserDisable()
         {
@@ -80,7 +80,7 @@ namespace eComSolution.API.Controllers
             return Ok(result);
         }
 
-        [HttpPost("Update")]
+        [HttpPut]
         [Authorize]
         public async Task<IActionResult> UpdateUser(UpdateUserVm updateUser)
         {
@@ -91,7 +91,7 @@ namespace eComSolution.API.Controllers
 
             return Ok(result);
         }
-        [HttpPut("changePassword")]
+        [HttpPatch("ChangePassword")]
         [Authorize]
         public async Task<IActionResult> ChangePassword(ChangePasswordVm request)
         {
@@ -102,7 +102,7 @@ namespace eComSolution.API.Controllers
 
             return Ok(result);
         }
-        [HttpGet("{email}/forgetPassword")]
+        [HttpGet("{email}/ForgetPassword")]
         public async Task<IActionResult> ForgetPassword(string email)
         {
             var result = await _userService.ForgetPassword(email);
