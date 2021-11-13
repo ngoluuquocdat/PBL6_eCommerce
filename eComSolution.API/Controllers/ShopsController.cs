@@ -32,7 +32,7 @@ namespace eComSolution.API.Controllers
 
             return Ok(result);
         }
-        [HttpPost("update")]
+        [HttpPut]
         public async Task<IActionResult> Update([FromForm]CreateShopVm request)
         {
             var claimsPrincipal = this.User;
