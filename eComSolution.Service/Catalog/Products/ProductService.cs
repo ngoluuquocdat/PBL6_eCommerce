@@ -42,6 +42,9 @@ namespace eComSolution.Service.Catalog.Products
                         select new {p, c, sh};
 
             // 2. filter
+            // theo id
+            if(request.ProductId != 0)
+                query = query.Where(x => x.p.Id == request.ProductId);
             // theo keyword
             if (!string.IsNullOrEmpty(request.Keyword))
                 query = query.Where(x => x.p.Name.Contains(request.Keyword));
