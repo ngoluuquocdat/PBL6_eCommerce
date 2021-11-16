@@ -11,9 +11,10 @@ namespace eComSolution.Service.Catalog.Shops
     {
         Task<ApiResult<string>> Create(int userId, CreateShopVm request);
         Task<ApiResult<ShopVm>> Get(int userId);
-        Task<ApiResult<List<ShopVm>>> GetAll();
+        Task<ApiResult<ShopVm>> GetByShopId(int shopId);
+        Task<ApiResult<List<ShopVm>>> GetAll(string name);
         Task<ApiResult<string>> Update(int userId, CreateShopVm request);
-        Task<ApiResult<string>> DisableShop(int shopId);
+        Task<ApiResult<string>> DisableShop(int shopId, string disable_reason);
         Task<ApiResult<string>> EnableShop(int shopId);
     }
 }

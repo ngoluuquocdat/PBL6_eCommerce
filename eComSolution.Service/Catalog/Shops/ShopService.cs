@@ -7,8 +7,6 @@ using System.Threading.Tasks;
 using eComSolution.Data.EF;
 using eComSolution.Data.Entities;
 using eComSolution.Service.System.Token;
-using eComSolution.ViewModel.System.Users;
-using EmailValidation;
 using eShopSolution.ViewModels.Common;
 using Microsoft.EntityFrameworkCore;
 using eComSolution.Service.Common;
@@ -44,6 +42,7 @@ namespace eComSolution.Service.System.Users
             {
                 var shop = await _context.Shops.FirstOrDefaultAsync(s => s.Id == user.ShopId);
                 var shopInfo = new ShopVm{
+                    ShopId = shop.Id,
                     NameOfShop = shop.Name,
                     NameOfUser = user.Fullname,
                     Avatar = "/storage/"+ shop.Avatar,
@@ -55,7 +54,6 @@ namespace eComSolution.Service.System.Users
                 };
                 return new ApiResult<ShopVm>(true, shopInfo);
             }
-
         }
         public async Task<ApiResult<string>> Create(int userId, CreateShopVm request){
             var user =  await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
@@ -95,12 +93,18 @@ namespace eComSolution.Service.System.Users
             }
         }
 
-        public async Task<ApiResult<List<ShopVm>>> GetAll(){
+        public async Task<ApiResult<List<ShopVm>>> GetAll(string name){
             var query = from sh in _context.Shops
                         join u in _context.Users on sh.Id equals u.ShopId
                         select new {sh, u};
 
+            if(name != null)
+            {
+                query = query.Where(x => x.sh.Name.Contains(name));
+            }
+
             var data = await query.Select(x => new ShopVm{
+                ShopId = x.sh.Id,
                 NameOfShop = x.sh.Name,
                 NameOfUser = x.u.Fullname,
                 Avatar = x.sh.Avatar,
@@ -119,12 +123,13 @@ namespace eComSolution.Service.System.Users
             }
 
         }
-        public async Task<ApiResult<string>> DisableShop(int shopId){
+        public async Task<ApiResult<string>> DisableShop(int shopId, string disable_reason){
             var shop = await _context.Shops.FirstOrDefaultAsync(s => s.Id == shopId);
             if(shop == null) return new ApiResult<string>(false, "Không tồn tại cửa hàng này!");
             
             shop.Disable = true;
-            // shop.DisableReason = "";
+            shop.DisableReason = disable_reason;
+            shop.DateModified = DateTime.Now;
             _context.Shops.Update(shop);
 
             if(await _context.SaveChangesAsync() > 0)
@@ -138,10 +143,11 @@ namespace eComSolution.Service.System.Users
             if(shop == null) return new ApiResult<string>(false, "Không tồn tại cửa hàng này!");
 
             shop.Disable = false;
+            shop.DisableReason = "";
             _context.Shops.Update(shop);
 
             if(await _context.SaveChangesAsync() > 0)
-            return new ApiResult<string>(true, Message: "Bỏ vô hiệu hóa cửa hàng thành công!");
+            return new ApiResult<string>(true, Message: "Tái kích hoạt cửa hàng thành công!");
             else
             return new ApiResult<string>(false, Message: "Đã xảy ra lỗi. Vui lòng thử lại!");
 
@@ -177,5 +183,27 @@ namespace eComSolution.Service.System.Users
             await _storageService.SaveFileAsync(file.OpenReadStream(), fileName);
             return fileName;
         }
+
+        public async Task<ApiResult<ShopVm>> GetByShopId(int shopId)
+        {
+            var shop =  await _context.Shops.FirstOrDefaultAsync(sh => sh.Id == shopId);
+            if(shop == null) return new ApiResult<ShopVm>(false, "Shop này không tồn tại trong hệ thống!");
+
+            var user = await _context.Users.FirstOrDefaultAsync(x => x.ShopId == shopId);
+ 
+            var shopInfo = new ShopVm{
+                ShopId = shop.Id,
+                NameOfShop = shop.Name,
+                NameOfUser = user.Fullname,
+                Avatar = "/storage/"+ shop.Avatar,
+                PhoneNumber = shop.PhoneNumber,
+                Address = shop.Address,
+                Description = shop.Description,
+                DateCreated = shop.DateCreated,
+                DateModified = shop.DateModified
+            };
+            return new ApiResult<ShopVm>(true, shopInfo);
+        }
     }
+    
 }
