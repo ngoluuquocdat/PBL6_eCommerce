@@ -80,7 +80,7 @@ namespace eComSolution.Service.System.Users
         public async Task<ApiResult<string>> Register(RegisterRequest request)
         {   
             if(IsValidEmail(request.Email.ToLower()) == false){
-                return new ApiResult<string>(false, "Không thể xác thực Email này. Vui lòng nhập email khác và thử lại!");
+                return new ApiResult<string>(false, "Email này không tồn tại. Vui lòng nhập Email khác và thử lại!");
             }
 
             using var hmac = new HMACSHA512();
@@ -126,8 +126,9 @@ namespace eComSolution.Service.System.Users
 
             return new ApiResult<UserViewModel>(true, userViewModel);
         }
-        public async Task<ApiResult<List<UserViewModel>>> GetAllUsers(){
+        public async Task<ApiResult<List<UserViewModel>>> GetAllUsers(string name){
             var query = await _context.Users.ToListAsync();
+            if (name != null) query = query.Where(u => u.Fullname.Contains(name)).ToList();
             List<UserViewModel> listUser = new List<UserViewModel>();
             foreach (var user in query){
                 if(user.Id == 1) continue;
