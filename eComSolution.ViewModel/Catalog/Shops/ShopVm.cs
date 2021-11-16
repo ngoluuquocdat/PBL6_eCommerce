@@ -8,6 +8,7 @@ namespace eComSolution.ViewModel.Catalog.Shops
 {
     public class ShopVm
     {
+        public int ShopId { get; set; }
         public string NameOfShop { get; set; }
         public string NameOfUser { get; set; }
         public string Avatar {get; set;} 
