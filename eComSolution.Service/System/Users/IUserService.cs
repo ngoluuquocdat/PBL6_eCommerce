@@ -28,7 +28,7 @@ namespace eComSolution.Service.System.Users
 
         Task<ApiResult<string>> UpdateUser(int userId, UpdateUserVm updateUser);
 
-        Task<ApiResult<List<UserViewModel>>> GetAllUsers();
+        Task<ApiResult<List<UserViewModel>>> GetAllUsers(string name);
 
         Task<ApiResult<List<UserViewModel>>> GetUserDisable();
 
