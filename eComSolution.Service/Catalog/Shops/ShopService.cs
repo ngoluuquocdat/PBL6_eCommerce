@@ -15,6 +15,7 @@ using eComSolution.Service.Catalog.Shops;
 using eComSolution.ViewModel.Catalog.Shops;
 using System.Net.Http.Headers;
 using Microsoft.AspNetCore.Http;
+using System.Text.RegularExpressions;
 
 namespace eComSolution.Service.System.Users
 {
@@ -56,10 +57,25 @@ namespace eComSolution.Service.System.Users
             }
         }
         public async Task<ApiResult<string>> Create(int userId, CreateShopVm request){
+
+            bool IsNull = (String.IsNullOrEmpty(request.Name) || String.IsNullOrEmpty(request.PhoneNumber) || request.ImageFile == null
+                          || String.IsNullOrEmpty(request.Address) || String.IsNullOrEmpty(request.Description));
+
+            if(IsNull) return new ApiResult<string>(false, "Dữ liệu đầu vào không được để trống!");
+
             var user =  await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
             if(user == null) return new ApiResult<string>(false, "Người dùng này không tồn tại trong hệ thống!");
 
             if(user.ShopId == null){
+            
+                if(!IsValid("", "", "",request.PhoneNumber)) // valid phone number
+                {
+                    return new ApiResult<string>(false, "Số điện thoại không hợp lệ. Vui lòng nhập lại!");
+                }
+                // check phone number is used
+                var phone =  await _context.Shops.FirstOrDefaultAsync(sh => sh.PhoneNumber == request.PhoneNumber);
+                if(phone != null) return new ApiResult<string>(false, "Số điện thoại này đã được sử dụng. Vui lòng thử với số điện thoại khác!");
+
                 Shop shop = new Shop{
                     Name = request.Name,
                     Avatar = await this.SaveFile(request.ImageFile),
@@ -159,6 +175,20 @@ namespace eComSolution.Service.System.Users
             if(user.ShopId == null){
                 return new ApiResult<string>(false, "Bạn chưa đăng ký cửa hàng nào. Vui lòng tạo mới một cửa hàng vào thử lại!");
             }else{
+
+                bool IsNull = (String.IsNullOrEmpty(request.Name) || String.IsNullOrEmpty(request.PhoneNumber) || request.ImageFile == null
+                          || String.IsNullOrEmpty(request.Address) || String.IsNullOrEmpty(request.Description));
+
+                if(IsNull) return new ApiResult<string>(false, "Dữ liệu đầu vào không được để trống!");
+            
+                if(!IsValid("", "", "",request.PhoneNumber)) // valid phone number
+                {
+                    return new ApiResult<string>(false, "Số điện thoại không hợp lệ. Vui lòng nhập lại!");
+                }
+                // check phone number is used
+                var phone =  await _context.Shops.FirstOrDefaultAsync(sh => sh.PhoneNumber == request.PhoneNumber &&  sh.Id != user.ShopId);
+                if(phone != null) return new ApiResult<string>(false, "Số điện thoại này đã được sử dụng. Vui lòng thử với số điện thoại khác!");
+                
                 var shop = await _context.Shops.FirstOrDefaultAsync(s => s.Id == user.ShopId);
 
                 shop.Name = request.Name;
@@ -183,7 +213,6 @@ namespace eComSolution.Service.System.Users
             await _storageService.SaveFileAsync(file.OpenReadStream(), fileName);
             return fileName;
         }
-
         public async Task<ApiResult<ShopVm>> GetByShopId(int shopId)
         {
             var shop =  await _context.Shops.FirstOrDefaultAsync(sh => sh.Id == shopId);
@@ -203,6 +232,15 @@ namespace eComSolution.Service.System.Users
                 DateModified = shop.DateModified
             };
             return new ApiResult<ShopVm>(true, shopInfo);
+        }
+        public  bool IsValid(string username, string password, string email, string phonenumber) 
+        {
+            if(!String.IsNullOrEmpty(username)) return Regex.Match(username, @"^(?=.{8,}$)(?![_.])(?!.*[_.]{2})[a-zA-Z0-9._]+(?<![_.])$").Success;
+            if(!String.IsNullOrEmpty(password)) return Regex.Match(password, @"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$").Success;
+            if(!String.IsNullOrEmpty(email)) return Regex.Match(email, @"^([\w-\.]+)@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.)|(([\w-]+\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\]?)$").Success; 
+            if(!String.IsNullOrEmpty(phonenumber)) return Regex.Match(phonenumber, @"^([\+]?61[-]?|[0])?[1-9][0-9]{8}$").Success;
+
+            return false;
         }
     }
     
