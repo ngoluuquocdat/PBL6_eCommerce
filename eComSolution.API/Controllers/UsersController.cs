@@ -126,29 +126,5 @@ namespace eComSolution.API.Controllers
 
             return Ok(result);
         }
-        [HttpGet("Checkusername")]
-        public async Task<IActionResult> CheckUsername(string username)
-        {
-            var result = await _userService.CheckUsername(username);
-            if(result.IsSuccessed == false) return Unauthorized(result);
-
-            return Ok(result);
-        }
-        [HttpGet("CheckEmail")]
-        public async Task<IActionResult> CheckEmail(string email)
-        {
-            var result = await _userService.CheckEmail(email);
-            if(result.IsSuccessed == false) return Unauthorized(result);
-
-            return Ok(result);
-        }
-        [HttpGet("CheckPhone")]
-        public async Task<IActionResult> CheckPhone(string phone)
-        {
-            var result = await _userService.CheckPhone(phone);
-            if(result.IsSuccessed == false) return Unauthorized(result);
-
-            return Ok(result);
-        }
     }
 }

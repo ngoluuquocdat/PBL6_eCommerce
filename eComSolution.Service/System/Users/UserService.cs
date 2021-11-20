@@ -13,6 +13,7 @@ using eShopSolution.ViewModels.Common;
 using Microsoft.EntityFrameworkCore;
 using eComSolution.Service.Common;
 using System.IO;
+using System.Text.RegularExpressions;
 
 namespace eComSolution.Service.System.Users
 {
@@ -28,9 +29,13 @@ namespace eComSolution.Service.System.Users
             _tokenService = tokenService;
             _emailService = emailService;
         }
-
-        public async Task<ApiResult<string>> Login(LoginRequest request)
+        public async Task<ApiResult<string>> Login(LoginRequest request)   // Login
         {
+
+            bool IsNull = (String.IsNullOrEmpty(request.Username) || String.IsNullOrEmpty(request.Password));
+
+            if(IsNull) return new ApiResult<string>(false, "Dữ liệu đầu vào không được để trống!");
+
             var user =  await _context.Users.FirstOrDefaultAsync(u => u.Username == request.Username);
             if(user == null) return new ApiResult<string>(false, "Tên đăng nhập không tồn tại!");   // return Unauthorized("Invalid Username.");
 
@@ -44,22 +49,6 @@ namespace eComSolution.Service.System.Users
             }
 
             return new ApiResult<string>(true, ResultObj : _tokenService.CreateToken(user));
-        }
-
-        public bool IsValidEmail(string email){
-            EmailValidator emailValidator = new EmailValidator();
-            EmailValidationResult result;
-
-            if (!emailValidator.Validate(email, out result))
-            {
-                Console.WriteLine("Unable to check email"); // no internet connection or mailserver is down / busy
-            }
-
-            if(result == EmailValidationResult.OK){
-                return true;
-            }else{
-                return false;
-            }
         }
         public async Task<ApiResult<string>> CheckUsername(string username){
             var user =  await _context.Users.FirstOrDefaultAsync(u => u.Username == username);
@@ -76,13 +65,47 @@ namespace eComSolution.Service.System.Users
             if(user == null) return new ApiResult<string>(true, "Số điện thoại hợp lệ!");
             else return new ApiResult<string>(false, "Số điện thoại này đã được sử dụng. Vui lòng thử với số điện thoại khác!");
         }
-
         public async Task<ApiResult<string>> Register(RegisterRequest request)
-        {   
-            if(IsValidEmail(request.Email.ToLower()) == false){
+        {
+            bool IsNull = (String.IsNullOrEmpty(request.Fullname) || String.IsNullOrEmpty(request.Email) || String.IsNullOrEmpty(request.PhoneNumber)
+                          || String.IsNullOrEmpty(request.Username) || String.IsNullOrEmpty(request.Password));
+
+            if(IsNull) return new ApiResult<string>(false, "Dữ liệu đầu vào không được để trống!");
+
+            if(!IsValid("", "", request.Email, "")) // valid email
+            {
+                return new ApiResult<string>(false, "Email không hợp lệ. Vui lòng nhập lại!");
+            }
+            // check email is used
+            var email =  await _context.Users.FirstOrDefaultAsync(u => u.Email == request.Email);
+            if(email != null) return new ApiResult<string>(false, "Email đã được sử dụng. Vui lòng thử với email khác!");
+            
+            if(VerifyEmail(request.Email.ToLower()) == false) // verify email
+            {
                 return new ApiResult<string>(false, "Email này không tồn tại. Vui lòng nhập Email khác và thử lại!");
             }
+            
+            if(!IsValid("", "", "",request.PhoneNumber)) // valid phone number
+            {
+                return new ApiResult<string>(false, "Số điện thoại không hợp lệ. Vui lòng nhập lại!");
+            }
+            // check phone number is used
+            var phone =  await _context.Users.FirstOrDefaultAsync(u => u.PhoneNumber == request.PhoneNumber);
+            if(phone != null) return new ApiResult<string>(false, "Số điện thoại này đã được sử dụng. Vui lòng thử với số điện thoại khác!");
 
+            if(!IsValid(request.Username, "", "", "")) // valid username
+            {
+                return new ApiResult<string>(false, "Tên đăng nhập phải có ít nhất 8 kí tự, không bao gồm chữ cái viết hoa và kí tự đặc biệt.");
+            }
+            // check username is used
+            var username =  await _context.Users.FirstOrDefaultAsync(u => u.Username == request.Username);
+            if(username != null) return new ApiResult<string>(false, "Tên đăng nhập đã được sử dụng. Vui lòng thử với tên đăng nhập khác!");
+
+            if(!IsValid("", request.Password, "", "")) // valid password
+            {
+                return new ApiResult<string>(false, "Mật khẩu tối thiểu 8 ký tự, ít nhất một chữ cái viết hoa, một chữ cái viết thường, một số và một ký tự đặc biệt.");
+            }
+            
             using var hmac = new HMACSHA512();
 
             var new_user = new User
@@ -92,8 +115,7 @@ namespace eComSolution.Service.System.Users
                 PasswordSalt = hmac.Key,
                 Fullname = request.Fullname,
                 Email = request.Email,
-                PhoneNumber = request.PhoneNumber, 
-                Address = request.Address
+                PhoneNumber = request.PhoneNumber
             };
             
             _context.Users.Add(new_user);
@@ -148,7 +170,6 @@ namespace eComSolution.Service.System.Users
                 return new ApiResult<List<UserViewModel>>(false, Message: "Không có người dùng nào bị vô hiệu hóa!");
             }
         }
-        
         public async Task<ApiResult<string>> DisableUser(int userId){
             var user =  await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
             if(user == null) return new ApiResult<string>(false, "Người dùng này không tồn tại trong hệ thống!");
@@ -187,7 +208,6 @@ namespace eComSolution.Service.System.Users
             return new ApiResult<string>(false, Message: "Đã xảy ra lỗi. Vui lòng thử lại!");
 
         }
-
         public async Task<List<Function>> GetPermissions(int userId){
             var user =  await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
             if(user == null) return null;
@@ -202,7 +222,12 @@ namespace eComSolution.Service.System.Users
             }; 
             return query.Distinct().ToList();
         }
-        public async Task<ApiResult<string>> ChangePassword(int userId, ChangePasswordVm request){
+        public async Task<ApiResult<string>> ChangePassword(int userId, ChangePasswordVm request)
+        {
+            bool IsNull = (String.IsNullOrEmpty(request.CurrentPassword) || String.IsNullOrEmpty(request.NewPassword));
+
+            if(IsNull) return new ApiResult<string>(false, "Dữ liệu đầu vào không được để trống!");
+
             var user =  await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
             using var hmac = new HMACSHA512(user.PasswordSalt);
             var computedHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(request.CurrentPassword));
@@ -212,6 +237,12 @@ namespace eComSolution.Service.System.Users
             {
                 if(computedHash[i] != user.PasswordHash[i]) return new ApiResult<string>(false, "Mật khẩu hiện tại của bạn không đúng. Vui lòng thử lại!");; //Unauthorized("Invalid Password.");
             }
+
+            if(!IsValid("", request.NewPassword, "", "")) // valid password
+            {
+                return new ApiResult<string>(false, "Mật khẩu tối thiểu 8 ký tự, ít nhất một chữ cái viết hoa, một chữ cái viết thường, một số và một ký tự đặc biệt.");
+            }
+
             user.PasswordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(request.NewPassword));
             _context.Update(user);
             if(await _context.SaveChangesAsync() > 0)
@@ -219,9 +250,7 @@ namespace eComSolution.Service.System.Users
             else
             return new ApiResult<string>(false, Message: "Đã xảy ra lỗi. Vui lòng thử lại!");
         }
-
-        // tạo key cho chức năng quên mật khẩu
-        public string GetUniqueKey(int size)
+        public string GetUniqueKey(int size)   // tạo key cho chức năng quên mật khẩu
         {
             char[] chars =
                 "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890".ToCharArray();
@@ -237,9 +266,7 @@ namespace eComSolution.Service.System.Users
             }
             return result.ToString();
         }
-        
-        // hash md5
-        public string GetHash(string plainText)
+        public string GetHash(string plainText)  // hash md5
         {
             MD5 md5 = new MD5CryptoServiceProvider();
             md5.ComputeHash(ASCIIEncoding.ASCII.GetBytes(plainText));
@@ -253,6 +280,9 @@ namespace eComSolution.Service.System.Users
             return strBuilder.ToString();
         }
         public async Task<ApiResult<string>> ForgetPassword(string email){
+            bool IsNull = (String.IsNullOrEmpty(email));
+
+            if(IsNull) return new ApiResult<string>(false, "Dữ liệu đầu vào không được để trống!");
             // check email is exist?
             var user =  await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
             if(user == null) return new ApiResult<string>(false, "Email không đúng hoặc không tồn tại!");
@@ -297,9 +327,17 @@ namespace eComSolution.Service.System.Users
             return new ApiResult<string>(true, Message: "Chúng tôi đã gửi thông tin thông tin đặt lại mật khẩu đến email của bạn. Vui lòng kiểm tra email và làm theo hướng dẫn!");
         }
         public async Task<ApiResult<string>> ResetPassword(string email, string password){
+            bool IsNull = (String.IsNullOrEmpty(email) || String.IsNullOrEmpty(password));
+
+            if(IsNull) return new ApiResult<string>(false, "Dữ liệu đầu vào không được để trống!");
             var user =  await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
 
             using var hmac = new HMACSHA512(user.PasswordSalt);
+
+            if(!IsValid("", password, "", "")) // valid password
+            {
+                return new ApiResult<string>(false, "Mật khẩu tối thiểu 8 ký tự, ít nhất một chữ cái viết hoa, một chữ cái viết thường, một số và một ký tự đặc biệt.");
+            }
 
             user.PasswordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(password));
             _context.Update(user);
@@ -340,13 +378,36 @@ namespace eComSolution.Service.System.Users
 
             return new ApiResult<string>(false, Message: "Mã quá hạn! Vui lòng nhấn chọn lại 'Quên mật khẩu'.");
         }
-        public async Task<ApiResult<string>> UpdateUser(int userId, UpdateUserVm updateUser){
+        public async Task<ApiResult<string>> UpdateUser(int userId, UpdateUserVm updateUser)
+        {
+            bool IsNull = (String.IsNullOrEmpty(updateUser.Fullname) || String.IsNullOrEmpty(updateUser.Email) 
+                        || String.IsNullOrEmpty(updateUser.PhoneNumber) || String.IsNullOrEmpty(updateUser.Address));
+
+            if(IsNull) return new ApiResult<string>(false, "Dữ liệu đầu vào không được để trống!");
+
             var user =  await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
             if(user == null) return new ApiResult<string> (false, Message: "Người dùng này không tồn tại trong hệ thống!");
 
-            if(IsValidEmail(updateUser.Email.ToLower()) == false){
-                return new ApiResult<string>(false, "Không thể xác thực email này. Vui lòng nhập email khác và thử lại!");
+            if(!IsValid("", "", updateUser.Email, "")) // valid email
+            {
+                return new ApiResult<string>(false, "Email không hợp lệ. Vui lòng nhập lại!");
             }
+            // check email is used
+            var email =  await _context.Users.FirstOrDefaultAsync(u => u.Email == updateUser.Email &&  u.Id != userId);
+            if(email != null) return new ApiResult<string>(false, "Email đã được sử dụng. Vui lòng thử với email khác!");
+
+            if(VerifyEmail(updateUser.Email.ToLower()) == false) // verify email
+            {
+                return new ApiResult<string>(false, "Email này không tồn tại. Vui lòng nhập Email khác và thử lại!");
+            }
+            
+            if(!IsValid("", "", "",updateUser.PhoneNumber)) // valid phone number
+            {
+                return new ApiResult<string>(false, "Số điện thoại không hợp lệ. Vui lòng nhập lại!");
+            }
+            // check phone number is used
+            var phone =  await _context.Users.FirstOrDefaultAsync(u => u.PhoneNumber == updateUser.PhoneNumber &&  u.Id != userId);
+            if(phone != null) return new ApiResult<string>(false, "Số điện thoại này đã được sử dụng. Vui lòng thử với số điện thoại khác!");
 
             user.Fullname = updateUser.Fullname;
             user.Email = updateUser.Email;
@@ -359,6 +420,25 @@ namespace eComSolution.Service.System.Users
             return new ApiResult<string>(true, Message: "Cập nhật thông tin cá nhân thành công!");
             else
             return new ApiResult<string>(false, Message: "Đã xảy ra lỗi. Vui lòng thử lại!");
+        }
+        public bool VerifyEmail(string email)  // Verify Email
+        {
+            EmailValidator emailValidator = new EmailValidator();
+            EmailValidationResult result;
+
+            emailValidator.Validate(email, out result);
+
+            if(result == EmailValidationResult.OK) return true;
+            else return false;
+        }
+        public  bool IsValid(string username, string password, string email, string phonenumber) 
+        {
+            if(!String.IsNullOrEmpty(username)) return Regex.Match(username, @"^(?=.{8,}$)(?![_.])(?!.*[_.]{2})[a-zA-Z0-9._]+(?<![_.])$").Success;
+            if(!String.IsNullOrEmpty(password)) return Regex.Match(password, @"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$").Success;
+            if(!String.IsNullOrEmpty(email)) return Regex.Match(email, @"^([\w-\.]+)@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.)|(([\w-]+\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\]?)$").Success; 
+            if(!String.IsNullOrEmpty(phonenumber)) return Regex.Match(phonenumber, @"^([\+]?61[-]?|[0])?[1-9][0-9]{8}$").Success;
+
+            return false;
         }
     }
 }
