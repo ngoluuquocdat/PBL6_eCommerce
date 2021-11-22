@@ -198,12 +198,6 @@ namespace eComSolution.Service.Catalog.Products
             var category = await _context.Categories.FirstOrDefaultAsync(x=>x.Id==request.CategoryId);
             if(category==null) 
                 return new ApiResult<int>(false, Message:$"Không tồn tại category với Id: {request.CategoryId}");
-            // // check shop hợp lệ
-            // var shop = await _context.Shops.FirstOrDefaultAsync(x=>x.Id==request.ShopId);
-            // if(shop==null)
-            //     return new ApiResult<int>(false, Message:$"Không tồn tại shop với Id: {request.ShopId}");
-            // if(shop.Disable==true)
-            //     return new ApiResult<int>(false, Message:$"Đã vô hiệu hóa shop với Id: {request.ShopId}");
                 
             // 1. tạo list các product details
             var product_details = new List<ProductDetail>();
@@ -310,11 +304,19 @@ namespace eComSolution.Service.Catalog.Products
 
         
 
-        public async Task<ApiResult<int>> Delete(int productId)
+        public async Task<ApiResult<int>> Delete(int userId, int productId)
         {
             var product = await _context.Products.Where(x=>x.Id==productId).FirstOrDefaultAsync();
             if(product == null || product.IsDeleted == true)
                 return new ApiResult<int>(false, Message:$"Không tìm thấy sản phẩm có Id: {productId}"); 
+
+            // check có phải sản phẩm của chủ shop không
+            var shopId = (await _context.Users.FirstOrDefaultAsync(x=>x.Id==userId)).ShopId;
+            if(shopId==null)
+                return new ApiResult<int>(false, Message:"Chỉ có tài khoản chủ shop mới được thực hiện hành động này");
+            if(shopId!=product.ShopId)
+                return new ApiResult<int>(false, Message:$"Shop của bạn không có sản phẩm với Id: {productId}");
+                    
             // 1. xóa mềm product
             product.IsDeleted = true;
             _context.Products.Update(product);

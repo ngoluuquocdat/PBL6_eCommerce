@@ -21,7 +21,7 @@ namespace eComSolution.Service.Catalog.Products
 
         Task<ApiResult<int>> Create(int userId, CreateProductRequest request);
 
-        Task<ApiResult<int>> Delete(int productId);
+        Task<ApiResult<int>> Delete(int userId, int productId);
 
         Task<ApiResult<int>> Update(int userId, UpdateProductRequest request);
 
