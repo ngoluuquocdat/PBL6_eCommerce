@@ -45,11 +45,11 @@ namespace eComSolution.API.Controllers
         //[Consumes("multipart/form-data")]
         public async Task<IActionResult> Create([FromBody]CreateProductRequest request) 
         {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
+            // if (!ModelState.IsValid)
+            //     return BadRequest(ModelState);
             var result = await _productService.Create(request);
             if (result.IsSuccessed == false)
-                return BadRequest(result.Message);    
+                return BadRequest(result.Message);
 
             return Ok(result);
         }

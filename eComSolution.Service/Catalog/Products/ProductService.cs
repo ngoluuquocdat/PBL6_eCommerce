@@ -191,6 +191,20 @@ namespace eComSolution.Service.Catalog.Products
 
         public async Task<ApiResult<int>> Create(CreateProductRequest request)
         {
+            // check valid properties request
+            if(request.IsValid()==false )
+                return new ApiResult<int>(false, Message:"Thông tin không hợp lệ, vui lòng nhập lại");
+            // check categories hợp lệ
+            var category = await _context.Categories.FirstOrDefaultAsync(x=>x.Id==request.CategoryId);
+            if(category==null) 
+                return new ApiResult<int>(false, Message:$"Không tồn tại category với Id: {request.CategoryId}");
+            // check shop hợp lệ
+            var shop = await _context.Shops.FirstOrDefaultAsync(x=>x.Id==request.ShopId);
+            if(shop==null)
+                return new ApiResult<int>(false, Message:$"Không tồn tại shop với Id: {request.ShopId}");
+            if(shop.Disable==true)
+                return new ApiResult<int>(false, Message:$"Đã vô hiệu hóa shop với Id: {request.CategoryId}");
+                
             // 1. tạo list các product details
             var product_details = new List<ProductDetail>();
             if(request.Details==null || request.Details.Count==0)
@@ -270,11 +284,11 @@ namespace eComSolution.Service.Catalog.Products
                 IsSizeDetail = request.IsSizeDetail
             };
 
-            if (request.ImageFile != null)      // nếu có file ảnh thì mới add
-            {
-                productImage.ImagePath = await this.SaveFile(request.ImageFile);
-                _context.ProductImages.Add(productImage);
-            }
+            if(request.ImageFile==null)
+                return new ApiResult<int>(false, Message:"Không có file ảnh nào được chọn");
+
+            productImage.ImagePath = await this.SaveFile(request.ImageFile);
+            _context.ProductImages.Add(productImage);
 
             await _context.SaveChangesAsync();
 
