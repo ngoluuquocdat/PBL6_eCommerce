@@ -25,11 +25,15 @@ namespace eComSolution.Service.Catalog.Products
 
         Task<ApiResult<int>> Update(int userId, UpdateProductRequest request);
 
-        Task<int> AddDetail(int productId, ProductDetailVm dto);
+        Task<ApiResult<int>> UpdateMainInfo(int userId, UpdateProductMainInfoRequest request);
 
-        Task<int> UpdateDetail(int productId, ProductDetailVm dto);
+        Task<ApiResult<int>> UpdateProductDetails(int userId, UpdateProductDetailsRequest request);
 
-        Task<int> DeleteDetail(int productId, string color, string size);
+        // Task<int> AddDetail(int productId, ProductDetailVm dto);
+
+        // Task<int> UpdateDetail(int productId, ProductDetailVm dto);
+
+        // Task<int> DeleteDetail(int productId, string color, string size);
 
         Task<ApiResult<int>> AddImage(int productId, CreateProductImageRequest request);
 
