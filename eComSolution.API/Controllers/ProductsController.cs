@@ -58,9 +58,10 @@ namespace eComSolution.API.Controllers
         [HttpDelete]
         public async Task<IActionResult> Delete(int productId) 
         {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
-            var result = await _productService.Delete(productId);
+            var claimsPrincipal = this.User;
+            var userId = Int32.Parse(claimsPrincipal.FindFirst("id").Value);
+            
+            var result = await _productService.Delete(userId, productId);
             if (result.IsSuccessed == false)
                 return BadRequest(result.Message);    
 
