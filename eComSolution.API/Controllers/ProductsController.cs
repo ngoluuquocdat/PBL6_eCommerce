@@ -81,6 +81,32 @@ namespace eComSolution.API.Controllers
             return Ok(result);
         }
 
+        [HttpPatch]
+        public async Task<IActionResult> UpdateMainInfo([FromBody]UpdateProductMainInfoRequest request) 
+        {
+            var claimsPrincipal = this.User;
+            var userId = Int32.Parse(claimsPrincipal.FindFirst("id").Value);
+
+            var result = await _productService.UpdateMainInfo(userId, request);
+            if (result.IsSuccessed == false)
+                return BadRequest(result.Message);    
+
+            return Ok(result);
+        }
+
+        [HttpPatch("details")]
+        public async Task<IActionResult> UpdateProductDetails([FromBody]UpdateProductDetailsRequest request) 
+        {
+            var claimsPrincipal = this.User;
+            var userId = Int32.Parse(claimsPrincipal.FindFirst("id").Value);
+
+            var result = await _productService.UpdateProductDetails(userId, request);
+            if (result.IsSuccessed == false)
+                return BadRequest(result.Message);    
+
+            return Ok(result);
+        }
+
         [HttpPost("{productId}/images")]
         public async Task<IActionResult> AddImage(int productId, [FromForm]CreateProductImageRequest request) 
         {
