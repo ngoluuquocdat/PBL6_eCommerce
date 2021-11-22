@@ -10,7 +10,7 @@ namespace eComSolution.Service.Catalog.Orders
 {
     public interface IOrderService
     {
-        Task<int> CheckCartItems(List<int> cartIds);
+        //Task<int> CheckCartItems(List<int> cartIds);
         Task<ApiResult<int>> CreateOrders(int userId, CheckOutRequest request);
         //Task<ApiResult<int>> CreateOrderManyShop(int userId, CheckOutRequest request);
 

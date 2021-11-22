@@ -192,7 +192,7 @@ namespace eComSolution.Service.Catalog.Products
         public async Task<ApiResult<int>> Create(int userId, CreateProductRequest request)
         {
             // check valid properties request
-            if(request.IsValid()==false )
+            if(request.IsValid()==false)
                 return new ApiResult<int>(false, Message:"Thông tin không hợp lệ, vui lòng nhập lại");
             // check categories hợp lệ
             var category = await _context.Categories.FirstOrDefaultAsync(x=>x.Id==request.CategoryId);
