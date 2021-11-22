@@ -18,7 +18,7 @@ namespace eComSolution.ViewModel.Catalog.Products
         //public int ViewCount { get; set; }
         //public DateTime DateCreated { get; set; }
         public int CategoryId { get; set; }
-        public int ShopId { get; set; }
+        //public int ShopId { get; set; }
         //public bool IsDeleted { get; set; }
         public List<CreateProductDetailVm> Details {get; set;}
         //public List<CreateProductImagesRequest> NewImages { get; set; }
@@ -28,7 +28,7 @@ namespace eComSolution.ViewModel.Catalog.Products
         {
             // null or empty check
             if(String.IsNullOrEmpty(Name) || String.IsNullOrEmpty(Description)
-                        || Gender==0 || Price==0 || OriginalPrice==0 || CategoryId==0 || ShopId==0)
+                        || Gender==0 || Price==0 || OriginalPrice==0 || CategoryId==0)
             {
                 return false;
             }
