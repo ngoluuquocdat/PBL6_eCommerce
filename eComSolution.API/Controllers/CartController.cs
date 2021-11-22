@@ -44,31 +44,44 @@ namespace eComSolution.API.Controllers
             var userId = Int32.Parse(claimsPrincipal.FindFirst("id").Value);
 
             var result = await _cartService.AddToCart(userId, request);
-           
+            if(result.IsSuccessed==false)
+                return BadRequest(result.Message);
             return Ok(result);
         }
 
         [HttpDelete("{cartId}")]
         public async Task<IActionResult> DeleteCart(int cartId)
         {
-            // var claimsPrincipal = this.User;
-            // var userId = Int32.Parse(claimsPrincipal.FindFirst("id").Value);
+            var claimsPrincipal = this.User;
+            var userId = Int32.Parse(claimsPrincipal.FindFirst("id").Value);
 
-            var result = await _cartService.RemoveFromCart(cartId);
+            var result = await _cartService.RemoveFromCart(userId, cartId);
+            if(result.IsSuccessed==false)
+                return BadRequest(result.Message);
             return Ok(result);
         }
 
         [HttpDelete]
         public async Task<IActionResult> DeleteMultiCarts(List<int> cartIds)
         {
-            var result = await _cartService.RemoveMultiCarts(cartIds);       
+            var claimsPrincipal = this.User;
+            var userId = Int32.Parse(claimsPrincipal.FindFirst("id").Value);
+
+            var result = await _cartService.RemoveMultiCarts(userId, cartIds);       
+            if(result.IsSuccessed==false)
+                return BadRequest(result.Message);
             return Ok(result);
         }
 
         [HttpPatch]
         public async Task<IActionResult> UpdateCartItem(UpdateCartItemRequest request)
         {
-            var result = await _cartService.UpdateCartItem(request);       
+            var claimsPrincipal = this.User;
+            var userId = Int32.Parse(claimsPrincipal.FindFirst("id").Value);
+
+            var result = await _cartService.UpdateCartItem(userId, request);   
+            if(result.IsSuccessed==false)
+                return BadRequest(result.Message);    
             return Ok(result);
         }
 
