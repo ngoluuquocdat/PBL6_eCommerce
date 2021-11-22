@@ -10,5 +10,15 @@ namespace eComSolution.ViewModel.Catalog.Carts
     {
         public int CartId { get; set; }
         public int Quantity { get; set; }
+
+        public bool IsValid()
+        {
+            if(CartId==0 || Quantity==0 || Quantity<0)
+            {
+                return false;
+            }
+
+            return true;
+        }
     }
 }
