@@ -19,11 +19,11 @@ namespace eComSolution.Service.Catalog.Products
 
         Task<ApiResult<ProductVm>> GetProductById(int productId);
 
-        Task<ApiResult<int>> Create(CreateProductRequest request);
+        Task<ApiResult<int>> Create(int userId, CreateProductRequest request);
 
         Task<ApiResult<int>> Delete(int productId);
 
-        Task<ApiResult<int>> Update(UpdateProductRequest request);
+        Task<ApiResult<int>> Update(int userId, UpdateProductRequest request);
 
         Task<int> AddDetail(int productId, ProductDetailVm dto);
 

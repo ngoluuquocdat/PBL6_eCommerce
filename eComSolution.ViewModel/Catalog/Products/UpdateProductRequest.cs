@@ -17,7 +17,34 @@ namespace eComSolution.ViewModel.Catalog.Products
         public int Price { get; set; }
         public int OriginalPrice { get; set; }
         public int CategoryId { get; set; }
-        public List<ProductDetailVm> Details {get; set;}
+        public List<UpdateProductDetailVm> Details {get; set;}
         
+        public bool IsValid()
+        {
+            // null or empty check
+            if(String.IsNullOrEmpty(Name) || String.IsNullOrEmpty(Description)
+                        || Id==0 || Gender==0 || Price==0 || OriginalPrice==0 || CategoryId==0)
+            {
+                return false;
+            }
+            // valid gender 
+            if(Gender!=1 && Gender!=2 && Gender!= 3)
+            {
+                return false;
+            }
+            // valid price & original price
+            if(Price<0 || OriginalPrice<0)
+            {
+                return false;
+            }
+            // valid product details
+            foreach(var detail in Details)
+            {
+                if(detail.IsValid()==false)
+                    return false;
+            }
+
+            return true;
+        }
     }
 }

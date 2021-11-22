@@ -45,9 +45,10 @@ namespace eComSolution.API.Controllers
         //[Consumes("multipart/form-data")]
         public async Task<IActionResult> Create([FromBody]CreateProductRequest request) 
         {
-            // if (!ModelState.IsValid)
-            //     return BadRequest(ModelState);
-            var result = await _productService.Create(request);
+            var claimsPrincipal = this.User;
+            var userId = Int32.Parse(claimsPrincipal.FindFirst("id").Value);
+
+            var result = await _productService.Create(userId, request);
             if (result.IsSuccessed == false)
                 return BadRequest(result.Message);
 
@@ -69,9 +70,10 @@ namespace eComSolution.API.Controllers
         [HttpPut]
         public async Task<IActionResult> Update([FromBody]UpdateProductRequest request) 
         {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
-            var result = await _productService.Update(request);
+            var claimsPrincipal = this.User;
+            var userId = Int32.Parse(claimsPrincipal.FindFirst("id").Value);
+
+            var result = await _productService.Update(userId, request);
             if (result.IsSuccessed == false)
                 return BadRequest(result.Message);    
 
