@@ -114,6 +114,7 @@ namespace eComSolution.Service.System.Users
                 PasswordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(request.Password)),
                 PasswordSalt = hmac.Key,
                 Fullname = request.Fullname,
+                Address = request.Address,
                 Email = request.Email,
                 PhoneNumber = request.PhoneNumber
             };
