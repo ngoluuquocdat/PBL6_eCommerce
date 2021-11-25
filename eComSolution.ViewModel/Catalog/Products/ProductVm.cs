@@ -20,6 +20,7 @@ namespace eComSolution.ViewModel.Catalog.Products
         public string CategoryName { get; set; }
         public int ShopId { get; set; }
         public string ShopName {get; set;}
+        public string ShopDescription { get; set; }
         public int TotalStock {get; set;}
         public List<ProductDetailVm> Details {get; set;}
         public List<ProductImageVm> Images {get; set;}       
