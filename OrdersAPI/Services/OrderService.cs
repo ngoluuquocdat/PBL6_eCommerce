@@ -54,7 +54,7 @@ namespace OrdersAPI.Services
                 } 
                 if(query.sh.Disable==true)
                 {
-                    return new ApiResult<int>(false, Message:$"Shop với Id: {query.sh.Id} đã ngừng hoạt động, vui lòng kiểm tra lại giỏ hàng");
+                    return new ApiResult<int>(false, Message:$"Shop: {query.sh.Name} đã ngừng hoạt động, vui lòng kiểm tra lại giỏ hàng");
                 }
                 if(query.pd.IsDeleted==true)
                 {

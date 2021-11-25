@@ -27,7 +27,7 @@ namespace APIGateway
                                .SetBasePath(hostingContext.HostingEnvironment.ContentRootPath)
                                .AddEnvironmentVariables();
 
-                           config.AddOcelot("Routes", hostingContext.HostingEnvironment);
+                           config.AddOcelot("RoutesDocker", hostingContext.HostingEnvironment);
                        });
                  });
     }

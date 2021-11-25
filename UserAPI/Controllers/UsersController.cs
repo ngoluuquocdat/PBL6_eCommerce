@@ -154,6 +154,23 @@ namespace UserAPI.Controllers
                 return StatusCode(500, "Lỗi server");
             }
         }
+        [HttpPut()]
+        [Authorize]
+        public async Task<IActionResult> UpdateUser(int userId, UpdateUserVm updateUser)
+        {
+            try
+            {
+                var result = await _userService.UpdateUser(userId, updateUser);
+                if(result.IsSuccessed == false) return BadRequest(result.Message);
+
+                return Ok(result);
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine(DateTime.Now + "- Server Error: " + ex);
+                return StatusCode(500, "Lỗi server");
+            }
+        }
         [HttpPatch("Password")]
         [Authorize]
         public async Task<IActionResult> ChangePassword(ChangePasswordVm request)

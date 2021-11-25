@@ -1,23 +1,23 @@
 {
   "Routes": [
       {
-        "DownstreamPathTemplate": "/storage/{image}",
-        "DownstreamScheme": "http",
-        "DownstreamHostAndPorts": [
-          {
-            "Host": "productapi",
-            "Port": 80
-          }
-        ],
-        "UpstreamPathTemplate": "/apigateway/Products/storage/{image}"
+          "DownstreamPathTemplate": "/storage/{image}",
+          "DownstreamScheme": "https",
+          "DownstreamHostAndPorts": [
+            {
+              "Host": "localhost",
+              "Port": 5003
+            }
+          ],
+          "UpstreamPathTemplate": "/apigateway/Products/storage/{image}"
       },
       {
           "DownstreamPathTemplate": "/api/Products/paging",
-          "DownstreamScheme": "http",
+          "DownstreamScheme": "https",
           "DownstreamHostAndPorts": [
             {
-              "Host": "productapi",
-              "Port": 80
+              "Host": "localhost",
+              "Port": 5003
             }
           ],
           "UpstreamPathTemplate": "/apigateway/Products/paging",
@@ -25,11 +25,11 @@
       },
       {
           "DownstreamPathTemplate": "/api/Products/{productId}",
-          "DownstreamScheme": "http",
+          "DownstreamScheme": "https",
           "DownstreamHostAndPorts": [
             {
-              "Host": "productapi",
-              "Port": 80
+              "Host": "localhost",
+              "Port": 5003
             }
           ],
           "UpstreamPathTemplate": "/apigateway/Products/{productId}",
@@ -37,11 +37,11 @@
       },
       {
         "DownstreamPathTemplate": "/api/Products",
-        "DownstreamScheme": "http",
+        "DownstreamScheme": "https",
         "DownstreamHostAndPorts": [
           {
-            "Host": "productapi",
-            "Port": 80
+            "Host": "localhost",
+            "Port": 5003
           }
         ],
         "UpstreamPathTemplate": "/apigateway/Products",
@@ -49,11 +49,11 @@
       },
       {
         "DownstreamPathTemplate": "/api/Products/details",
-        "DownstreamScheme": "http",
+        "DownstreamScheme": "https",
         "DownstreamHostAndPorts": [
           {
-            "Host": "productapi",
-            "Port": 80
+            "Host": "localhost",
+            "Port": 5003
           }
         ],
         "UpstreamPathTemplate": "/apigateway/Products/details",
@@ -61,11 +61,11 @@
       },
       {
           "DownstreamPathTemplate": "/api/Products/{productId}/images",
-          "DownstreamScheme": "http",
+          "DownstreamScheme": "https",
           "DownstreamHostAndPorts": [
             {
-              "Host": "productapi",
-              "Port": 80
+              "Host": "localhost",
+              "Port": 5003
             }
           ],
           "UpstreamPathTemplate": "/apigateway/Products/{productId}/images",
@@ -73,11 +73,11 @@
       },
       {
           "DownstreamPathTemplate": "/api/Products/{productId}/images/{imageId}",
-          "DownstreamScheme": "http",
+          "DownstreamScheme": "https",
           "DownstreamHostAndPorts": [
             {
-              "Host": "productapi",
-              "Port": 80
+              "Host": "localhost",
+              "Port": 5003
             }
           ],
           "UpstreamPathTemplate": "/apigateway/Products/{productId}/images/{imageId}",

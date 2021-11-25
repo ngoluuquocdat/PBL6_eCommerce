@@ -1,23 +1,23 @@
 {
   "Routes": [
       {
-          "DownstreamPathTemplate": "/storage/{image}",
-          "DownstreamScheme": "http",
-          "DownstreamHostAndPorts": [
-            {
-              "Host": "shopapi",
-              "Port": 80
-            }
-          ],
-          "UpstreamPathTemplate": "/apigateway/Shops/storage/{image}"
+        "DownstreamPathTemplate": "/storage/{image}",
+        "DownstreamScheme": "https",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "localhost",
+            "Port": 5009
+          }
+        ],
+        "UpstreamPathTemplate": "/apigateway/Shops/storage/{image}"
       },
       {
           "DownstreamPathTemplate": "/api/Shops",
-          "DownstreamScheme": "http",
+          "DownstreamScheme": "https",
           "DownstreamHostAndPorts": [
             {
-              "Host": "shopapi",
-              "Port": 80
+              "Host": "localhost",
+              "Port": 5009
             }
           ],
           "UpstreamPathTemplate": "/apigateway/Shops",
@@ -25,11 +25,11 @@
       },
       {
           "DownstreamPathTemplate": "/api/Shops/me",
-          "DownstreamScheme": "http",
+          "DownstreamScheme": "https",
           "DownstreamHostAndPorts": [
             {
-              "Host": "shopapi",
-              "Port": 80
+              "Host": "localhost",
+              "Port": 5009
             }
           ],
           "UpstreamPathTemplate": "/apigateway/Shops/me",
@@ -37,11 +37,11 @@
       },
       {
           "DownstreamPathTemplate": "/api/Shops/{userId}",
-          "DownstreamScheme": "http",
+          "DownstreamScheme": "https",
           "DownstreamHostAndPorts": [
             {
-              "Host": "shopapi",
-              "Port": 80
+              "Host": "localhost",
+              "Port": 5009
             }
           ],
           "UpstreamPathTemplate": "/apigateway/Shops/{userId}",
@@ -49,11 +49,11 @@
       },
       {
           "DownstreamPathTemplate": "/api/Shops/Disable",
-          "DownstreamScheme": "http",
+          "DownstreamScheme": "https",
           "DownstreamHostAndPorts": [
             {
-              "Host": "shopapi",
-              "Port": 80
+              "Host": "localhost",
+              "Port": 5009
             }
           ],
           "UpstreamPathTemplate": "/apigateway/Shops/Disable",
@@ -61,11 +61,11 @@
       },
       {
           "DownstreamPathTemplate": "/api/Shops/Enable",
-          "DownstreamScheme": "http",
+          "DownstreamScheme": "https",
           "DownstreamHostAndPorts": [
           {
-              "Host": "shopapi",
-              "Port": 80
+              "Host": "localhost",
+              "Port": 5009
           }
           ],
           "UpstreamPathTemplate": "/apigateway/Shops/Enable",

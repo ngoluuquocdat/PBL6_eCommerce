@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Controllers;
+using Microsoft.AspNetCore.Http.Extensions;
 using ProductAPI.Services;
 
 namespace ProductAPI.Middleware
@@ -21,10 +22,13 @@ namespace ProductAPI.Middleware
         {
             bool check = false;
             // lấy action name
-            var controllerActionDescriptor = httpContext
-                .GetEndpoint()
-                .Metadata
-                .GetMetadata<ControllerActionDescriptor>();
+            Console.WriteLine(httpContext.Request.GetEncodedUrl());
+            if(!httpContext.Request.GetEncodedUrl().Contains("/storage"))
+            {
+                var controllerActionDescriptor = httpContext
+                    .GetEndpoint()
+                    .Metadata
+                    .GetMetadata<ControllerActionDescriptor>();
 
                 var controllerName = controllerActionDescriptor.ControllerName;
                 var actionName = controllerName + "." + controllerActionDescriptor.ActionName;
@@ -53,9 +57,11 @@ namespace ProductAPI.Middleware
 
                 if(!check)
                 {
-                    await httpContext.Response.WriteAsync("user don't has permission for this action");
+                    httpContext.Response.StatusCode = 403;
                     return;
                 }
+            }
+            else Console.WriteLine("ok nha");
             await _next(httpContext);
         }
     }

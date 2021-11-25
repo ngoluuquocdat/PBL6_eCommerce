@@ -127,12 +127,12 @@ namespace ShopAPI.Services
 
             return new ApiResult<List<ShopVm>>(true, data);
         }
-        public async Task<ApiResult<string>> DisableShop(int shopId, string disable_reason){
-            var shop = await _context.Shops.FirstOrDefaultAsync(s => s.Id == shopId);
+        public async Task<ApiResult<string>> DisableShop(ShopDisableRequest request){
+            var shop = await _context.Shops.FirstOrDefaultAsync(s => s.Id == request.ShopId);
             if(shop == null) return new ApiResult<string>(false, "Không tồn tại cửa hàng này!");
             
             shop.Disable = true;
-            shop.DisableReason = disable_reason;
+            shop.DisableReason = request.DisableReason;
             shop.DateModified = DateTime.Now;
             _context.Shops.Update(shop);
 

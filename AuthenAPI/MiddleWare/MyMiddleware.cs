@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Controllers;
 using AuthenAPI.Services.Authen;
+using Microsoft.AspNetCore.Http.Extensions;
 
 namespace AuthenAPI.Middleware
 {
@@ -21,10 +22,13 @@ namespace AuthenAPI.Middleware
         {
             bool check = false;
             // lấy action name
-            var controllerActionDescriptor = httpContext
-                .GetEndpoint()
-                .Metadata
-                .GetMetadata<ControllerActionDescriptor>();
+            Console.WriteLine(httpContext.Request.GetEncodedUrl());
+            if(!httpContext.Request.GetEncodedUrl().Contains("/storage"))
+            {
+                var controllerActionDescriptor = httpContext
+                    .GetEndpoint()
+                    .Metadata
+                    .GetMetadata<ControllerActionDescriptor>();
 
                 var controllerName = controllerActionDescriptor.ControllerName;
                 var actionName = controllerName + "." + controllerActionDescriptor.ActionName;
@@ -53,9 +57,10 @@ namespace AuthenAPI.Middleware
 
                 if(!check)
                 {
-                    await httpContext.Response.WriteAsync("user don't has permission for this action");
+                    httpContext.Response.StatusCode = 403;
                     return;
                 }
+            }
             await _next(httpContext);
         }
     }

@@ -116,7 +116,7 @@ namespace UserAPI
 
             app.UseAuthorization();
 
-            //app.UseMiddleware<MyMiddleware>();
+            app.UseMiddleware<MyMiddleware>();
 
             app.UseEndpoints(endpoints =>
             {

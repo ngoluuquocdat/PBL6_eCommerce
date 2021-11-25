@@ -77,7 +77,7 @@ namespace CartAPI
                 });
             });
             services.AddDbContext<EComDbContext>(options =>
-                options.UseSqlServer(Configuration.GetConnectionString("Default")));
+                options.UseSqlServer(Configuration.GetConnectionString("DockerSQL")));
             // add jwt bearer authentication
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                     .AddJwtBearer(options => {
@@ -114,7 +114,7 @@ namespace CartAPI
 
             app.UseAuthorization();
 
-            //app.UseMiddleware<MyMiddleware>();
+            app.UseMiddleware<MyMiddleware>();
 
             app.UseEndpoints(endpoints =>
             {

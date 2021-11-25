@@ -15,7 +15,7 @@ namespace ShopAPI.Services
         Task<ApiResult<ShopVm>> GetByShopId(int shopId);
         Task<ApiResult<List<ShopVm>>> GetAll(string name);
         Task<ApiResult<string>> Update(int userId, CreateShopVm request);
-        Task<ApiResult<string>> DisableShop(int shopId, string disable_reason);
+        Task<ApiResult<string>> DisableShop(ShopDisableRequest request);
         Task<ApiResult<string>> EnableShop(int shopId);
         Task<List<Function>> GetPermissions(int userId);
     }

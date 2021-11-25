@@ -1,0 +1,28 @@
+{
+    "Routes": [
+      {
+        "DownstreamPathTemplate": "/api/Carts",
+        "DownstreamScheme": "https",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "localhost",
+            "Port": 5007
+          }
+        ],
+        "UpstreamPathTemplate": "/apigateway/Carts",
+        "UpstreamHttpMethod": [ "GET", "POST", "PATCH", "DELETE"]
+      },
+      {
+        "DownstreamPathTemplate": "/api/Carts/{cartId}",
+        "DownstreamScheme": "https",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "localhost",
+            "Port": 5007
+          }
+        ],
+        "UpstreamPathTemplate": "/apigateway/Carts/{cartId}",
+        "UpstreamHttpMethod": ["DELETE"]
+      }
+    ]
+  }

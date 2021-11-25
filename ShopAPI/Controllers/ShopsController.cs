@@ -72,28 +72,9 @@ namespace ShopAPI.Controllers
 
             return Ok(result);
         }
-        [HttpGet("Id")]
+        [HttpGet("{shopId}")]
         [AllowAnonymous]
-        public  Task<ActionResult> GetShopById(int userId, int shopId) =>  // xem thông tin shop by userId (ADMIN)
-            userId == 0 ? GetByShopId(shopId) : GetByUserId(userId);
-        private async Task<ActionResult> GetByUserId(int userId)
-        {
-            try
-            {
-                var result = await _shopService.Get(userId);
-
-                if (result.IsSuccessed == false)
-                    return BadRequest(result.Message);    
-
-                return Ok(result);
-            }
-            catch(Exception ex)
-            {
-                Console.WriteLine(DateTime.Now + "- Server Error: " + ex);
-                return StatusCode(500, "Lỗi server");
-            }
-        }
-        private async Task<ActionResult> GetByShopId(int shopId)
+        public async Task<ActionResult> GetShopById(int shopId)  // xem thông tin shop by userId (ADMIN)
         {
             try
             {
@@ -129,11 +110,11 @@ namespace ShopAPI.Controllers
         }
         [HttpPatch("Disable")]
         [Authorize]
-        public async Task<IActionResult> DisableShop(int shopId, string disable_reason)   // vô hiệu hóa shop (ADMIN)
+        public async Task<IActionResult> DisableShop(ShopDisableRequest request)   // vô hiệu hóa shop (ADMIN)
         {
             try
             {
-                var result = await _shopService.DisableShop(shopId, disable_reason);
+                var result = await _shopService.DisableShop(request);
                 if(result.IsSuccessed == false) return BadRequest(result.Message);
 
                 return Ok(result);
