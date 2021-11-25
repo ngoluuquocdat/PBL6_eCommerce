@@ -143,6 +143,7 @@ namespace eComSolution.Service.Catalog.Products
                 CategoryName = category.Name,
                 ShopId = shop.Id,
                 ShopName = shop.Name,
+                ShopDescription = shop.Description,
                 Details = await GetProductDetails(product.Id),
                 Images = await GetProductImages(product.Id)
             };
