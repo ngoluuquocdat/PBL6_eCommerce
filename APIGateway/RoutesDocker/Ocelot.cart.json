@@ -1,0 +1,28 @@
+{
+    "Routes": [
+      {
+        "DownstreamPathTemplate": "/api/Carts",
+        "DownstreamScheme": "http",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "cartapi",
+            "Port": 80
+          }
+        ],
+        "UpstreamPathTemplate": "/apigateway/Carts",
+        "UpstreamHttpMethod": [ "GET", "POST", "PATCH", "DELETE"]
+      },
+      {
+        "DownstreamPathTemplate": "/api/Carts/{cartId}",
+        "DownstreamScheme": "http",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "cartapi",
+            "Port": 80
+          }
+        ],
+        "UpstreamPathTemplate": "/apigateway/Carts/{cartId}",
+        "UpstreamHttpMethod": ["DELETE"]
+      }
+    ]
+  }

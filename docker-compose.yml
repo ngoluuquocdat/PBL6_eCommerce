@@ -1,0 +1,78 @@
+version: '3.4'
+
+services:
+  apigateway:
+    image: ${DOCKER_REGISTRY-}apigateway
+    build:
+      context: .
+      dockerfile: APIGateway/Dockerfile
+    depends_on:
+      - ms-sql-server  
+
+  authenapi:
+    image: ${DOCKER_REGISTRY-}authenapi
+    build:
+      context: .
+      dockerfile: AuthenAPI/Dockerfile
+    depends_on:
+      - ms-sql-server
+
+  cartapi:
+    image: ${DOCKER_REGISTRY-}cartapi
+    build:
+      context: .
+      dockerfile: CartAPI/Dockerfile
+    depends_on:
+      - ms-sql-server
+
+  productapi:
+    image: ${DOCKER_REGISTRY-}productapi
+    build:
+      context: .
+      dockerfile: ProductAPI/Dockerfile
+    depends_on:
+      - ms-sql-server
+
+  shopapi:
+    image: ${DOCKER_REGISTRY-}shopapi
+    build:
+      context: .
+      dockerfile: ShopAPI/Dockerfile
+    depends_on:
+      - ms-sql-server  
+
+  userapi:
+    image: ${DOCKER_REGISTRY-}userapi
+    build:
+      context: .
+      dockerfile: UserAPI/Dockerfile
+    depends_on:
+      - ms-sql-server
+
+  historyapi:
+    image: ${DOCKER_REGISTRY-}historyapi
+    build:
+      context: .
+      dockerfile: HistoryAPI/Dockerfile
+    depends_on:
+      - ms-sql-server
+
+  orderapi:
+    image: ${DOCKER_REGISTRY-}orderapi
+    build:
+      context: .
+      dockerfile: OrdersAPI/Dockerfile
+    depends_on:
+      - ms-sql-server
+    
+
+  ms-sql-server:
+    image: mcr.microsoft.com/mssql/server:2019-latest
+    volumes: 
+      - /var/opt/mssql
+    environment: 
+      ACCEPT_EULA: "Y"
+      SA_PASSWORD: "Onepiece1810!"
+    ports:
+      - "1433:1433"    
+

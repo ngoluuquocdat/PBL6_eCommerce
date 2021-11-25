@@ -1,0 +1,16 @@
+{
+  "Routes": [
+        {
+        "DownstreamPathTemplate": "/api/History/me",
+        "DownstreamScheme": "http",
+        "DownstreamHostAndPorts": [
+            {
+            "Host": "historyapi",
+            "Port": 80
+            }
+        ],
+        "UpstreamPathTemplate": "/apigateway/History/me",
+        "UpstreamHttpMethod": [ "GET" , "POST" ]
+        }
+    ]
+}

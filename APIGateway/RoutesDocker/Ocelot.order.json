@@ -1,0 +1,28 @@
+{
+    "Routes": [
+          {
+          "DownstreamPathTemplate": "/api/Orders/me",
+          "DownstreamScheme": "http",
+          "DownstreamHostAndPorts": [
+              {
+              "Host": "orderapi",
+              "Port": 80
+              }
+          ],
+          "UpstreamPathTemplate": "/apigateway/Orders/me",
+          "UpstreamHttpMethod": [ "GET" , "DELETE" ]
+          },
+          {
+            "DownstreamPathTemplate": "/api/Orders",
+            "DownstreamScheme": "http",
+            "DownstreamHostAndPorts": [
+                {
+                "Host": "orderapi",
+                "Port": 80
+                }
+            ],
+            "UpstreamPathTemplate": "/apigateway/Orders",
+            "UpstreamHttpMethod": [ "POST" ]
+            }
+      ]
+  }
