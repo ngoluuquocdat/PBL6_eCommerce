@@ -24,29 +24,48 @@ namespace eComSolution.API.Controllers
         [HttpGet("me")]
         public async Task<IActionResult> Get()
         {
-            var claimsPrincipal = this.User;
-            var userId = Int32.Parse(claimsPrincipal.FindFirst("id").Value);
+            try
+            {
+                var claimsPrincipal = this.User;
+                var userId = Int32.Parse(claimsPrincipal.FindFirst("id").Value);
 
-            var result = await _historyService.GetHistory(userId);
+                var result = await _historyService.GetHistory(userId);
 
-            if (result.IsSuccessed == false)
-                return BadRequest(result.Message);
+                if (result.IsSuccessed == false)
+                    return BadRequest(result.Message);
+                
+                if (result.ResultObj == null || result.ResultObj.Count==0)
+                    return NoContent(); 
 
-            return Ok(result);
+                return Ok(result);
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine(DateTime.Now + "- Server Error: " + ex);
+                return StatusCode(500, "Lỗi server");
+            }
         }
 
         [HttpPost("me")]
         public async Task<IActionResult> Add([FromBody]int productId)
         {
-            var claimsPrincipal = this.User;
-            var userId = Int32.Parse(claimsPrincipal.FindFirst("id").Value);
+            try
+            {
+                var claimsPrincipal = this.User;
+                var userId = Int32.Parse(claimsPrincipal.FindFirst("id").Value);
 
-            var result = await _historyService.AddHistory(userId, productId);
+                var result = await _historyService.AddHistory(userId, productId);
 
-            if (result.IsSuccessed == false)
-                return BadRequest(result.Message);
+                if (result.IsSuccessed == false)
+                    return BadRequest(result.Message);
 
-            return Ok(result);
+                return Ok(result);
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine(DateTime.Now + "- Server Error: " + ex);
+                return StatusCode(500, "Lỗi server");
+            }
         }
     }
 }

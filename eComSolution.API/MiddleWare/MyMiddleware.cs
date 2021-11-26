@@ -1,9 +1,10 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
+using System.Net;
+using System.Net.Http;
 using System.Threading.Tasks;
 using eComSolution.Service.System.Users;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc.Controllers;
 
 namespace eComSolution.API.Middleware
@@ -16,11 +17,13 @@ namespace eComSolution.API.Middleware
         {
             _next = next;
         }
- 
         public async Task Invoke(HttpContext httpContext, IUserService userService)
         {
             bool check = false;
-            // lấy action name
+
+            if(httpContext.GetEndpoint() != null)
+            {
+                // lấy action name
             var controllerActionDescriptor = httpContext
                 .GetEndpoint()
                 .Metadata
@@ -48,12 +51,12 @@ namespace eComSolution.API.Middleware
                         break;
                     }
                 }
-
                 if(!check)
                 {
-                    await httpContext.Response.WriteAsync("user don't has permission for this action");
+                    httpContext.Response.StatusCode = 403;
                     return;
                 }
+            }
             await _next(httpContext);
         }
     }

@@ -103,7 +103,7 @@ namespace eComSolution.Service.System.Users
 
             if(!IsValid("", request.Password, "", "")) // valid password
             {
-                return new ApiResult<string>(false, "Mật khẩu tối thiểu 8 ký tự, ít nhất một chữ cái viết hoa, một chữ cái viết thường, một số và một ký tự đặc biệt.");
+                return new ApiResult<string>(false, "Mật khẩu tối thiểu 8 ký tự, ít nhất một chữ cái và một số!");
             }
             
             using var hmac = new HMACSHA512();
@@ -124,7 +124,7 @@ namespace eComSolution.Service.System.Users
             await _context.SaveChangesAsync();
 
             var  gu = new GroupUser{
-                GroupId = 1, 
+                GroupId = 3, 
                 UserId = new_user.Id,
             };
 
@@ -435,7 +435,7 @@ namespace eComSolution.Service.System.Users
         public  bool IsValid(string username, string password, string email, string phonenumber) 
         {
             if(!String.IsNullOrEmpty(username)) return Regex.Match(username, @"^(?=.{8,}$)(?![_.])(?!.*[_.]{2})[a-zA-Z0-9._]+(?<![_.])$").Success;
-            if(!String.IsNullOrEmpty(password)) return Regex.Match(password, @"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$").Success;
+            if(!String.IsNullOrEmpty(password)) return Regex.Match(password, @"^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$").Success;
             if(!String.IsNullOrEmpty(email)) return Regex.Match(email, @"^([\w-\.]+)@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.)|(([\w-]+\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\]?)$").Success; 
             if(!String.IsNullOrEmpty(phonenumber)) return Regex.Match(phonenumber, @"^([\+]?61[-]?|[0])?[1-9][0-9]{8}$").Success;
 

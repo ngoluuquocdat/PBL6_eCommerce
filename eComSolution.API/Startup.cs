@@ -134,7 +134,7 @@ namespace eComSolution.API
 
             app.UseAuthorization();
 
-            // app.UseMiddleware<MyMiddleware>();
+            app.UseMiddleware<MyMiddleware>();
 
             app.UseEndpoints(endpoints =>
             {

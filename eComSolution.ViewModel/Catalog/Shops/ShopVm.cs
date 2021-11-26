@@ -18,5 +18,6 @@ namespace eComSolution.ViewModel.Catalog.Shops
         public DateTime DateCreated { get; set; }
         public DateTime DateModified {get; set;}
         public bool Disable { get; set; }
+        public string DisableReason { get; set; }
     }
 }

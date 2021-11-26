@@ -41,7 +41,7 @@ namespace eComSolution.Service.Catalog.Orders
                 } 
                 if(query.sh.Disable==true)
                 {
-                    return new ApiResult<int>(false, Message:$"Shop với Id: {query.sh.Id} đã ngừng hoạt động, vui lòng kiểm tra lại giỏ hàng");
+                    return new ApiResult<int>(false, Message:$"Shop: {query.sh.Name} đã ngừng hoạt động, vui lòng kiểm tra lại giỏ hàng");
                 }
                 if(query.pd.IsDeleted==true)
                 {
@@ -114,7 +114,7 @@ namespace eComSolution.Service.Catalog.Orders
                 {
                     // get cart item
                     var cartItem = await _context.Carts.Where(x=>x.Id==cartId).FirstOrDefaultAsync();
-                    if(cartItem==null)  return new ApiResult<int>(false, Message:$"Không có giỏ hàng với Id: {cartId}");
+                    //if(cartItem==null)  return new ApiResult<int>(false, Message:$"Không có giỏ hàng với Id: {cartId}");
                     // get product detail of cart item
                     var product_detail = await _context.ProductDetails.Where(x=>x.Id==cartItem.ProductDetail_Id).FirstOrDefaultAsync();
                     // get price 
@@ -148,13 +148,15 @@ namespace eComSolution.Service.Catalog.Orders
 
         public async Task<ApiResult<List<OrderVm>>> GetUserOrders(int userId, string state = "")
         {
+            if(!(string.IsNullOrEmpty(state)) && (!String.Equals(state, "Chờ xác nhận")
+                    &&!String.Equals(state, "Đã xác nhận")
+                        &&!String.Equals(state, "Đã hủy")))
+                return new ApiResult<List<OrderVm>>(false, Message:"Thông tin không hợp lệ, vui lòng nhập lại");
+
             var query = from o in _context.Orders 
                         join sh in _context.Shops on o.ShopId equals sh.Id
                         where o.UserId == userId
                         select new {o, sh};
-                                    
-            if(query==null)
-                return new ApiResult<List<OrderVm>>(false, Message:"Bạn chưa có đơn hàng nào!");
 
             if(!string.IsNullOrEmpty(state))
                 query = query.Where(x=>x.o.State==state);
@@ -218,24 +220,31 @@ namespace eComSolution.Service.Catalog.Orders
             return data;
         }
 
-        public async Task<ApiResult<int>> CancelUnconfirmedOrder(int orderId, string cancelReason)
+        public async Task<ApiResult<int>> CancelUnconfirmedOrder(int userId, CancelOrderRequest request)
         {
-            var order = await _context.Orders.Where(x=>x.Id==orderId).FirstOrDefaultAsync();
-            if(order==null) return new ApiResult<int>(false, Message:$"Không tìm thấy đơn hàng với Id: {orderId}");
+            if(!request.IsValid())
+                return new ApiResult<int>(false, Message:$"Thông tin không hợp lệ");
+                
+            var order = await _context.Orders.Where(x=>x.Id==request.OrderId).FirstOrDefaultAsync();
+            if(order==null) return new ApiResult<int>(false, Message:$"Không tìm thấy đơn hàng với Id: {request.OrderId}");
+
+            // check đơn hàng chính chủ
+            if(order.UserId!=userId) 
+                return new ApiResult<int>(false, Message:$"Bạn không có đơn hàng với Id: {request.OrderId}");
             
             if(!String.Equals(order.State, "Chờ xác nhận")) 
                 return new ApiResult<int>(false, Message:$"Bạn chỉ có thể hủy đơn chưa xác nhận");
 
             var order_details = await _context.OrderDetails
-                            .Where(x=>x.OrderId==orderId).ToListAsync();
+                            .Where(x=>x.OrderId==request.OrderId).ToListAsync();
 
-            if(String.IsNullOrEmpty(cancelReason))  cancelReason = "Lý do khác";
+            if(String.IsNullOrEmpty(request.CancelReason))  request.CancelReason = "Lý do khác";
             
 
             // 1. chuyển trạng thái đơn hàng thành 'đã hủy'
             order.State = "Đã hủy";
             // 2. cập nhật lý do hủy đơn
-            order.CancelReason = cancelReason;
+            order.CancelReason = request.CancelReason;
             _context.Orders.Update(order);
             // 3. cộng lại số lượng sản phẩm đã đặt vào stock
             foreach(var order_detail in order_details)
@@ -247,12 +256,9 @@ namespace eComSolution.Service.Catalog.Orders
                 _context.ProductDetails.Update(product_detail);
             }
             await _context.SaveChangesAsync();
-
-            
             
             return new ApiResult<int>(true, Message:"Hủy đơn hàng thành công!");
         }
-
         
         // public async Task<ApiResult<int>> CreateOrder(int userId, CheckOutRequest request)
         // {

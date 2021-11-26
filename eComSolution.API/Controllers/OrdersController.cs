@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using eComSolution.Service.Catalog.Orders;
 using eComSolution.ViewModel.Catalog.Carts;
+using eComSolution.ViewModel.Catalog.Orders;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -24,30 +25,70 @@ namespace eComSolution.API.Controllers
         [HttpPost]
         public async Task<IActionResult> Create(CheckOutRequest request)
         {
-            var claimsPrincipal = this.User;
-            var userId = Int32.Parse(claimsPrincipal.FindFirst("id").Value);
+            try
+            {
+                var claimsPrincipal = this.User;
+                var userId = Int32.Parse(claimsPrincipal.FindFirst("id").Value);
             
-            var result = await _orderService.CreateOrders(userId, request);
+                var result = await _orderService.CreateOrders(userId, request);
 
-            return Ok(result);
+                if(result.IsSuccessed==false)
+                    return BadRequest(result.Message);      
+
+                return Ok(result);
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine(DateTime.Now + "- Server Error: " + ex);
+                return StatusCode(500, "Lỗi server");
+            }
+            
         }
         
         [HttpGet("me")]
         public async Task<IActionResult> GetUserOrders(string state)
         {
-            var claimsPrincipal = this.User;
-            var userId = Int32.Parse(claimsPrincipal.FindFirst("id").Value);
-            
-            var result = await _orderService.GetUserOrders(userId, state);
+            try
+            {
+                var claimsPrincipal = this.User;
+                var userId = Int32.Parse(claimsPrincipal.FindFirst("id").Value);
+                
+                var result = await _orderService.GetUserOrders(userId, state);
 
-            return Ok(result);
+                if(result.IsSuccessed==false)
+                    return BadRequest(result.Message);
+
+                if (result.ResultObj == null || result.ResultObj.Count==0)
+                    return NoContent();     
+
+                return Ok(result);
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine(DateTime.Now + "- Server Error: " + ex);
+                return StatusCode(500, "Lỗi server");
+            }
         }
 
         [HttpDelete("me")]
-        public async Task<IActionResult> CancelUnconfirmedOrder(int orderId, string cancelReason)
+        public async Task<IActionResult> CancelUnconfirmedOrder(CancelOrderRequest request)
         {   
-            var result = await _orderService.CancelUnconfirmedOrder(orderId, cancelReason);
-            return Ok(result);
-        }    
+            try
+            {
+                var claimsPrincipal = this.User;
+                var userId = Int32.Parse(claimsPrincipal.FindFirst("id").Value);
+
+                var result = await _orderService.CancelUnconfirmedOrder(userId, request);
+                if(result.IsSuccessed==false)
+                    return BadRequest(result.Message);
+
+                return Ok(result);
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine(DateTime.Now + "- Server Error: " + ex);
+                return StatusCode(500, "Lỗi server");
+            }
+        }
     }
 }

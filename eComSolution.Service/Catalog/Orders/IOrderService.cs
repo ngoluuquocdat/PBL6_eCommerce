@@ -22,6 +22,6 @@ namespace eComSolution.Service.Catalog.Orders
 
         // get order cho shop theo ngày để thống kê doanh thu
         //Task<ApiResult<List<OrderVm>>> GetOrdersByDate(int shopId, DateTime fromdate, DateTime todate);
-        Task<ApiResult<int>> CancelUnconfirmedOrder(int orderId, string cancelReason);
+        Task<ApiResult<int>> CancelUnconfirmedOrder(int userId, CancelOrderRequest request);
     }
 }

@@ -35,14 +35,26 @@ namespace eComSolution.Service.System.Users
             var user =  await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
             if(user == null) return new ApiResult<ShopVm>(false, "Người dùng này không tồn tại trong hệ thống!");
 
-            if(user.ShopId == null)
-            {
-                return new ApiResult<ShopVm>(false, "Bạn chưa đăng ký cửa hàng nào. Vui lòng tạo mới một cửa hàng vào thử lại!");
+            var shopInfo = new ShopVm();
+            var shop = await _context.Shops.FirstOrDefaultAsync(s => s.Id == user.ShopId);
+            
+            if(shop.Disable == true)    // bị vô hiệu hóa shop
+            {    
+                shopInfo = new ShopVm
+                {
+                    ShopId = shop.Id,
+                    NameOfShop = shop.Name,
+                    NameOfUser = user.Fullname,
+                    Disable = shop.Disable,
+                    DisableReason = shop.DisableReason,
+                    DateModified = shop.DateModified
+                };
+                return new ApiResult<ShopVm>(false, shopInfo);
             }
-            else
+            else // shop vẫn hoạt động bình thường
             {
-                var shop = await _context.Shops.FirstOrDefaultAsync(s => s.Id == user.ShopId);
-                var shopInfo = new ShopVm{
+                shopInfo = new ShopVm
+                {
                     ShopId = shop.Id,
                     NameOfShop = shop.Name,
                     NameOfUser = user.Fullname,
@@ -53,8 +65,8 @@ namespace eComSolution.Service.System.Users
                     DateCreated = shop.DateCreated,
                     DateModified = shop.DateModified
                 };
-                return new ApiResult<ShopVm>(true, shopInfo);
-            }
+            return new ApiResult<ShopVm>(true, shopInfo);
+            }                       
         }
         public async Task<ApiResult<string>> Create(int userId, CreateShopVm request){
 
@@ -139,12 +151,12 @@ namespace eComSolution.Service.System.Users
             }
 
         }
-        public async Task<ApiResult<string>> DisableShop(int shopId, string disable_reason){
-            var shop = await _context.Shops.FirstOrDefaultAsync(s => s.Id == shopId);
+        public async Task<ApiResult<string>> DisableShop(ShopDisableRequest request){
+            var shop = await _context.Shops.FirstOrDefaultAsync(s => s.Id == request.ShopId);
             if(shop == null) return new ApiResult<string>(false, "Không tồn tại cửa hàng này!");
             
             shop.Disable = true;
-            shop.DisableReason = disable_reason;
+            shop.DisableReason = request.DisableReason;
             shop.DateModified = DateTime.Now;
             _context.Shops.Update(shop);
 
@@ -236,7 +248,7 @@ namespace eComSolution.Service.System.Users
         public  bool IsValid(string username, string password, string email, string phonenumber) 
         {
             if(!String.IsNullOrEmpty(username)) return Regex.Match(username, @"^(?=.{8,}$)(?![_.])(?!.*[_.]{2})[a-zA-Z0-9._]+(?<![_.])$").Success;
-            if(!String.IsNullOrEmpty(password)) return Regex.Match(password, @"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$").Success;
+            if(!String.IsNullOrEmpty(password)) return Regex.Match(password, @"^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$").Success;
             if(!String.IsNullOrEmpty(email)) return Regex.Match(email, @"^([\w-\.]+)@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.)|(([\w-]+\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\]?)$").Success; 
             if(!String.IsNullOrEmpty(phonenumber)) return Regex.Match(phonenumber, @"^([\+]?61[-]?|[0])?[1-9][0-9]{8}$").Success;
 

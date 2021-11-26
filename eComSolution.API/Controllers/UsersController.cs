@@ -25,106 +25,218 @@ namespace eComSolution.API.Controllers
         [Authorize]
         public async Task<IActionResult> Get()                // get info of user (USER)
         {
-            var claimsPrincipal = this.User;
-            var userId = Int32.Parse(claimsPrincipal.FindFirst("id").Value);
-            var result = await _userService.GetUserById(userId);
-            if(result.IsSuccessed == false) return BadRequest(result);
+            try
+            {
+                var claimsPrincipal = this.User;
+                var userId = Int32.Parse(claimsPrincipal.FindFirst("id").Value);
+                var result = await _userService.GetUserById(userId);
+                if(result.IsSuccessed == false) return BadRequest(result.Message);
 
-            return Ok(result);
+                return Ok(result);
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine(DateTime.Now + "- Server Error: " + ex);
+                return StatusCode(500, "Lỗi server");
+            }
         }
+
         [HttpGet("{userId}")]                 
         [Authorize]
         public async Task<IActionResult> GetById(int userId)  // get info of user (ADMIN) 
         {
-            var result = await _userService.GetUserById(userId);
-            if(result.IsSuccessed == false) return Unauthorized(result);
+            try
+            {
+                var result = await _userService.GetUserById(userId);
+                if(result.IsSuccessed == false) 
+                    return NoContent();
 
-            return Ok(result);
+                return Ok(result);
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine(DateTime.Now + "- Server Error: " + ex);
+                return StatusCode(500, "Lỗi server");
+            }
         }
         [HttpGet] 
         [Authorize]
         public async Task<IActionResult> GetAll(string name)            // get all user (ADMIN)
         {
-            var result = await _userService.GetAllUsers(name);
-            if(result.IsSuccessed == false) return BadRequest(result);
+            try
+            {
+                var result = await _userService.GetAllUsers(name);
+                if(result.IsSuccessed == false) return BadRequest(result.Message);
+                if (result.ResultObj == null || result.ResultObj.Count==0)
+                    return NoContent();
 
-            return Ok(result);
+                return Ok(result);
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine(DateTime.Now + "- Server Error: " + ex);
+                return StatusCode(500, "Lỗi server");
+            }    
         }
         [HttpGet("Disable")]
         [Authorize]
         public async Task<IActionResult> GetUserDisable()
         {
-            var result = await _userService.GetUserDisable();
-            if(result.IsSuccessed == false) return BadRequest(result);
+            try
+            {
+                var result = await _userService.GetUserDisable();
+                if(result.IsSuccessed == false) return BadRequest(result.Message);
 
-            return Ok(result);
+                if (result.ResultObj == null || result.ResultObj.Count==0)
+                    return NoContent(); 
+
+                return Ok(result);
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine(DateTime.Now + "- Server Error: " + ex);
+                return StatusCode(500, "Lỗi server");
+            }
         }
 
         [HttpPatch("Disable")]
         [Authorize]
         public async Task<IActionResult> DisableUser(int userId)
         {
-            var result = await _userService.DisableUser(userId);
-            if(result.IsSuccessed == false) return BadRequest(result);
+            try
+            {
+                var result = await _userService.DisableUser(userId);
+                if(result.IsSuccessed == false) return BadRequest(result.Message);
 
-            return Ok(result);
+                return Ok(result);
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine(DateTime.Now + "- Server Error: " + ex);
+                return StatusCode(500, "Lỗi server");
+            }
         }
 
         [HttpPatch("Enable")]
         [Authorize]
         public async Task<IActionResult> EnableUser(int userId)
         {
-            var result = await _userService.EnableUser(userId);
-            if(result.IsSuccessed == false) return BadRequest(result);
+            try
+            {
+                var result = await _userService.EnableUser(userId);
+                if(result.IsSuccessed == false) return BadRequest(result.Message);
 
-            return Ok(result);
+                return Ok(result);
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine(DateTime.Now + "- Server Error: " + ex);
+                return StatusCode(500, "Lỗi server");
+            }
         }
 
-        [HttpPut]
+        [HttpPut("me")]
         [Authorize]
         public async Task<IActionResult> UpdateUser(UpdateUserVm updateUser)
         {
-            var claimsPrincipal = this.User;
-            var userId = Int32.Parse(claimsPrincipal.FindFirst("id").Value);
-            var result = await _userService.UpdateUser(userId, updateUser);
-            if(result.IsSuccessed == false) return BadRequest(result);
+            try
+            {
+                var claimsPrincipal = this.User;
+                var userId = Int32.Parse(claimsPrincipal.FindFirst("id").Value);
+                var result = await _userService.UpdateUser(userId, updateUser);
+                if(result.IsSuccessed == false) return BadRequest(result.Message);
 
-            return Ok(result);
+                return Ok(result);
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine(DateTime.Now + "- Server Error: " + ex);
+                return StatusCode(500, "Lỗi server");
+            }
+        }
+        [HttpPut()]
+        [Authorize]
+        public async Task<IActionResult> UpdateUserAdmin(int userId, UpdateUserVm updateUser)
+        {
+            try
+            {
+                var result = await _userService.UpdateUser(userId, updateUser);
+                if(result.IsSuccessed == false) return BadRequest(result.Message);
+
+                return Ok(result);
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine(DateTime.Now + "- Server Error: " + ex);
+                return StatusCode(500, "Lỗi server");
+            }
         }
         [HttpPatch("Password")]
         [Authorize]
         public async Task<IActionResult> ChangePassword(ChangePasswordVm request)
         {
-            var claimsPrincipal = this.User;
-            var userId = Int32.Parse(claimsPrincipal.FindFirst("id").Value);
-            var result = await _userService.ChangePassword(userId, request);
-            if(result.IsSuccessed == false) return Unauthorized(result);
+            try
+            {
+                var claimsPrincipal = this.User;
+                var userId = Int32.Parse(claimsPrincipal.FindFirst("id").Value);
+                var result = await _userService.ChangePassword(userId, request);
+                if(result.IsSuccessed == false) return BadRequest(result.Message);
 
-            return Ok(result);
+                return Ok(result);
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine(DateTime.Now + "- Server Error: " + ex);
+                return StatusCode(500, "Lỗi server");
+            }   
         }
         [HttpPost("{email}/ForgetPassword")]
         public async Task<IActionResult> ForgetPassword(string email)
         {
-            var result = await _userService.ForgetPassword(email);
-            if(result.IsSuccessed == false) return Unauthorized(result);
+            try
+            {
+                var result = await _userService.ForgetPassword(email);
+                if(result.IsSuccessed == false) return BadRequest(result.Message);
 
-            return Ok(result);
+                return Ok(result);
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine(DateTime.Now + "- Server Error: " + ex);
+                return StatusCode(500, "Lỗi server");
+            } 
         }
         [HttpPatch("ResetPassword")]
         public async Task<IActionResult> ResetPassword(string email, string password)
         {
-            var result = await _userService.ResetPassword(email, password);
-            if(result.IsSuccessed == false) return Unauthorized(result);
+            try
+            {
+                var result = await _userService.ResetPassword(email, password);
+                if(result.IsSuccessed == false) return BadRequest(result.Message);
 
-            return Ok(result);
+                return Ok(result);
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine(DateTime.Now + "- Server Error: " + ex);
+                return StatusCode(500, "Lỗi server");
+            }
         }
         [HttpGet("ConfirmResetPass")]
         public async Task<IActionResult> ConfirmResetPass(string email, string key)
         {
-            var result = await _userService.ComfirmResetPassword(email, key);   
-            if(result.IsSuccessed == false) return Unauthorized(result);
+            try
+            {
+                var result = await _userService.ComfirmResetPassword(email, key);   
+                if(result.IsSuccessed == false) return BadRequest(result.Message);
 
-            return Ok(result);
+                return Ok(result);
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine(DateTime.Now + "- Server Error: " + ex);
+                return StatusCode(500, "Lỗi server");
+            }
         }
     }
 }
