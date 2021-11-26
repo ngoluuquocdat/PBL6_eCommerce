@@ -170,9 +170,6 @@ namespace OrdersAPI.Services
                         join sh in _context.Shops on o.ShopId equals sh.Id
                         where o.UserId == userId
                         select new {o, sh};
-                                    
-            if(query==null)
-                return new ApiResult<List<OrderVm>>(false, Message:"Bạn chưa có đơn hàng nào!");
 
             if(!string.IsNullOrEmpty(state))
                 query = query.Where(x=>x.o.State==state);

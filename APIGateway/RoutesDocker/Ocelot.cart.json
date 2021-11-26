@@ -23,6 +23,18 @@
         ],
         "UpstreamPathTemplate": "/apigateway/Carts/{cartId}",
         "UpstreamHttpMethod": ["DELETE"]
+      },
+      {
+        "DownstreamPathTemplate": "/api/Carts/count",
+        "DownstreamScheme": "http",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "cartapi",
+            "Port": 80
+          }
+        ],
+        "UpstreamPathTemplate": "/apigateway/Carts/count",
+        "UpstreamHttpMethod": ["GET"]
       }
     ]
   }

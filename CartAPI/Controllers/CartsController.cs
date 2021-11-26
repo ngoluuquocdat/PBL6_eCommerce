@@ -32,10 +32,7 @@ namespace CartAPI.Controllers
                 var result = await _cartService.GetCartItems(userId);
 
                 if (result.IsSuccessed == false)
-                    return BadRequest(result.Message);
-
-                if (result.ResultObj == null || result.ResultObj.Count==0)
-                    return NoContent();    
+                    return NoContent();        
 
                 return Ok(result);
             }
@@ -46,6 +43,28 @@ namespace CartAPI.Controllers
             }            
         }
 
+        [HttpGet("count")]
+        public async Task<IActionResult> GetCartCount()
+        {
+            try
+            {
+                var claimsPrincipal = this.User;
+                var userId = Int32.Parse(claimsPrincipal.FindFirst("id").Value);
+
+                var result = await _cartService.GetCartItemsCount(userId);
+
+                if (result.IsSuccessed == false)
+                    return BadRequest(result.Message);
+
+                return Ok(result);
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine(DateTime.Now + "- Server Error: " + ex);
+                return StatusCode(500, "Lỗi server");
+            }
+            
+        }
         [HttpPost]
         public async Task<IActionResult> AddCart(AddToCartRequest request)
         {

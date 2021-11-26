@@ -21,9 +21,8 @@ namespace ProductAPI.Middleware
         public async Task Invoke(HttpContext httpContext, IProductService productService)
         {
             bool check = false;
-            // lấy action name
-            Console.WriteLine(httpContext.Request.GetEncodedUrl());
-            if(!httpContext.Request.GetEncodedUrl().Contains("/storage"))
+            
+            if(httpContext.GetEndpoint() != null)
             {
                 var controllerActionDescriptor = httpContext
                     .GetEndpoint()
@@ -32,8 +31,6 @@ namespace ProductAPI.Middleware
 
                 var controllerName = controllerActionDescriptor.ControllerName;
                 var actionName = controllerName + "." + controllerActionDescriptor.ActionName;
-
-                Console.WriteLine(actionName);
                 
                 // get id user
                 var claimsPrincipal = httpContext.User;

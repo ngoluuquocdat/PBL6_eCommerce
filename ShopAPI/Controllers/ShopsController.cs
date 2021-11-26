@@ -63,14 +63,23 @@ namespace ShopAPI.Controllers
         [HttpGet("me")]
         public async Task<ActionResult> Get()  // xem thông tin shop (USER)
         {
-            var claimsPrincipal = this.User;
-            var userId = Int32.Parse(claimsPrincipal.FindFirst("id").Value);
+            try
+            {
+                var claimsPrincipal = this.User;
+                var userId = Int32.Parse(claimsPrincipal.FindFirst("id").Value);
 
-            var result = await _shopService.Get(userId);
-            if (result.IsSuccessed == false)
-                return BadRequest(result.Message);    
-
-            return Ok(result);
+                var result = await _shopService.Get(userId);
+                if (result.IsSuccessed == false )
+                    return BadRequest(result);    
+                    
+                return Ok(result);
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine(DateTime.Now + "- Server Error: " + ex);
+                return StatusCode(500, "Lỗi server");
+            } 
+            
         }
         [HttpGet("{shopId}")]
         [AllowAnonymous]

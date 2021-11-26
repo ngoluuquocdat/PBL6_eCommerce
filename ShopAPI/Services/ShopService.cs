@@ -28,14 +28,26 @@ namespace ShopAPI.Services
             var user =  await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
             if(user == null) return new ApiResult<ShopVm>(false, "Người dùng này không tồn tại trong hệ thống!");
 
-            if(user.ShopId == null)
-            {
-                return new ApiResult<ShopVm>(false, "Bạn chưa đăng ký cửa hàng nào. Vui lòng tạo mới một cửa hàng và thử lại!");
+            var shopInfo = new ShopVm();
+            var shop = await _context.Shops.FirstOrDefaultAsync(s => s.Id == user.ShopId);
+            
+            if(shop.Disable == true)    // bị vô hiệu hóa shop
+            {    
+                shopInfo = new ShopVm
+                {
+                    ShopId = shop.Id,
+                    NameOfShop = shop.Name,
+                    NameOfUser = user.Fullname,
+                    Disable = shop.Disable,
+                    DisableReason = shop.DisableReason,
+                    DateModified = shop.DateModified
+                };
+                return new ApiResult<ShopVm>(false, shopInfo);
             }
-            else
+            else // shop vẫn hoạt động bình thường
             {
-                var shop = await _context.Shops.FirstOrDefaultAsync(s => s.Id == user.ShopId);
-                var shopInfo = new ShopVm{
+                shopInfo = new ShopVm
+                {
                     ShopId = shop.Id,
                     NameOfShop = shop.Name,
                     NameOfUser = user.Fullname,
@@ -46,8 +58,8 @@ namespace ShopAPI.Services
                     DateCreated = shop.DateCreated,
                     DateModified = shop.DateModified
                 };
-                return new ApiResult<ShopVm>(true, shopInfo);
-            }
+            return new ApiResult<ShopVm>(true, shopInfo);
+            }                       
         }
         public async Task<ApiResult<string>> Create(int userId, CreateShopVm request){
 

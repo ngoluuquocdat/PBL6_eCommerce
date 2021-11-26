@@ -18,16 +18,15 @@ namespace OrdersAPI.Middleware
         public async Task Invoke(HttpContext httpContext, IOrderService orderService)
         {
             bool check = false;
-            // lấy action name
-            var controllerActionDescriptor = httpContext
-                .GetEndpoint()
-                .Metadata
-                .GetMetadata<ControllerActionDescriptor>();
+            if(httpContext.GetEndpoint() != null)
+            {
+                var controllerActionDescriptor = httpContext
+                    .GetEndpoint()
+                    .Metadata
+                    .GetMetadata<ControllerActionDescriptor>();
 
                 var controllerName = controllerActionDescriptor.ControllerName;
                 var actionName = controllerName + "." + controllerActionDescriptor.ActionName;
-
-                Console.WriteLine(actionName);
                 
                 // get id user
                 var claimsPrincipal = httpContext.User;
@@ -54,6 +53,7 @@ namespace OrdersAPI.Middleware
                     await httpContext.Response.WriteAsync("user don't has permission for this action");
                     return;
                 }
+            }
             await _next(httpContext);
         }
     }
