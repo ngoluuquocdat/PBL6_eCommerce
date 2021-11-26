@@ -130,6 +130,12 @@ namespace eComSolution.Service.Catalog.Carts
             return new ApiResult<List<CartItem>>(true, ResultObj:data);
         }
 
+        public async Task<ApiResult<int>> GetCartItemsCount(int userId)
+        {
+            int count = await _context.Carts.CountAsync(x=>x.UserId==userId);
+            return new ApiResult<int>(true, ResultObj: count); 
+        }
+
         public async Task<ApiResult<int>> RemoveFromCart(int userId, int cartId)
         {
             var cart_item = await _context.Carts.Where(x=>x.Id == cartId).FirstOrDefaultAsync();
