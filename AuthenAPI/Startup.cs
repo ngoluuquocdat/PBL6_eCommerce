@@ -31,7 +31,7 @@ namespace AuthenAPI
 
             services.AddCors(option 
                 => option.AddPolicy("MyCorsPolicy", builder => 
-                builder.WithOrigins("http://localhost:4200")
+                builder.WithOrigins("http://localhost:8080")
                 .AllowAnyMethod()
                 .AllowAnyHeader()
                 .SetIsOriginAllowed(origin => true)));

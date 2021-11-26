@@ -30,6 +30,12 @@ namespace APIGateway
         {
 
             services.AddControllers();
+            services.AddCors(option 
+                => option.AddPolicy("MyCorsPolicy", builder => 
+                builder.WithOrigins("http://localhost:8080")
+                .AllowAnyMethod()
+                .AllowAnyHeader()
+                .SetIsOriginAllowed(origin => true)));
             services.AddOcelot();
             services.AddSwaggerGen(c =>
             {
