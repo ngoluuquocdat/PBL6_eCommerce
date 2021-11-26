@@ -12,6 +12,8 @@ namespace eComSolution.Service.Catalog.Carts
     {
         Task<ApiResult<List<CartItem>>> GetCartItems(int userId);
 
+        Task<ApiResult<int>> GetCartItemsCount(int userId);
+
         Task<ApiResult<int>> AddToCart(int userId, AddToCartRequest request);
 
         Task<ApiResult<int>> UpdateCartItem(int userId, UpdateCartItemRequest request);

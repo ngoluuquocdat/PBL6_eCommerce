@@ -37,6 +37,20 @@ namespace eComSolution.API.Controllers
             return Ok(result);
         }
 
+        [HttpGet("count")]
+        public async Task<IActionResult> GetCartCount()
+        {
+            var claimsPrincipal = this.User;
+            var userId = Int32.Parse(claimsPrincipal.FindFirst("id").Value);
+
+            var result = await _cartService.GetCartItemsCount(userId);
+
+            if (result.IsSuccessed == false)
+                return BadRequest(result.Message);
+
+            return Ok(result);
+        }
+
         [HttpPost]
         public async Task<IActionResult> AddCart(AddToCartRequest request)
         {
