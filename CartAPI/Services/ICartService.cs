@@ -12,6 +12,8 @@ namespace CartAPI.Services
     {
         Task<ApiResult<List<CartItem>>> GetCartItems(int userId);
 
+        Task<ApiResult<List<CartItem>>> GetCartItemsByIds(int userId, List<int> cartIds);
+
         Task<ApiResult<int>> AddToCart(int userId, AddToCartRequest request);
         
         Task<ApiResult<int>> GetCartItemsCount(int userId);

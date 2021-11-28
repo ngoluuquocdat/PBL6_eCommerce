@@ -13,6 +13,18 @@
         "UpstreamHttpMethod": [ "GET", "POST", "PATCH", "DELETE"]
       },
       {
+        "DownstreamPathTemplate": "/api/Carts/me",
+        "DownstreamScheme": "http",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "cartapi",
+            "Port": 80
+          }
+        ],
+        "UpstreamPathTemplate": "/apigateway/Carts/me",
+        "UpstreamHttpMethod": ["GET"]
+      },
+      {
         "DownstreamPathTemplate": "/api/Carts/{cartId}",
         "DownstreamScheme": "http",
         "DownstreamHostAndPorts": [

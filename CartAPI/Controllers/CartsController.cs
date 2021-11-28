@@ -21,7 +21,7 @@ namespace CartAPI.Controllers
             _cartService = cartService;
         }
 
-        [HttpGet]
+        [HttpGet("me")]
         public async Task<IActionResult> GetCart()
         {
             try
@@ -42,6 +42,28 @@ namespace CartAPI.Controllers
                 return StatusCode(500, "Lỗi server");
             }            
         }
+
+        [HttpGet]
+        public async Task<IActionResult> GetCartItemsByIds([FromQuery] List<int> cartIds)
+        {
+            try
+            {
+                var claimsPrincipal = this.User;
+                var userId = Int32.Parse(claimsPrincipal.FindFirst("id").Value);
+
+                var result = await _cartService.GetCartItemsByIds(userId, cartIds);
+
+                if (result.ResultObj.Count == 0 || result.ResultObj==null)
+                    return NoContent();        
+
+                return Ok(result);
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine(DateTime.Now + "- Server Error: " + ex);
+                return StatusCode(500, "Lỗi server");
+            }            
+        } 
 
         [HttpGet("count")]
         public async Task<IActionResult> GetCartCount()

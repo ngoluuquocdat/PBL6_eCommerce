@@ -135,6 +135,59 @@ namespace CartAPI.Services
             return new ApiResult<int>(true, ResultObj: count); 
         }
 
+        public async Task<ApiResult<List<CartItem>>> GetCartItemsByIds(int userId, List<int> cartIds)
+        {
+            List<CartItem> data = new List<CartItem>(); 
+            foreach(var cartId in cartIds)
+            {
+                var query = from c in _context.Carts
+                        join pd in _context.ProductDetails on c.ProductDetail_Id equals pd.Id
+                        join p in _context.Products on pd.ProductId equals p.Id
+                        join sh in _context.Shops on p.ShopId equals sh.Id
+                        where c.Id == cartId
+                        select new {c, pd, p, sh};
+                var record = await query.FirstOrDefaultAsync();
+                if(record==null) continue;
+                if(record.c.Quantity > record.pd.Stock && record.pd.Stock>0)
+                {
+                    record.c.Quantity = record.pd.Stock;
+                    await _context.SaveChangesAsync();
+                }
+                string path = "";
+                int productId = record.p.Id;
+                // ảnh thumbnail
+                // var image =  await _context.ProductImages
+                //     .Where(x=>x.ProductId==productId && x.IsDefault==true)
+                //     .FirstOrDefaultAsync();
+                // ảnh theo color
+                var image =  await _context.ProductImages
+                    .Where(x=>x.ProductId==productId && x.ColorName==record.pd.Color)
+                    .FirstOrDefaultAsync();
+                
+                if(image!=null) path = image.ImagePath;
+                data.Add(new CartItem()
+                {
+                    Id = record.c.Id,
+                    UserId = record.c.UserId,
+                    ProductId = record.p.Id,
+                    ProductDetail_Id = record.c.ProductDetail_Id,
+                    ShopId = record.p.ShopId,
+                    ProductName = record.p.Name,
+                    Color = record.pd.Color,
+                    Size = record.pd.Size,
+                    ShopName = record.sh.Name,
+                    Quantity = record.c.Quantity,
+                    Stock = record.pd.Stock,
+                    Price = record.p.Price,
+                    Image = path,
+                    IsShopAvailable = !record.sh.Disable,
+                    IsProductDetailAvailable = !record.pd.IsDeleted,
+                    IsRemainInStock = !(record.pd.Stock == 0)
+                });
+            }
+            return new ApiResult<List<CartItem>>(true, ResultObj:data);
+        }
+
         public async Task<ApiResult<int>> RemoveFromCart(int userId, int cartId)
         {
             var cart_item = await _context.Carts.Where(x=>x.Id == cartId).FirstOrDefaultAsync();
