@@ -30,6 +30,7 @@ namespace APIGateway
         {
 
             services.AddControllers();
+            
             services.AddCors(option 
                 => option.AddPolicy("MyCorsPolicy", builder => 
                 builder.WithOrigins("http://localhost:8080")
@@ -52,10 +53,13 @@ namespace APIGateway
                 app.UseSwagger();
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "APIGateway v1"));
             }
+            //app.UseCors(builder =>builder.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod().AllowCredentials());
 
             app.UseHttpsRedirection();
 
             app.UseRouting();
+
+            app.UseCors("MyCorsPolicy");
 
             app.UseAuthorization();
 

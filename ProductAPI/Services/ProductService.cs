@@ -145,6 +145,7 @@ namespace ProductAPI.Services
                 ShopId = shop.Id,
                 ShopName = shop.Name,
                 ShopDescription = shop.Description,
+                IsDisableShop = shop.Disable,
                 Details = await GetProductDetails(product.Id),
                 Images = await GetProductImages(product.Id)
             };
