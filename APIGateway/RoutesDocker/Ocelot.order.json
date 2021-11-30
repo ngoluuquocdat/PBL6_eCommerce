@@ -1,28 +1,40 @@
 {
     "Routes": [
-          {
-          "DownstreamPathTemplate": "/api/Orders/me",
-          "DownstreamScheme": "http",
-          "DownstreamHostAndPorts": [
-              {
-              "Host": "orderapi",
-              "Port": 80
-              }
-          ],
-          "UpstreamPathTemplate": "/apigateway/Orders/me",
-          "UpstreamHttpMethod": [ "GET" , "DELETE" ]
-          },
-          {
+        {
+            "DownstreamPathTemplate": "/api/Orders/me",
+            "DownstreamScheme": "http",
+            "DownstreamHostAndPorts": [
+                {
+                    "Host": "orderapi",
+                    "Port": 80
+                }
+            ],
+            "UpstreamPathTemplate": "/apigateway/Orders/me",
+            "UpstreamHttpMethod": [ "GET" , "DELETE" ]
+        },
+        {
+            "DownstreamPathTemplate": "/api/Orders/shop",
+            "DownstreamScheme": "http",
+            "DownstreamHostAndPorts": [
+                {
+                    "Host": "orderapi",
+                    "Port": 80
+                }
+            ],
+            "UpstreamPathTemplate": "/apigateway/Orders/shop",
+            "UpstreamHttpMethod": [ "GET", "PATCH", "DELETE" ]
+        },
+        {
             "DownstreamPathTemplate": "/api/Orders",
             "DownstreamScheme": "http",
             "DownstreamHostAndPorts": [
                 {
-                "Host": "orderapi",
-                "Port": 80
+                    "Host": "orderapi",
+                    "Port": 80
                 }
             ],
             "UpstreamPathTemplate": "/apigateway/Orders",
             "UpstreamHttpMethod": [ "POST" ]
-            }
+        }
       ]
   }

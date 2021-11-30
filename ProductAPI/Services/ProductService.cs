@@ -380,8 +380,7 @@ namespace ProductAPI.Services
                         .FirstOrDefault();
                     product_detail.Stock = dto.Stock;
                     product_detail.IsDeleted = false;
-                    _context.ProductDetails.Update(product_detail);  
-                                          
+                    _context.ProductDetails.Update(product_detail);                                           
                 } 
                 else
                 {
