@@ -31,7 +31,7 @@ namespace CartAPI.Controllers
 
                 var result = await _cartService.GetCartItems(userId);
 
-                if (result.IsSuccessed == false)
+                if (result.ResultObj.Count == 0 || result.ResultObj==null)
                     return NoContent();        
 
                 return Ok(result);
