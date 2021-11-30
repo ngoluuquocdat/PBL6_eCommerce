@@ -227,7 +227,7 @@ namespace OrdersAPI.Services
                     Size = record.pd.Size,
                     Quantity = record.od.Quantity,
                     Price = record.od.Price,
-                    Image = path
+                    Image = !String.IsNullOrEmpty(path) ? "/storage/"+path : "",
                 });
             }
             return data;
