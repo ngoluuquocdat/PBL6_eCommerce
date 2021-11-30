@@ -21,9 +21,11 @@ namespace ProductAPI.Middleware
         public async Task Invoke(HttpContext httpContext, IProductService productService)
         {
             bool check = false;
+            // ** url lấy ảnh sẽ không qua middleware
             // check httpContext.GetEndpoint(): 
+            // - GetEndpoint: ProductAPI.Controllers.ProductsController.GetProductById
             // - nó sẽ null nếu như request không khớp với endpoint nào
-            // - VD: url lấy ảnh hoặc url 404 not found
+            // - VD: url 404 not found
             // check httpContext.GetEndpoint().Metadata.GetMetadata<ControllerActionDescriptor>(): 
             // - nó sẽ null nếu như method của request bị sai - lỗi 405
             // - VD: POST api/Products/7 (GET getProductById)
