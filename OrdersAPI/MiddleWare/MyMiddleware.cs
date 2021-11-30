@@ -18,7 +18,16 @@ namespace OrdersAPI.Middleware
         public async Task Invoke(HttpContext httpContext, IOrderService orderService)
         {
             bool check = false;
-            if(httpContext.GetEndpoint() != null)
+            // check httpContext.GetEndpoint(): 
+            // - nó sẽ null nếu như request không khớp với endpoint nào
+            // - VD: url lấy ảnh hoặc url 404 not found
+            // check httpContext.GetEndpoint().Metadata.GetMetadata<ControllerActionDescriptor>(): 
+            // - nó sẽ null nếu như method của request bị sai - lỗi 405
+            // - VD: POST api/Products/7 (GET getProductById)
+            // những trường hợp như trên thì sẽ không cần check quyền, nên cho qua
+            
+            if(httpContext.GetEndpoint() != null 
+            && httpContext.GetEndpoint().Metadata.GetMetadata<ControllerActionDescriptor>() != null )
             {
                 var controllerActionDescriptor = httpContext
                     .GetEndpoint()
@@ -50,7 +59,7 @@ namespace OrdersAPI.Middleware
 
                 if(!check)
                 {
-                    await httpContext.Response.WriteAsync("user don't has permission for this action");
+                    httpContext.Response.StatusCode = 403;
                     return;
                 }
             }
