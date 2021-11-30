@@ -220,6 +220,56 @@ namespace eComSolution.Service.Catalog.Orders
             return data;
         }
 
+        public async Task<ApiResult<List<OrderVm>>> GetShopOrders(int userId, string state = "")
+        {
+            if(!(string.IsNullOrEmpty(state)) && (!String.Equals(state, "Chờ xác nhận")
+                    &&!String.Equals(state, "Đã xác nhận")
+                        &&!String.Equals(state, "Đã hủy")))
+                return new ApiResult<List<OrderVm>>(false, Message:"Thông tin không hợp lệ, vui lòng nhập lại");
+
+            // get shop
+            var shop_query = await (from sh in _context.Shops
+                       join u in _context.Users on sh.Id equals u.ShopId
+                       where u.Id == userId
+                       select sh).FirstOrDefaultAsync();  
+
+            if(shop_query==null)  
+                return new ApiResult<List<OrderVm>>(false, Message:"Chỉ có tài khoản chủ shop mới được thực hiện hành động này");
+
+            var query = from o in _context.Orders 
+                        join sh in _context.Shops on o.ShopId equals sh.Id
+                        where o.ShopId == shop_query.Id
+                        select new {o, sh};
+
+            if(!string.IsNullOrEmpty(state))
+                query = query.Where(x=>x.o.State==state);
+
+            query = query.OrderByDescending(x=>x.o.OrderDate);
+            
+            var data = await query.Select(x=> new OrderVm
+            {
+                Id = x.o.Id,
+                OrderDate = x.o.OrderDate,
+                DateModified = x.o.DateModified,
+                UserId = x.o.UserId,
+                ShopId = x.o.ShopId,
+                ShopName = x.sh.Name,
+                ShipName = x.o.ShipName,
+                ShipAddress = x.o.ShipAddress,
+                ShipPhone = x.o.ShipPhone,
+                State = x.o.State,
+                CancelReason = x.o.CancelReason
+            }).ToListAsync();
+
+            for(int i=0; i<data.Count; i++)
+            {
+                data[i].OrderDetails = await GetOrderDetails(data[i].Id);
+                data[i].TotalPrice = data[i].OrderDetails.Sum(d => d.Price*d.Quantity);
+            }
+                        
+            return new ApiResult<List<OrderVm>>(true, ResultObj:data);
+        }
+
         public async Task<ApiResult<int>> CancelUnconfirmedOrder(int userId, CancelOrderRequest request)
         {
             if(!request.IsValid())
@@ -243,6 +293,7 @@ namespace eComSolution.Service.Catalog.Orders
 
             // 1. chuyển trạng thái đơn hàng thành 'đã hủy'
             order.State = "Đã hủy";
+            order.DateModified = DateTime.Now;
             // 2. cập nhật lý do hủy đơn
             order.CancelReason = request.CancelReason;
             _context.Orders.Update(order);
@@ -259,7 +310,85 @@ namespace eComSolution.Service.Catalog.Orders
             
             return new ApiResult<int>(true, Message:"Hủy đơn hàng thành công!");
         }
-        
+
+        public async Task<ApiResult<int>> ConfirmOrder(int userId, int orderId)
+        {
+            // get shop & check
+            var shop = await (from sh in _context.Shops
+                       join u in _context.Users on sh.Id equals u.ShopId
+                       where u.Id == userId
+                       select sh).FirstOrDefaultAsync();  
+
+            if(shop==null)  
+                return new ApiResult<int>(false, Message:"Chỉ có tài khoản chủ shop mới được thực hiện hành động này");
+
+            // get order
+            var order = await _context.Orders.Where(x=>x.Id==orderId).FirstOrDefaultAsync();
+            if(order==null) return new ApiResult<int>(false, Message:$"Không tìm thấy đơn hàng với Id: {orderId}");  
+
+            // check đơn hàng chính chủ của shop
+            if(order.ShopId!=shop.Id) 
+                return new ApiResult<int>(false, Message:$"Shop của bạn không có đơn hàng với Id: {orderId}");
+            
+            if(!String.Equals(order.State, "Chờ xác nhận")) 
+                return new ApiResult<int>(false, Message:$"Bạn chỉ có thể xác nhận đơn chưa xác nhận");  
+
+            // chuyển trạng thái đơn hàng thành 'Đã xác nhận'
+            order.State = "Đã xác nhận";
+            order.DateModified = DateTime.Now;
+            _context.Orders.Update(order);
+            await _context.SaveChangesAsync();
+            
+            return new ApiResult<int>(true, Message:"Xác nhận đơn hàng thành công!");
+        }
+
+        public async Task<ApiResult<int>> CancelOrder(int userId, CancelOrderRequest request)
+        {
+            // get shop & check
+            var shop = await (from sh in _context.Shops
+                       join u in _context.Users on sh.Id equals u.ShopId
+                       where u.Id == userId
+                       select sh).FirstOrDefaultAsync();  
+
+            if(shop==null)  
+                return new ApiResult<int>(false, Message:"Chỉ có tài khoản chủ shop mới được thực hiện hành động này");
+
+            // get order
+            var order = await _context.Orders.Where(x=>x.Id==request.OrderId).FirstOrDefaultAsync();
+            if(order==null) return new ApiResult<int>(false, Message:$"Không tìm thấy đơn hàng với Id: {request.OrderId}");  
+
+            // check đơn hàng chính chủ của shop
+            if(order.ShopId!=shop.Id) 
+                return new ApiResult<int>(false, Message:$"Shop của bạn không có đơn hàng với Id: {request.OrderId}");
+            
+            if(String.Equals(order.State, "Đã hủy")) 
+                return new ApiResult<int>(false, Message:$"Đơn hàng này đã bị hủy trước đó");  
+
+            var order_details = await _context.OrderDetails
+                            .Where(x=>x.OrderId==request.OrderId).ToListAsync();
+
+            if(String.IsNullOrEmpty(request.CancelReason))  request.CancelReason = "Lý do khác";    
+
+            // 1. chuyển trạng thái đơn hàng thành 'đã hủy'
+            order.State = "Đã hủy";
+            order.DateModified = DateTime.Now;
+            // 2. cập nhật lý do hủy đơn
+            order.CancelReason = request.CancelReason;
+            _context.Orders.Update(order);
+            // 3. cộng lại số lượng sản phẩm đã đặt vào stock
+            foreach(var order_detail in order_details)
+            {
+                var product_detail = await _context.ProductDetails    
+                                    .Where(x=>x.Id==order_detail.ProductDetail_Id)
+                                    .FirstOrDefaultAsync();
+                product_detail.Stock += order_detail.Quantity;
+                _context.ProductDetails.Update(product_detail);
+            }
+            await _context.SaveChangesAsync();
+            
+            return new ApiResult<int>(true, Message:"Hủy đơn hàng thành công!");
+        }
+
         // public async Task<ApiResult<int>> CreateOrder(int userId, CheckOutRequest request)
         // {
         // ****** bên web tự gom shopId với list cartIds*****

@@ -90,5 +90,69 @@ namespace eComSolution.API.Controllers
                 return StatusCode(500, "Lỗi server");
             }
         }
+        [HttpGet("shop")]
+        public async Task<IActionResult> GetShopOrders(string state)
+        {
+            try
+            {
+                var claimsPrincipal = this.User;
+                var userId = Int32.Parse(claimsPrincipal.FindFirst("id").Value);
+                
+                var result = await _orderService.GetShopOrders(userId, state);
+
+                if(result.IsSuccessed==false)
+                    return BadRequest(result.Message);
+
+                if (result.ResultObj == null || result.ResultObj.Count==0)
+                    return NoContent();     
+
+                return Ok(result);
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine(DateTime.Now + "- Server Error: " + ex);
+                return StatusCode(500, "Lỗi server");
+            }
+        }  
+        [HttpPatch("shop")]
+        public async Task<IActionResult> ConfirmOrder(int orderId)
+        {   
+            try
+            {
+                var claimsPrincipal = this.User;
+                var userId = Int32.Parse(claimsPrincipal.FindFirst("id").Value);
+
+                var result = await _orderService.ConfirmOrder(userId, orderId);
+                if(result.IsSuccessed==false)
+                    return BadRequest(result.Message);
+
+                return Ok(result);
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine(DateTime.Now + "- Server Error: " + ex);
+                return StatusCode(500, "Lỗi server");
+            }
+        }
+        [HttpDelete("shop")]
+        public async Task<IActionResult> CancelOrder(CancelOrderRequest request)
+        {   
+            try
+            {
+                var claimsPrincipal = this.User;
+                var userId = Int32.Parse(claimsPrincipal.FindFirst("id").Value);
+
+                var result = await _orderService.CancelOrder(userId, request);
+                if(result.IsSuccessed==false)
+                    return BadRequest(result.Message);
+
+                return Ok(result);
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine(DateTime.Now + "- Server Error: " + ex);
+                return StatusCode(500, "Lỗi server");
+            }
+        } 
     }
 }
