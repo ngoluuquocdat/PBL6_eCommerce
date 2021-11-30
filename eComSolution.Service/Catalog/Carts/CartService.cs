@@ -120,7 +120,7 @@ namespace eComSolution.Service.Catalog.Carts
                     Quantity = record.c.Quantity,
                     Stock = record.pd.Stock,
                     Price = record.p.Price,
-                    Image = "/storage/"+path,
+                    Image = !String.IsNullOrEmpty(path) ? "/storage/"+path : "",
                     IsShopAvailable = !record.sh.Disable,
                     IsProductDetailAvailable = !record.pd.IsDeleted,
                     IsRemainInStock = !(record.pd.Stock == 0)
@@ -174,7 +174,7 @@ namespace eComSolution.Service.Catalog.Carts
                     Quantity = record.c.Quantity,
                     Stock = record.pd.Stock,
                     Price = record.p.Price,
-                    Image = "/storage/"+path,
+                    Image = !String.IsNullOrEmpty(path) ? "/storage/"+path : "",
                     IsShopAvailable = !record.sh.Disable,
                     IsProductDetailAvailable = !record.pd.IsDeleted,
                     IsRemainInStock = !(record.pd.Stock == 0)
