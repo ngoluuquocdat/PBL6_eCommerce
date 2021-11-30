@@ -120,7 +120,7 @@ namespace CartAPI.Services
                     Quantity = record.c.Quantity,
                     Stock = record.pd.Stock,
                     Price = record.p.Price,
-                    Image = path,
+                    Image = "/storage/"+path,
                     IsShopAvailable = !record.sh.Disable,
                     IsProductDetailAvailable = !record.pd.IsDeleted,
                     IsRemainInStock = !(record.pd.Stock == 0)
@@ -179,7 +179,7 @@ namespace CartAPI.Services
                     Quantity = record.c.Quantity,
                     Stock = record.pd.Stock,
                     Price = record.p.Price,
-                    Image = path,
+                    Image = "/storage/"+path,
                     IsShopAvailable = !record.sh.Disable,
                     IsProductDetailAvailable = !record.pd.IsDeleted,
                     IsRemainInStock = !(record.pd.Stock == 0)
