@@ -90,6 +90,25 @@ namespace ShopAPI.Controllers
                 var result = await _shopService.GetByShopId(shopId);
 
                 if (result.IsSuccessed == false)
+                    return NoContent();                       
+
+                return Ok(result);
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine(DateTime.Now + "- Server Error: " + ex);
+                return StatusCode(500, "Lỗi server");
+            }
+        }
+        [HttpDelete("{shopId}")]
+        [AllowAnonymous]
+        public async Task<ActionResult> DeleteShop(int shopId)  // xem thông tin shop by userId (ADMIN)
+        {
+            try
+            {
+                var result = await _shopService.DeleteShop(shopId);
+
+                if (result.IsSuccessed == false)
                     return BadRequest(result.Message);    
 
                 return Ok(result);

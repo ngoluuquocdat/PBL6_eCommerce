@@ -18,5 +18,6 @@ namespace ShopAPI.Services
         Task<ApiResult<string>> DisableShop(ShopDisableRequest request);
         Task<ApiResult<string>> EnableShop(int shopId);
         Task<List<Function>> GetPermissions(int userId);
+        Task<ApiResult<string>> DeleteShop(int shopId);
     }
 }

@@ -154,6 +154,25 @@ namespace ShopAPI.Services
             return new ApiResult<string>(false, Message: "Đã xảy ra lỗi. Vui lòng thử lại!");
 
         }
+        public async Task<ApiResult<string>> DeleteShop(int shopId){
+            var shop = await _context.Shops.FirstOrDefaultAsync(s => s.Id == shopId);
+            if(shop == null) return new ApiResult<string>(false, "Không tồn tại cửa hàng này!");
+            
+            var user = await _context.Users.FirstOrDefaultAsync(x => x.ShopId == shopId);
+            user.ShopId = null;
+
+            var gu = await _context.GroupUsers.FirstOrDefaultAsync(x => x.UserId == user.Id && x.GroupId == 2);
+
+            _context.Users.Update(user);
+            _context.Shops.Remove(shop);
+            _context.GroupUsers.Remove(gu);
+
+            if(await _context.SaveChangesAsync() > 0)
+            return new ApiResult<string>(true, Message: "Xóa shop thành công!");
+            else
+            return new ApiResult<string>(false, Message: "Đã xảy ra lỗi. Vui lòng thử lại!");
+
+        }
         public async Task<ApiResult<string>> EnableShop(int shopId){
             var shop = await _context.Shops.FirstOrDefaultAsync(s => s.Id == shopId);
             if(shop == null) return new ApiResult<string>(false, "Không tồn tại cửa hàng này!");
