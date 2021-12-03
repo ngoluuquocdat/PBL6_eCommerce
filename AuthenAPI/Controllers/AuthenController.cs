@@ -44,7 +44,7 @@ namespace AuthenAPI.Controllers
             {
                 var result = await _authenService.Register(request);
                 if(result.IsSuccessed == false) return BadRequest(result);
-
+                
                 return Ok(result);
             }
             catch(Exception ex)
@@ -60,8 +60,8 @@ namespace AuthenAPI.Controllers
             try
             {
                 var result = await _authenService.CheckUsername(username);
-                if(result.IsSuccessed == false) 
-                    return BadRequest(result.Message);
+                // if(result.IsSuccessed == false) 
+                //     return BadRequest(result.Message);
 
                 return Ok(result);
             }

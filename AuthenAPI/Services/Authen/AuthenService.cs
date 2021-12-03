@@ -67,17 +67,17 @@ namespace AuthenAPI.Services.Authen
         public async Task<ApiResult<string>> CheckUsername(string username){
             var user =  await _context.Users.FirstOrDefaultAsync(u => u.Username == username);
             if(user == null) return new ApiResult<string>(true, "Tên đăng nhập hợp lệ!");
-            else return new ApiResult<string>(false, "Tên đăng nhập đã được sử dụng. Vui lòng thử với tên đăng nhập khác!");
+            else return new ApiResult<string>(true, true, "Tên đăng nhập đã được sử dụng. Vui lòng thử với tên đăng nhập khác!");
         }
         public async Task<ApiResult<string>> CheckEmail(string email){
             var user =  await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
             if(user == null) return new ApiResult<string>(true, "Email hợp lệ!");
-            else return new ApiResult<string>(false, "Email đã được sử dụng. Vui lòng thử với email khác!");
+            else return new ApiResult<string>(true, true, "Email đã được sử dụng. Vui lòng thử với email khác!");
         }
         public async Task<ApiResult<string>> CheckPhone(string phonenumber){
             var user =  await _context.Users.FirstOrDefaultAsync(u => u.PhoneNumber == phonenumber);
             if(user == null) return new ApiResult<string>(true, "Số điện thoại hợp lệ!");
-            else return new ApiResult<string>(false, "Số điện thoại này đã được sử dụng. Vui lòng thử với số điện thoại khác!");
+            else return new ApiResult<string>(true, true, "Số điện thoại này đã được sử dụng. Vui lòng thử với số điện thoại khác!");
         }
 
         public async Task<ApiResult<string>> Register(RegisterRequest request)
@@ -97,7 +97,7 @@ namespace AuthenAPI.Services.Authen
             
             if(VerifyEmail(request.Email.ToLower()) == false) // verify email
             {
-                return new ApiResult<string>(false, "Email này không tồn tại. Vui lòng nhập Email khác và thử lại!");
+                return new ApiResult<string>(true, true, "Email này không tồn tại. Vui lòng nhập Email khác và thử lại!");
             }
             
             if(!IsValid("", "", "",request.PhoneNumber)) // valid phone number
@@ -106,7 +106,7 @@ namespace AuthenAPI.Services.Authen
             }
             // check phone number is used
             var phone =  await _context.Users.FirstOrDefaultAsync(u => u.PhoneNumber == request.PhoneNumber);
-            if(phone != null) return new ApiResult<string>(false, "Số điện thoại này đã được sử dụng. Vui lòng thử với số điện thoại khác!");
+            if(phone != null) return new ApiResult<string>(true, true , "Số điện thoại này đã được sử dụng. Vui lòng thử với số điện thoại khác!");
 
             if(!IsValid(request.Username, "", "", "")) // valid username
             {
@@ -114,7 +114,7 @@ namespace AuthenAPI.Services.Authen
             }
             // check username is used
             var username =  await _context.Users.FirstOrDefaultAsync(u => u.Username == request.Username);
-            if(username != null) return new ApiResult<string>(false, "Tên đăng nhập đã được sử dụng. Vui lòng thử với tên đăng nhập khác!");
+            if(username != null) return new ApiResult<string>(true, true, "Tên đăng nhập đã được sử dụng. Vui lòng thử với tên đăng nhập khác!");
 
             if(!IsValid("", request.Password, "", "")) // valid password
             {

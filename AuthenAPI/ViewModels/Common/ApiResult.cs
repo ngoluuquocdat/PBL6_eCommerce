@@ -7,15 +7,12 @@ namespace AuthenAPI.ViewModels.Common
     public class ApiResult<T>
     {
         public bool IsSuccessed { get; set; }
+        
+        public bool IsExisted { get; set; }
 
         public string Message { get; set; }
 
         public T ResultObj { get; set; }
-
-        public ApiResult(bool IsSuccessed)
-        {
-            this.IsSuccessed = IsSuccessed;
-        }
 
         // cho trường hợp Failed, gởi ra 1 message 
         public ApiResult(bool IsSuccessed, string Message)
@@ -36,5 +33,12 @@ namespace AuthenAPI.ViewModels.Common
             this.IsSuccessed = IsSuccessed;
             this.ResultObj = ResultObj;
         }
+        public ApiResult(bool IsSuccessed, bool IsExisted, string Message)
+        {
+            this.IsSuccessed = IsSuccessed;
+            this.IsExisted = IsExisted;
+            this.Message = Message;
+        }
+
     }
 }
