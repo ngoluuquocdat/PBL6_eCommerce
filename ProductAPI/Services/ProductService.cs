@@ -5,14 +5,13 @@ using System.Linq;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using eComSolution.ViewModel.Catalog.Products;
-using eProductAPI.ViewModels.ProductImages;
+using ProductAPI.ViewModels.ProductImages;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Database;
 using Database.Entities;
 using ProductAPI.ViewModels.Common;
 using ProductAPI.ViewModels.ProductDetails;
-using ProductAPI.ViewModels.ProductImages;
 using ProductAPI.ViewModels.Products;
 
 namespace ProductAPI.Services
@@ -192,6 +191,89 @@ namespace ProductAPI.Services
             return data;
         }
 
+        // public async Task<ApiResult<int>> Create(int userId, CreateProductRequest request)
+        // {
+        //     // check valid properties request
+        //     if(request.IsValid()==false)
+        //         return new ApiResult<int>(false, Message:"Thông tin không hợp lệ, vui lòng nhập lại");
+        //     // check categories hợp lệ
+        //     var category = await _context.Categories.FirstOrDefaultAsync(x=>x.Id==request.CategoryId);
+        //     if(category==null) 
+        //         return new ApiResult<int>(false, Message:$"Không tồn tại category với Id: {request.CategoryId}");
+                
+        //     // 1. tạo list các product details
+        //     var product_details = new List<ProductDetail>();
+        //     if(request.Details==null || request.Details.Count==0)
+        //         return new ApiResult<int>(false, Message:"Chi tiết sản phẩm không được phép để trống!");
+
+        //     foreach(var productDetailVm in request.Details)
+        //     {
+        //         product_details.Add(new ProductDetail()
+        //         {
+        //             Color = productDetailVm.Color,
+        //             Size = productDetailVm.Size,
+        //             Stock = productDetailVm.Stock,
+        //             IsDeleted = false
+        //         });
+        //     }
+
+        //     // 2. tạo list các product images
+        //     //var product_images = new List<ProductImage>();
+        //     // cách 1:
+        //     // if(request.Images==null || request.Images.Count==0)
+        //     //     return new ApiResult<int>(false, Message:"Details must not null");
+        //     // if(request.NewImages!=null)
+        //     // {
+        //     //     foreach(var image in request.NewImages)
+        //     //     {
+        //     //         product_images.Add(new ProductImage()
+        //     //         {
+        //     //             IsDefault = image.IsDefault,
+        //     //             ColorName = image.ColorName,
+        //     //             IsSizeDetail = image.IsSizeDetail,
+        //     //             ImagePath =  await this.SaveFile(image.ImageFile)
+        //     //         });            
+        //     //     }
+        //     // }
+        //     // cách 2:
+        //     // for(int i=0; i<request.ImageInfos.Count; i++)
+        //     // {
+        //     //     product_images.Add(new ProductImage()
+        //     //         {
+        //     //             IsDefault = request.ImageInfos[i].IsDefault,
+        //     //             ColorName = request.ImageInfos[i].ColorName,
+        //     //             IsSizeDetail = request.ImageInfos[i].IsSizeDetail,
+        //     //             ImagePath =  await this.SaveFile(request.NewImages[i])
+        //     //         });   
+        //     // }
+
+        //     // 3. tạo product mới
+        //     // get shopId
+        //     var shopId = (await _context.Users.FirstOrDefaultAsync(x=>x.Id==userId)).ShopId;
+        //     if(shopId==null)  
+        //         return new ApiResult<int>(false, Message:"Chỉ có tài khoản chủ shop mới được thực hiện hành động này");
+        //     // thông tin mới 
+        //     var product = new Product()
+        //     {
+        //         Name = request.Name,
+        //         Description = request.Description,
+        //         Gender = request.Gender,
+        //         OriginalPrice = request.OriginalPrice,
+        //         Price = request.Price,
+        //         ViewCount = 0,
+        //         DateCreated = DateTime.Now,
+        //         CategoryId = request.CategoryId,
+        //         ShopId = shopId.GetValueOrDefault(),
+        //         IsDeleted = false,
+        //         ProductDetails = product_details
+        //         //ProductImages = product_images
+        //     };
+        //      _context.Products.Add(product);
+        //     await _context.SaveChangesAsync();
+
+        //     return new ApiResult<int>(true, product.Id);    // trả về Id của product mới
+        // }
+
         public async Task<ApiResult<int>> Create(int userId, CreateProductRequest request)
         {
             // check valid properties request
@@ -219,23 +301,23 @@ namespace ProductAPI.Services
             }
 
             // 2. tạo list các product images
-            //var product_images = new List<ProductImage>();
-            // cách 1:
-            // if(request.Images==null || request.Images.Count==0)
-            //     return new ApiResult<int>(false, Message:"Details must not null");
-            // if(request.NewImages!=null)
-            // {
-            //     foreach(var image in request.NewImages)
-            //     {
-            //         product_images.Add(new ProductImage()
-            //         {
-            //             IsDefault = image.IsDefault,
-            //             ColorName = image.ColorName,
-            //             IsSizeDetail = image.IsSizeDetail,
-            //             ImagePath =  await this.SaveFile(image.ImageFile)
-            //         });            
-            //     }
-            // }
+            var product_images = new List<ProductImage>();
+            //cách 1:
+            if(request.NewImages==null || request.NewImages.Count==0)
+                return new ApiResult<int>(false, Message:"NewImages không được phép để trống!");
+            if(request.NewImages!=null)
+            {
+                foreach(var image in request.NewImages)
+                {
+                    product_images.Add(new ProductImage()
+                    {
+                        IsDefault = image.IsDefault,
+                        ColorName = image.ColorName,
+                        IsSizeDetail = image.IsSizeDetail,
+                        ImagePath =  await this.SaveFile(image.ImageFile)
+                    });            
+                }
+            }
             // cách 2:
             // for(int i=0; i<request.ImageInfos.Count; i++)
             // {
@@ -266,14 +348,15 @@ namespace ProductAPI.Services
                 CategoryId = request.CategoryId,
                 ShopId = shopId.GetValueOrDefault(),
                 IsDeleted = false,
-                ProductDetails = product_details
-                //ProductImages = product_images
+                ProductDetails = product_details,
+                ProductImages = product_images
             };
              _context.Products.Add(product);
             await _context.SaveChangesAsync();
 
             return new ApiResult<int>(true, product.Id);    // trả về Id của product mới
         }
+
 
         public async Task<ApiResult<int>> AddImage(int productId, CreateProductImageRequest request)
         {

@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using ProductAPI.ViewModels.ProductDetails;
-
+using ProductAPI.ViewModels.ProductImages;
 namespace ProductAPI.ViewModels.Products
 {
     public class CreateProductRequest
@@ -11,13 +11,11 @@ namespace ProductAPI.ViewModels.Products
         public int Gender {get; set;}
         public int Price { get; set; }
         public int OriginalPrice { get; set; }
-        //public int ViewCount { get; set; }
-        //public DateTime DateCreated { get; set; }
         public int CategoryId { get; set; }
         //public int ShopId { get; set; }
         //public bool IsDeleted { get; set; }
         public List<CreateProductDetailVm> Details {get; set;}
-        //public List<CreateProductImagesRequest> NewImages { get; set; }
+        public List<CreateProductImageRequest> NewImages { get; set; }
         // public List<ImageInfo> ImageInfos {get; set;}
         // public List<IFormFile> NewImages {get; set;}
         public bool IsValid()

@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using eProductAPI.ViewModels.ProductImages;
+using ProductAPI.ViewModels.ProductImages;
 using ProductAPI.ViewModels.ProductDetails;
 
 namespace ProductAPI.ViewModels.Products

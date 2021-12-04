@@ -4,10 +4,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using Database.Entities;
 using eComSolution.ViewModel.Catalog.Products;
-using eProductAPI.ViewModels.ProductImages;
+using ProductAPI.ViewModels.ProductImages;
 using ProductAPI.ViewModels.Common;
 using ProductAPI.ViewModels.ProductDetails;
-using ProductAPI.ViewModels.ProductImages;
 using ProductAPI.ViewModels.Products;
 
 namespace ProductAPI.Services
@@ -21,7 +20,7 @@ namespace ProductAPI.Services
         Task<List<ProductImageVm>> GetProductImages(int productId);
 
         Task<ApiResult<ProductVm>> GetProductById(int productId);
-
+        
         Task<ApiResult<int>> Create(int userId, CreateProductRequest request);
 
         Task<ApiResult<int>> Delete(int userId, int productId);
