@@ -54,7 +54,7 @@
         "DownstreamHostAndPorts": [
           {
             "Host": "authenapi",
-            "Port": 5001
+            "Port": 80
           }
         ],
         "UpstreamPathTemplate": "/apigateway/Authen/CheckPhone",
