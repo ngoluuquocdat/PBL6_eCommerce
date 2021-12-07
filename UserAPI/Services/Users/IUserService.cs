@@ -18,7 +18,7 @@ namespace UserAPI.Services.Users
 
         Task<ApiResult<string>> ForgetPassword(string email);
 
-        Task<ApiResult<string>> ResetPassword(string email, string password);
+        Task<ApiResult<string>> ResetPassword(ResetPassVm request);
 
         Task<ApiResult<string>> ComfirmResetPassword(string email, string key);
 

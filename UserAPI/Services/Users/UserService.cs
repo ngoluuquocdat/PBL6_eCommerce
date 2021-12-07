@@ -179,13 +179,13 @@ namespace UserAPI.Services.Users
             var user =  await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
             if(user == null) return new ApiResult<string>(false, "Email không đúng hoặc không tồn tại!");
             
-            // random key with length = 16
-            var key = GetUniqueKey(16);
-            key = GetHash(key);
-            string emailhash = GetHash(email);
+            // random token with length = 16
+            var token = GetUniqueKey(16);
+            token = GetHash(token);
+            // string emailhash = GetHash(email);
 
             string content = "";
-            string s = "<a href=" + $"https://localhost:5001/api/Users/ConfirmResetPass?email={emailhash}&key={key}" + @">
+            string s = "<a href=" + $"https://localhost:5001/api/Users/ConfirmResetPass?email={email}&token={token}" + @">
             <button type='button'>Reset Password</button>
             </a> ";
             string[] readfile = File.ReadAllLines("./wwwroot/index.html");
@@ -200,75 +200,99 @@ namespace UserAPI.Services.Users
                     content += newtest;
                 }
             
-            _emailService.SendEmail(email, content);
-            
             // nếu có record cùng gmail thì xóa 
-            var instance = await _context.ResetPasses.FirstOrDefaultAsync(u => u.Email == emailhash);
+            var instance = await _context.ResetPasses.FirstOrDefaultAsync(u => u.Email == email);
             if(instance != null){
                 _context.ResetPasses.Remove(instance);
             }
             // insert record ResetPass
             var x = new ResetPass{
-                Email = emailhash,
-                Token = key,
+                Email = email,
+                Token = token,
                 Time = DateTime.Now
             };
             _context.ResetPasses.Add(x);
             await _context.SaveChangesAsync();
 
+            _emailService.SendEmail(email, content);
+
             return new ApiResult<string>(true, Message: "Chúng tôi đã gửi thông tin thông tin đặt lại mật khẩu đến email của bạn. Vui lòng kiểm tra email và làm theo hướng dẫn!");
         }
-        public async Task<ApiResult<string>> ResetPassword(string email, string password){
-            bool IsNull = (String.IsNullOrEmpty(email) || String.IsNullOrEmpty(password));
+        public async Task<ApiResult<string>> ResetPassword(ResetPassVm request){
+            bool IsNull = (String.IsNullOrEmpty(request.Email) || String.IsNullOrEmpty(request.NewPass));
 
             if(IsNull) return new ApiResult<string>(false, "Dữ liệu đầu vào không được để trống!");
-            var user =  await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
+
+            // kiểm tra email và key
+            var record = await _context.ResetPasses.Where(x => x.Email == request.Email).FirstOrDefaultAsync();
+            if(record == null) return new ApiResult<string>(false, "Không khả dụng. Vui lòng nhấn chọn 'quên mật khẩu'.");
+
+            // nhập sai quá 3 lần thì xóa record
+            if(record.Numcheck > 2)
+            {
+                _context.ResetPasses.Remove(record);
+                _context.SaveChanges();
+                return new ApiResult<string>(false, "Bạn đã nhập sai quá số lần quy định!");
+            }
+
+            // sai key thì tăng numcheck lên 1
+            if(record.Token != request.Token)
+            {
+                record.Numcheck += 1;
+                _context.ResetPasses.Update(record);
+                _context.SaveChanges();
+                return new ApiResult<string>(false, "Mã xác thực không đúng!");
+            }
+
+            if(DateTime.Now > ((DateTime)record.Time).AddMinutes(5)) 
+                return new ApiResult<string>(false, "Mã xác nhận quá hạn");
+
+            var user =  await _context.Users.FirstOrDefaultAsync(u => u.Email == request.Email);
 
             using var hmac = new HMACSHA512(user.PasswordSalt);
 
-            if(!IsValid("", password, "", "")) // valid password
+            if(!IsValid("", request.NewPass, "", "")) // valid password
             {
-                return new ApiResult<string>(false, "Mật khẩu tối thiểu 8 ký tự, ít nhất một chữ cái viết hoa, một chữ cái viết thường, một số và một ký tự đặc biệt.");
+                return new ApiResult<string>(false, "Mật khẩu tối thiểu 8 ký tự, ít nhất một chữ cái và một số.");
             }
 
-            user.PasswordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(password));
+            user.PasswordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(request.NewPass));
             _context.Update(user);
+
+            // xóa record ở ResetPass
+            _context.ResetPasses.Remove(record);
+
             if(await _context.SaveChangesAsync() > 0)
             return new ApiResult<string>(true, Message: "Đặt lại mật khẩu mới thành công!");
             else
             return new ApiResult<string>(false, Message: "Đã xảy ra lỗi. Vui lòng thử lại!");
         }
-        public async Task<ApiResult<string>> ComfirmResetPassword(string email, string key){
-            var resetPass =  await _context.ResetPasses.FirstOrDefaultAsync(u => u.Email == email);
-            if(resetPass == null) return new ApiResult<string>(false, "Không khả dụng. Vui lòng nhấn chọn 'quên mật khẩu'.");
+        public async Task<ApiResult<string>> ComfirmResetPassword(string email, string token){
 
-            // kiểm tra thời gian
-            var list = _context.ResetPasses.Where(x => DateTime.Now <= ((DateTime)x.Time).AddMinutes(5)).ToList();
-            foreach(ResetPass i in list){
-                if(i == resetPass){
+            var record = await _context.ResetPasses.Where(x => x.Email == email).FirstOrDefaultAsync();
+            if(record == null) return new ApiResult<string>(false, "Không khả dụng. Vui lòng nhấn chọn 'quên mật khẩu'.");
 
-                    // nhập sai quá 3 lần thì xóa record
-                    if(resetPass.Numcheck > 2)
-                    {
-                        _context.ResetPasses.Remove(resetPass);
-                        _context.SaveChanges();
-                        return new ApiResult<string>(false, "Bạn đã nhập sai quá số lần quy định!");
-                    }
+            if(DateTime.Now > ((DateTime)record.Time).AddMinutes(5)) 
+                return new ApiResult<string>(false, "Mã xác nhận quá hạn");
 
-                    // sai key thì tăng numcheck lên 1
-                    if(resetPass.Token != key){
-                        resetPass.Numcheck += 1;
-                        _context.ResetPasses.Update(resetPass);
-                        _context.SaveChanges();
-                        return new ApiResult<string>(false, "Mã xác thực không đúng!");
-                    }
-                    
-                    // thời gian ok, key ok thì chuyển qua cho nhập pass mới
-                    return new ApiResult<string>(true, Message: "Kiểm tra ok rồi, cho chuyển qua đổi pass đi");
-                }
+            // nhập sai quá 3 lần thì xóa record
+            if(record.Numcheck > 2)
+            {
+                _context.ResetPasses.Remove(record);
+                _context.SaveChanges();
+                return new ApiResult<string>(false, "Bạn đã nhập sai quá số lần quy định!");
             }
 
-            return new ApiResult<string>(false, Message: "Mã quá hạn! Vui lòng nhấn chọn lại 'Quên mật khẩu'.");
+            // sai key thì tăng numcheck lên 1
+            if(record.Token != token)
+            {
+                record.Numcheck += 1;
+                _context.ResetPasses.Update(record);
+                _context.SaveChanges();
+                return new ApiResult<string>(false, "Mã xác thực không đúng!");
+            }
+
+            return new ApiResult<string>(true, Message: "Kiểm tra ok rồi, cho chuyển qua đổi pass đi");
         }
         public async Task<ApiResult<string>> UpdateUser(int userId, UpdateUserVm updateUser)
         {
@@ -326,7 +350,7 @@ namespace UserAPI.Services.Users
         public  bool IsValid(string username, string password, string email, string phonenumber) 
         {
             if(!String.IsNullOrEmpty(username)) return Regex.Match(username, @"^(?=.{8,}$)(?![_.])(?!.*[_.]{2})[a-zA-Z0-9._]+(?<![_.])$").Success;
-            if(!String.IsNullOrEmpty(password)) return Regex.Match(password, @"^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$").Success;
+            if(!String.IsNullOrEmpty(password)) return Regex.Match(password, @"^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d@$!%*#?&]{8,}$").Success;
             if(!String.IsNullOrEmpty(email)) return Regex.Match(email, @"^([\w-\.]+)@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.)|(([\w-]+\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\]?)$").Success; 
             if(!String.IsNullOrEmpty(phonenumber)) return Regex.Match(phonenumber, @"^([\+]?61[-]?|[0])?[1-9][0-9]{8}$").Success;
 

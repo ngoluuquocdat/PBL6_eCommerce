@@ -207,11 +207,11 @@ namespace UserAPI.Controllers
             } 
         }
         [HttpPatch("ResetPassword")]
-        public async Task<IActionResult> ResetPassword(string email, string password)
+        public async Task<IActionResult> ResetPassword(ResetPassVm request)
         {
             try
             {
-                var result = await _userService.ResetPassword(email, password);
+                var result = await _userService.ResetPassword(request);
                 if(result.IsSuccessed == false) return BadRequest(result.Message);
 
                 return Ok(result);
@@ -223,11 +223,11 @@ namespace UserAPI.Controllers
             }
         }
         [HttpGet("ConfirmResetPass")]
-        public async Task<IActionResult> ConfirmResetPass(string email, string key)
+        public async Task<IActionResult> ConfirmResetPass(string email, string token)
         {
             try
             {
-                var result = await _userService.ComfirmResetPassword(email, key);   
+                var result = await _userService.ComfirmResetPassword(email, token);   
                 if(result.IsSuccessed == false) return BadRequest(result.Message);
 
                 return Ok(result);
