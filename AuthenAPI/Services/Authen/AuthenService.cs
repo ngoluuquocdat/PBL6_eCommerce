@@ -31,11 +31,22 @@ namespace AuthenAPI.Services.Authen
         {
 
             bool IsNull = (String.IsNullOrEmpty(request.Username) || String.IsNullOrEmpty(request.Password));
+            string role_name = "";
 
             if(IsNull) return new ApiResult<string>(false, "Dữ liệu đầu vào không được để trống!");
 
             var user =  await _context.Users.FirstOrDefaultAsync(u => u.Username == request.Username);
             if(user == null) return new ApiResult<string>(false, "Tên đăng nhập không tồn tại!");   // return Unauthorized("Invalid Username.");
+
+            var roles = await (from _user in _context.Users
+            join _groupuser in _context.GroupUsers on _user.Id equals _groupuser.UserId
+            join _group in _context.Groups on _groupuser.GroupId equals _group.Id
+            where _user.Id == user.Id 
+            select new {_group}).ToListAsync();
+            
+            if(roles.Count == 1) role_name = "Member";
+            if(roles.Count == 2) role_name = "Mod";
+            if(roles.Count == 3) role_name = "Admin";
 
             using var hmac = new HMACSHA512(user.PasswordSalt);
             var computedHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(request.Password));
@@ -46,7 +57,7 @@ namespace AuthenAPI.Services.Authen
                 if(computedHash[i] != user.PasswordHash[i]) return new ApiResult<string>(false, "Mật khẩu không đúng. Hãy thử lại!");; //Unauthorized("Invalid Password.");
             }
 
-            return new ApiResult<string>(true, ResultObj : _tokenService.CreateToken(user));
+            return new ApiResult<string>(true, ResultObj : _tokenService.CreateToken(user, role_name));
         }
 
         public bool IsValidEmail(string email){
@@ -145,7 +156,7 @@ namespace AuthenAPI.Services.Authen
             _context.GroupUsers.Add(gu);
             await _context.SaveChangesAsync();
 
-            return new ApiResult<string>(true, Message: "Đăng kí tài khoản thành công!", ResultObj : _tokenService.CreateToken(new_user));
+            return new ApiResult<string>(true, Message: "Đăng kí tài khoản thành công!", ResultObj : _tokenService.CreateToken(new_user, "Member"));
         }
 
         public bool VerifyEmail(string email)  // Verify Email

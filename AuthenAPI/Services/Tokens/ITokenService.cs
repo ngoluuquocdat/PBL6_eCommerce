@@ -9,7 +9,7 @@ namespace AuthenAPI.Services.Tokens
 {
     public interface ITokenService
     {
-        string CreateToken(User user);
+        string CreateToken(User user, string role_name);
         ClaimsPrincipal ValidateToken(string jwtToken);
     }
 }

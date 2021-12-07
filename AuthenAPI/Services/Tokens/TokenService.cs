@@ -11,11 +11,12 @@ namespace AuthenAPI.Services.Tokens
 {
     public class TokenService : ITokenService
     {
-        public string CreateToken(User user)
+        public string CreateToken(User user, string role_name)
         {
             var claims = new List<Claim>()
             {
                 new Claim("id", user.Id.ToString()),
+                new Claim("role_name", role_name),
                 new Claim(JwtRegisteredClaimNames.Name, user.Username)
             };
 
