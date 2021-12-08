@@ -69,6 +69,50 @@ namespace eComSolution.API.Controllers
             }
         }
 
+        [HttpGet("{orderId}")]
+        public async Task<IActionResult> GetOrderById(int orderId)
+        {
+            try
+            {
+                var result = await _orderService.GetOrderById(orderId);
+
+                if(result.IsSuccessed==false)
+                    return BadRequest(result.Message);
+
+                if (result.ResultObj == null)
+                    return NoContent();     
+
+                return Ok(result);
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine(DateTime.Now + "- Server Error: " + ex);
+                return StatusCode(500, "Lỗi server");
+            }
+        }
+
+        [HttpGet("all")]
+        public async Task<IActionResult> GetAllOrders(DateTime fromDate, DateTime toDate)
+        {
+            try
+            {
+                var result = await _orderService.GetAllOrders(fromDate, toDate);
+
+                if(result.IsSuccessed==false)
+                    return BadRequest(result.Message);
+
+                if (result.ResultObj == null)
+                    return NoContent();     
+
+                return Ok(result);
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine(DateTime.Now + "- Server Error: " + ex);
+                return StatusCode(500, "Lỗi server");
+            }
+        }
+
         [HttpDelete("me")]
         public async Task<IActionResult> CancelUnconfirmedOrder(CancelOrderRequest request)
         {   

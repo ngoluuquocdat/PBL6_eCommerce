@@ -401,6 +401,76 @@ namespace OrdersAPI.Services
             
             return new ApiResult<int>(true, Message:"Hủy đơn hàng thành công!");
         }
+
+        public async Task<ApiResult<OrderVm>> GetOrderById(int orderId)
+        {
+
+            var query = from o in _context.Orders 
+                        join sh in _context.Shops on o.ShopId equals sh.Id
+                        where o.Id == orderId
+                        select new {o, sh};
+            
+            if(query.Count()==0)
+                return new ApiResult<OrderVm>(true, ResultObj:null);
+
+            var data = await query.Select(x=> new OrderVm
+            {
+                Id = x.o.Id,
+                OrderDate = x.o.OrderDate,
+                DateModified = x.o.DateModified,
+                UserId = x.o.UserId,
+                ShopId = x.o.ShopId,
+                ShopName = x.sh.Name,
+                ShipName = x.o.ShipName,
+                ShipAddress = x.o.ShipAddress,
+                ShipPhone = x.o.ShipPhone,
+                State = x.o.State,
+                CancelReason = x.o.CancelReason
+            }).FirstOrDefaultAsync();
+
+            data.OrderDetails = await GetOrderDetails(data.Id);
+            data.TotalPrice = data.OrderDetails.Sum(d => d.Price*d.Quantity);
+                     
+            return new ApiResult<OrderVm>(true, ResultObj:data);
+        }
+
+        public async Task<ApiResult<List<OrderVm>>> GetAllOrders(DateTime fromDate, DateTime toDate)
+        {
+            var query = from o in _context.Orders 
+                        join sh in _context.Shops on o.ShopId equals sh.Id
+                        select new {o, sh};
+
+            if(fromDate!=DateTime.MinValue && toDate!=DateTime.MinValue)
+            {
+                query = query.Where(x=>x.o.OrderDate.Date >= fromDate && x.o.OrderDate.Date <= toDate);
+                //query = query.Where(x=>DateTime.Compare(x.o.OrderDate.Date, fromDate)>0 && DateTime.Compare(x.o.OrderDate.Date, toDate)<0);
+            }
+
+            query = query.OrderByDescending(x=>x.o.OrderDate);
+            
+            var data = await query.Select(x=> new OrderVm
+            {
+                Id = x.o.Id,
+                OrderDate = x.o.OrderDate,
+                DateModified = x.o.DateModified,
+                UserId = x.o.UserId,
+                ShopId = x.o.ShopId,
+                ShopName = x.sh.Name,
+                ShipName = x.o.ShipName,
+                ShipAddress = x.o.ShipAddress,
+                ShipPhone = x.o.ShipPhone,
+                State = x.o.State,
+                CancelReason = x.o.CancelReason
+            }).ToListAsync();
+
+            for(int i=0; i<data.Count; i++)
+            {
+                data[i].OrderDetails = await GetOrderDetails(data[i].Id);
+                data[i].TotalPrice = data[i].OrderDetails.Sum(d => d.Price*d.Quantity);
+            }
+                        
+            return new ApiResult<List<OrderVm>>(true, ResultObj:data);
+        }
     }
 }
 

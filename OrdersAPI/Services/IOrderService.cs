@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Database.Entities;
@@ -16,8 +17,11 @@ namespace OrdersAPI.Services
         // get order cho shop
         Task<ApiResult<List<OrderVm>>> GetShopOrders(int userId, string state="");
 
-        // get order cho shop theo ngày để thống kê doanh thu
-        //Task<ApiResult<List<OrderVm>>> GetOrdersByDate(int shopId, DateTime fromdate, DateTime todate);
+        // get order theo Id
+        Task<ApiResult<OrderVm>> GetOrderById(int orderId);
+
+        // get all orders cho admin
+        Task<ApiResult<List<OrderVm>>> GetAllOrders(DateTime fromDate, DateTime toDate);
         
         // cho member hủy đơn hàng Chưa xác nhận
         Task<ApiResult<int>> CancelUnconfirmedOrder(int userId, CancelOrderRequest request);

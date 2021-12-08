@@ -13,6 +13,30 @@
             "UpstreamHttpMethod": [ "GET" , "DELETE" ]
         },
         {
+            "DownstreamPathTemplate": "/api/Orders/{orderId}",
+            "DownstreamScheme": "http",
+            "DownstreamHostAndPorts": [
+                {
+                    "Host": "orderapi",
+                    "Port": 80
+                }
+            ],
+            "UpstreamPathTemplate": "/apigateway/Orders/{orderId}",
+            "UpstreamHttpMethod": [ "GET" ]
+        },
+        {
+            "DownstreamPathTemplate": "/api/Orders/all",
+            "DownstreamScheme": "http",
+            "DownstreamHostAndPorts": [
+                {
+                    "Host": "orderapi",
+                    "Port": 80
+                }
+            ],
+            "UpstreamPathTemplate": "/apigateway/Orders/all",
+            "UpstreamHttpMethod": [ "GET" ]
+        },
+        {
             "DownstreamPathTemplate": "/api/Orders/shop",
             "DownstreamScheme": "http",
             "DownstreamHostAndPorts": [
