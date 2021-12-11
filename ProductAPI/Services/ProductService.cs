@@ -118,6 +118,67 @@ namespace ProductAPI.Services
             
             return new ApiResult<PagedResult<ProductMainInfoVm>>(true, ResultObj:pagedResult);
         }
+
+        public async Task<ApiResult<PagedResult<ProductMainInfoManageVm>>> GetProductPagingManage(int userId, GetProductsManageRequest request)
+        {
+            // lấy ra shopId của chủ shop
+            var shopId = (await _context.Users.FirstOrDefaultAsync(x=>x.Id==userId)).ShopId;
+            if(shopId==null)
+                return new ApiResult<PagedResult<ProductMainInfoManageVm>>(false, Message:"Chỉ có tài khoản chủ shop mới được thực hiện hành động này");
+
+            // 1. join bảng
+            // var query = from p in _context.Products
+            //             join c in _context.Categories on p.CategoryId equals c.Id
+            //             join pd in _context.ProductDetails on p.Id equals pd.ProductId
+            //             join pi in _context.ProductImages on p.Id equals pi.ProductId
+            //             select new {p, c, pd, pi};
+            var query = from p in _context.Products
+                        join c in _context.Categories on p.CategoryId equals c.Id
+                        join sh in _context.Shops on p.ShopId equals sh.Id
+                        where p.IsDeleted == false && p.ShopId == shopId
+                        select new {p, c, sh};
+
+            // 2. filter
+            // theo id
+            if(request.ProductId != 0)
+                query = query.Where(x => x.p.Id == request.ProductId);
+            // theo keyword
+            if (!string.IsNullOrEmpty(request.Keyword))
+                query = query.Where(x => x.p.Name.Contains(request.Keyword));
+            
+            // 3. sắp xếp theo DateCreated
+            query = query.OrderByDescending(x => x.p.DateCreated); 
+
+            // 4. phân trang
+            int totalRow = await query.CountAsync();
+
+            var data = await query.Skip((request.PageIndex - 1)*request.PageSize)
+                    .Take(request.PageSize)
+                    .Select(x => new ProductMainInfoManageVm()
+                    {
+                        Id = x.p.Id,
+                        Name = x.p.Name,
+                        OriginalPrice = x.p.OriginalPrice,
+                        Price = x.p.Price,
+                        DateCreated = x.p.DateCreated                        
+                    }).ToListAsync();
+
+            // lấy totalstock
+            for(int i=0; i<data.Count; i++)
+            {
+                data[i].TotalStock =  (await GetProductDetails(data[i].Id)).Sum(d=>d.Stock);          
+            }
+            // 5. tạo paged result 
+            var pagedResult = new PagedResult<ProductMainInfoManageVm>()
+            {
+                TotalRecords = totalRow,
+                PageIndex = request.PageIndex,
+                PageSize = request.PageSize,
+                Items = data
+            };
+            
+            return new ApiResult<PagedResult<ProductMainInfoManageVm>>(true, ResultObj:pagedResult);
+        }
         public async Task<ApiResult<ProductVm>> GetProductById(int productId)
         {
             var product = await _context.Products.Where(x=>x.Id==productId).FirstOrDefaultAsync();

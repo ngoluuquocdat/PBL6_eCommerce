@@ -12,8 +12,6 @@ namespace ProductAPI.ViewModels.Products
         public int Price { get; set; }
         public int OriginalPrice { get; set; }
         public int CategoryId { get; set; }
-        //public int ShopId { get; set; }
-        //public bool IsDeleted { get; set; }
         public List<CreateProductDetailVm> Details {get; set;}
         public List<CreateProductImageRequest> NewImages { get; set; }
         // public List<ImageInfo> ImageInfos {get; set;}

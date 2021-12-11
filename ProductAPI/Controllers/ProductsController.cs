@@ -60,9 +60,29 @@ namespace ProductAPI.Controllers
             } 
         }  
 
+        [HttpGet("paging/manage")]
+        public async Task<IActionResult> GetProductPagingManage([FromQuery]GetProductsManageRequest request)
+        {
+            try
+            {
+                var claimsPrincipal = this.User;
+                var userId = Int32.Parse(claimsPrincipal.FindFirst("id").Value);
+
+                var result = await _productService.GetProductPagingManage(userId, request);
+                if (result.ResultObj == null || result.ResultObj.Items.Count==0)
+                    return NoContent();  
+                return Ok(result);
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine(DateTime.Now + "- Server Error: " + ex);
+                return StatusCode(500, "Lỗi server");
+            }     
+        }  
+
         [HttpPost]
         //[Consumes("multipart/form-data")]
-        public async Task<IActionResult> Create([FromBody]CreateProductRequest request) 
+        public async Task<IActionResult> Create([FromForm]CreateProductRequest request) 
         {
             try
             {

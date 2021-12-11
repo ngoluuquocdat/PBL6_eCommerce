@@ -12,7 +12,7 @@
         "UpstreamPathTemplate": "/apigateway/Products/storage/{image}"
       },
       {
-          "DownstreamPathTemplate": "/api/Products/paging",
+          "DownstreamPathTemplate": "/api/Products/paging/manage",
           "DownstreamScheme": "http",
           "DownstreamHostAndPorts": [
             {
@@ -20,9 +20,21 @@
               "Port": 80
             }
           ],
-          "UpstreamPathTemplate": "/apigateway/Products/paging",
+          "UpstreamPathTemplate": "/apigateway/Products/paging/manage",
           "UpstreamHttpMethod": [ "GET"]
       },
+      {
+        "DownstreamPathTemplate": "/api/Products/paging",
+        "DownstreamScheme": "http",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "productapi",
+            "Port": 80
+          }
+        ],
+        "UpstreamPathTemplate": "/apigateway/Products/paging",
+        "UpstreamHttpMethod": [ "GET"]
+    },
       {
           "DownstreamPathTemplate": "/api/Products/{productId}",
           "DownstreamScheme": "http",

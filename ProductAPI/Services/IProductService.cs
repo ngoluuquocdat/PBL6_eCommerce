@@ -15,6 +15,8 @@ namespace ProductAPI.Services
     {
         Task<ApiResult<PagedResult<ProductMainInfoVm>>> GetProductPaging(GetProductsRequest request);
 
+        Task<ApiResult<PagedResult<ProductMainInfoManageVm>>> GetProductPagingManage(int userId, GetProductsManageRequest request);
+
         Task<List<ProductDetailVm>> GetProductDetails(int productId);
 
         Task<List<ProductImageVm>> GetProductImages(int productId);
