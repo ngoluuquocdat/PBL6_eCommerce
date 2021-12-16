@@ -124,7 +124,7 @@ namespace ProductAPI.Controllers
         }
 
         [HttpPut]
-        public async Task<IActionResult> Update([FromBody]UpdateProductRequest request) 
+        public async Task<IActionResult> Update([FromForm]UpdateProductRequest request) 
         {
             try
             {

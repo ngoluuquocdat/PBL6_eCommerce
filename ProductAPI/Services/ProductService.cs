@@ -374,6 +374,7 @@ namespace ProductAPI.Services
                     {
                         IsDefault = image.IsDefault,
                         ColorName = image.ColorName,
+                        SortOrder = image.SortOrder,
                         IsSizeDetail = image.IsSizeDetail,
                         ImagePath =  await this.SaveFile(image.ImageFile)
                     });            
@@ -492,7 +493,9 @@ namespace ProductAPI.Services
             var category = await _context.Categories.FirstOrDefaultAsync(x=>x.Id==request.CategoryId);
             if(category==null) 
                 return new ApiResult<int>(false, Message:$"Không tồn tại category với Id: {request.CategoryId}");
-            
+            // check list details trống
+            if (request.Details == null || request.Details.Count == 0)
+                return new ApiResult<int>(false, Message: "Chi tiết sản phẩm không được phép để trống!");
 
             // 1. update các thông tin của product
             var product = await _context.Products.Where(x=>x.Id==request.Id&&x.IsDeleted==false).FirstOrDefaultAsync();
@@ -552,7 +555,39 @@ namespace ProductAPI.Services
                     _context.ProductDetails.Update(product_detail);
                 }
             }
-            // 3. lưu thay đổi
+            // 3. update các product images
+            if(request.UpdateImages != null)
+            {
+                foreach (var image in request.UpdateImages)
+                {
+                    if(image.Id == 0)
+                    {
+                        // trường hợp thêm ảnh mới
+                        var new_image = new ProductImage
+                        {
+                            ProductId = request.Id,
+                            IsDefault = image.IsDefault,
+                            SortOrder = image.SortOrder,
+                            ColorName = image.ColorName,
+                            IsSizeDetail = false,
+                            ImagePath = await this.SaveFile(image.ImageFile)
+                        };
+                        _context.ProductImages.Add(new_image);
+                    }   
+                    else
+                    {
+                        // trường hợp sửa ảnh có sẵn
+                        var _image = await _context.ProductImages.FirstOrDefaultAsync(x => x.Id == image.Id);
+                        if (_image == null) return new ApiResult<int>(false, Message: $"Không tìm thấy image với Id: {image.Id}");
+                        // xóa ảnh cũ trong image có sẵn
+                        await _storageService.DeleteFileAsync(_image.ImagePath);
+                        // update lại ảnh mới cho image có sẵn
+                        _image.ImagePath = await this.SaveFile(image.ImageFile);
+                    }    
+                }
+            }    
+               
+            // 4. lưu thay đổi
             await _context.SaveChangesAsync();
 
             return new ApiResult<int>(true, Message:"Cập nhật sản phẩm thành công!");

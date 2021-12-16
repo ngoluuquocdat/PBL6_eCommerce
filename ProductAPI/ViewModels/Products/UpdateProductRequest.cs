@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using ProductAPI.ViewModels.ProductDetails;
+using ProductAPI.ViewModels.ProductImages;
 
 namespace ProductAPI.ViewModels.Products
 {
@@ -17,7 +18,8 @@ namespace ProductAPI.ViewModels.Products
         public int OriginalPrice { get; set; }
         public int CategoryId { get; set; }
         public List<UpdateProductDetailVm> Details {get; set;}
-        
+        public List<UpdateProductImageRequest> UpdateImages { get; set; }
+
         public bool IsValid()
         {
             // null or empty check
