@@ -39,7 +39,8 @@ namespace UserAPI.Services.Users
                 Fullname = user.Fullname,
                 Email = user.Email,
                 PhoneNumber = user.PhoneNumber,
-                Address = user.Address
+                Address = user.Address,
+                Disable = user.Disable
             };
 
             return new ApiResult<UserViewModel>(true, userViewModel);
@@ -103,6 +104,8 @@ namespace UserAPI.Services.Users
         public async Task<List<Function>> GetPermissions(int userId){
             var user =  await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
             if(user == null) return null;
+
+            if (user.Disable == true) return new List<Function>{new Function() {ActionName = "Users.Get"}};
 
             var query = from _user in _context.Users
             join _groupuser in _context.GroupUsers on _user.Id equals _groupuser.UserId

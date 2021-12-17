@@ -55,6 +55,7 @@ namespace ShopAPI.Services
                     PhoneNumber = shop.PhoneNumber,
                     Address = shop.Address,
                     Description = shop.Description,
+                    Disable = shop.Disable,
                     DateCreated = shop.DateCreated,
                     DateModified = shop.DateModified
                 };
@@ -246,6 +247,7 @@ namespace ShopAPI.Services
                 Avatar = !String.IsNullOrEmpty(shop.Avatar) ? "/storage/"+shop.Avatar : "",
                 PhoneNumber = shop.PhoneNumber,
                 Address = shop.Address,
+                Disable = shop.Disable,
                 Description = shop.Description,
                 DateCreated = shop.DateCreated,
                 DateModified = shop.DateModified
@@ -264,6 +266,8 @@ namespace ShopAPI.Services
         public async Task<List<Function>> GetPermissions(int userId){
             var user =  await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
             if(user == null) return null;
+
+            if (user.Disable == true) return new List<Function>{new Function() {ActionName = "Users.Get"}};
 
             var query = from _user in _context.Users
             join _groupuser in _context.GroupUsers on _user.Id equals _groupuser.UserId

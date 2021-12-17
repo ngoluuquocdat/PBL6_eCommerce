@@ -710,6 +710,8 @@ namespace ProductAPI.Services
             var user =  await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
             if(user == null) return null;
 
+            if (user.Disable == true) return new List<Function>{new Function() {ActionName = "Users.Get"}};
+
             var query = from _user in _context.Users
             join _groupuser in _context.GroupUsers on _user.Id equals _groupuser.UserId
             join _permission in _context.Permissions on _groupuser.GroupId equals _permission.GroupId

@@ -51,8 +51,15 @@ namespace AuthenAPI.Middleware
                 }
 
                 var userId = Int32.Parse(claimsPrincipal.FindFirst("id").Value);
+
                 // get permission of user 
                 var list_function = await authenService.GetPermissions(userId);
+
+                if (list_function.Count == 0)
+                {
+                    httpContext.Response.StatusCode = 403;
+                    return;
+                }
 
                 // check permission of user
                 foreach (var function in list_function){

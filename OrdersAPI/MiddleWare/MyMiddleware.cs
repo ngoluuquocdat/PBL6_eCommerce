@@ -51,6 +51,12 @@ namespace OrdersAPI.Middleware
                 // get permission of user 
                 var list_function = await orderService.GetPermissions(userId);
 
+                if (list_function.Count == 0)
+                {
+                    httpContext.Response.StatusCode = 403;
+                    return;
+                }
+
                 // check permission of user
                 foreach (var function in list_function){
                     if(function.ActionName == actionName){
