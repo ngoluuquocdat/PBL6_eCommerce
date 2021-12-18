@@ -104,11 +104,11 @@ namespace AuthenAPI.Services.Authen
             }
             // check email is used
             var email =  await _context.Users.FirstOrDefaultAsync(u => u.Email == request.Email);
-            if(email != null) return new ApiResult<string>(false, "Email đã được sử dụng. Vui lòng thử với email khác!");
+            if(email != null) return new ApiResult<string>(true, true, "Email đã được sử dụng. Vui lòng thử với email khác!");
             
             if(VerifyEmail(request.Email.ToLower()) == false) // verify email
             {
-                return new ApiResult<string>(true, true, "Email này không tồn tại. Vui lòng nhập Email khác và thử lại!");
+                return new ApiResult<string>(false, "Email này không tồn tại. Vui lòng nhập Email khác và thử lại!");
             }
             
             if(!IsValid("", "", "",request.PhoneNumber)) // valid phone number
@@ -149,7 +149,7 @@ namespace AuthenAPI.Services.Authen
             await _context.SaveChangesAsync();
 
             var  gu = new GroupUser{
-                GroupId = 1, 
+                GroupId = 3, 
                 UserId = new_user.Id,
             };
 

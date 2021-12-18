@@ -137,8 +137,11 @@ namespace UserAPI.Services.Users
             {
                 return new ApiResult<string>(false, "Mật khẩu tối thiểu 8 ký tự, ít nhất một chữ cái và một số!");
             }
+            
+            using var new_hmac = new HMACSHA512();
+            user.PasswordHash = new_hmac.ComputeHash(Encoding.UTF8.GetBytes(request.NewPassword));
+            user.PasswordSalt = new_hmac.Key;
 
-            user.PasswordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(request.NewPassword));
             _context.Update(user);
             if(await _context.SaveChangesAsync() > 0)
             return new ApiResult<string>(true, Message: "Thay đổi mật khẩu thành công!");
@@ -259,7 +262,10 @@ namespace UserAPI.Services.Users
                 return new ApiResult<string>(false, "Mật khẩu tối thiểu 8 ký tự, ít nhất một chữ cái và một số.");
             }
 
-            user.PasswordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(request.NewPass));
+            using var new_hmac = new HMACSHA512();
+            user.PasswordHash = new_hmac.ComputeHash(Encoding.UTF8.GetBytes(request.NewPass));
+            user.PasswordSalt = new_hmac.Key;
+            
             _context.Update(user);
 
             // xóa record ở ResetPass
