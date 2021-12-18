@@ -38,7 +38,7 @@ namespace ProductAPI.Services
             var query = from p in _context.Products
                         join c in _context.Categories on p.CategoryId equals c.Id
                         join sh in _context.Shops on p.ShopId equals sh.Id
-                        where p.IsDeleted == false
+                        where p.IsDeleted == false && sh.Disable == false
                         select new {p, c, sh};
 
             // 2. filter
@@ -200,7 +200,8 @@ namespace ProductAPI.Services
                 Price = product.Price,
                 OriginalPrice = product.OriginalPrice,
                 ViewCount = product.ViewCount,
-                DateCreated = product.DateCreated, 
+                DateCreated = product.DateCreated,
+                CategoryId =  product.CategoryId,
                 CategoryName = category.Name,
                 ShopId = shop.Id,
                 ShopName = shop.Name,
@@ -245,6 +246,7 @@ namespace ProductAPI.Services
                 ProductId = x.ProductId,
                 ImagePath = "/storage/"+x.ImagePath,
                 IsDefault = x.IsDefault,
+                SortOrder = x.SortOrder,
                 ColorName = x.ColorName,
                 IsSizeDetail = x.IsSizeDetail
             }).ToListAsync();
@@ -563,26 +565,32 @@ namespace ProductAPI.Services
                     if(image.Id == 0)
                     {
                         // trường hợp thêm ảnh mới
-                        var new_image = new ProductImage
+                        if(image.ImageFile != null)
                         {
-                            ProductId = request.Id,
-                            IsDefault = image.IsDefault,
-                            SortOrder = image.SortOrder,
-                            ColorName = image.ColorName,
-                            IsSizeDetail = false,
-                            ImagePath = await this.SaveFile(image.ImageFile)
-                        };
-                        _context.ProductImages.Add(new_image);
+                            var new_image = new ProductImage
+                            {
+                                ProductId = request.Id,
+                                IsDefault = image.IsDefault,
+                                SortOrder = image.SortOrder,
+                                ColorName = image.ColorName,
+                                IsSizeDetail = false,
+                                ImagePath = await this.SaveFile(image.ImageFile)
+                            };
+                            _context.ProductImages.Add(new_image);
+                        }
                     }   
                     else
                     {
-                        // trường hợp sửa ảnh có sẵn
-                        var _image = await _context.ProductImages.FirstOrDefaultAsync(x => x.Id == image.Id);
-                        if (_image == null) return new ApiResult<int>(false, Message: $"Không tìm thấy image với Id: {image.Id}");
-                        // xóa ảnh cũ trong image có sẵn
-                        await _storageService.DeleteFileAsync(_image.ImagePath);
-                        // update lại ảnh mới cho image có sẵn
-                        _image.ImagePath = await this.SaveFile(image.ImageFile);
+                        if(image.ImageFile != null)
+                        {
+                            // trường hợp sửa ảnh có sẵn
+                            var _image = await _context.ProductImages.FirstOrDefaultAsync(x => x.Id == image.Id);
+                            if (_image == null) return new ApiResult<int>(false, Message: $"Không tìm thấy image với Id: {image.Id}");
+                            // xóa ảnh cũ trong image có sẵn
+                            await _storageService.DeleteFileAsync(_image.ImagePath);
+                            // update lại ảnh mới cho image có sẵn
+                            _image.ImagePath = await this.SaveFile(image.ImageFile);
+                        }
                     }    
                 }
             }    
