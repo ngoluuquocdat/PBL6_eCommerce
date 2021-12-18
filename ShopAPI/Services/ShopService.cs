@@ -30,6 +30,9 @@ namespace ShopAPI.Services
 
             var shopInfo = new ShopVm();
             var shop = await _context.Shops.FirstOrDefaultAsync(s => s.Id == user.ShopId);
+
+            if(shop == null)
+                return new ApiResult<ShopVm>(true, ResultObj: null);
             
             if(shop.Disable == true)    // bị vô hiệu hóa shop
             {    
@@ -59,7 +62,7 @@ namespace ShopAPI.Services
                     DateCreated = shop.DateCreated,
                     DateModified = shop.DateModified
                 };
-            return new ApiResult<ShopVm>(true, shopInfo);
+                return new ApiResult<ShopVm>(true, shopInfo);
             }                       
         }
         public async Task<ApiResult<string>> Create(int userId, CreateShopVm request){
@@ -196,8 +199,8 @@ namespace ShopAPI.Services
                 return new ApiResult<string>(false, "Bạn chưa đăng ký cửa hàng nào. Vui lòng tạo mới một cửa hàng vào thử lại!");
             }else{
 
-                bool IsNull = (String.IsNullOrEmpty(request.Name) || String.IsNullOrEmpty(request.PhoneNumber) || request.ImageFile == null
-                          || String.IsNullOrEmpty(request.Address) || String.IsNullOrEmpty(request.Description));
+                bool IsNull = (String.IsNullOrEmpty(request.Name) || String.IsNullOrEmpty(request.PhoneNumber) ||
+                           String.IsNullOrEmpty(request.Address) || String.IsNullOrEmpty(request.Description));
 
                 if(IsNull) return new ApiResult<string>(false, "Dữ liệu đầu vào không được để trống!");
             
@@ -212,7 +215,10 @@ namespace ShopAPI.Services
                 var shop = await _context.Shops.FirstOrDefaultAsync(s => s.Id == user.ShopId);
 
                 shop.Name = request.Name;
-                shop.Avatar =  await this.SaveFile(request.ImageFile);
+                if(request.ImageFile != null)
+                {
+                    shop.Avatar =  await this.SaveFile(request.ImageFile);
+                }
                 shop.PhoneNumber = request.PhoneNumber;
                 shop.Address = request.Address;
                 shop.Description = request.Description;

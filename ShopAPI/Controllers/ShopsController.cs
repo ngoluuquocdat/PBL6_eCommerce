@@ -69,7 +69,9 @@ namespace ShopAPI.Controllers
                 var userId = Int32.Parse(claimsPrincipal.FindFirst("id").Value);
 
                 var result = await _shopService.Get(userId);
-                if (result.IsSuccessed == false )
+                if(result == null)
+                    return NoContent();
+                if (result.IsSuccessed == false)
                     return BadRequest(result);    
                     
                 return Ok(result);
