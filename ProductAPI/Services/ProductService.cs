@@ -558,6 +558,7 @@ namespace ProductAPI.Services
                 }
             }
             // 3. update các product images
+            //var current_images = await _context.ProductImages.Where(x=>x.ProductId==request.Id).ToListAsync();
             if(request.UpdateImages != null)
             {
                 foreach (var image in request.UpdateImages)
@@ -591,8 +592,19 @@ namespace ProductAPI.Services
                             // update lại ảnh mới cho image có sẵn
                             _image.ImagePath = await this.SaveFile(image.ImageFile);
                         }
-                    }    
+                    }  
                 }
+                // xóa ảnh thừa
+
+                // foreach(var cur_image in current_images)
+                // {
+                //     if(!request.UpdateImages.Exists(x=>x.Id == cur_image.Id))
+                //     {
+                //         // delete image
+                //         await _storageService.DeleteFileAsync(cur_image.ImagePath);
+                //         _context.ProductImages.Remove(cur_image);
+                //     }
+                // }
             }    
                
             // 4. lưu thay đổi
