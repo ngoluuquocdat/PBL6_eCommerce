@@ -339,6 +339,9 @@ namespace ProductAPI.Services
 
         public async Task<ApiResult<int>> Create(int userId, CreateProductRequest request)
         {
+            // check list details null or empty
+            if(!((request.Details!= null) && (request.Details.Any())))
+                return new ApiResult<int>(false, Message:"Chi tiết sản phẩm không được phép để trống!");
             // check valid properties request
             if(request.IsValid()==false)
                 return new ApiResult<int>(false, Message:"Thông tin không hợp lệ, vui lòng nhập lại");
@@ -349,8 +352,6 @@ namespace ProductAPI.Services
                 
             // 1. tạo list các product details
             var product_details = new List<ProductDetail>();
-            if(request.Details==null || request.Details.Count==0)
-                return new ApiResult<int>(false, Message:"Chi tiết sản phẩm không được phép để trống!");
 
             foreach(var productDetailVm in request.Details)
             {
@@ -366,7 +367,7 @@ namespace ProductAPI.Services
             // 2. tạo list các product images
             var product_images = new List<ProductImage>();
             //cách 1:
-            if(request.NewImages==null || request.NewImages.Count==0)
+            if(!((request.NewImages!= null) && (request.NewImages.Any())))
                 return new ApiResult<int>(false, Message:"NewImages không được phép để trống!");
             if(request.NewImages!=null)
             {
@@ -488,6 +489,9 @@ namespace ProductAPI.Services
 
         public async Task<ApiResult<int>> Update(int userId, UpdateProductRequest request)
         {
+            // check list details null or empty
+            if(!((request.Details!= null) && (request.Details.Any())))
+                return new ApiResult<int>(false, Message:"Chi tiết sản phẩm không được phép để trống!");
             // check valid properties request
             if(request.IsValid()==false)
                 return new ApiResult<int>(false, Message:"Thông tin không hợp lệ, vui lòng nhập lại");
@@ -495,9 +499,6 @@ namespace ProductAPI.Services
             var category = await _context.Categories.FirstOrDefaultAsync(x=>x.Id==request.CategoryId);
             if(category==null) 
                 return new ApiResult<int>(false, Message:$"Không tồn tại category với Id: {request.CategoryId}");
-            // check list details trống
-            if (request.Details == null || request.Details.Count == 0)
-                return new ApiResult<int>(false, Message: "Chi tiết sản phẩm không được phép để trống!");
 
             // 1. update các thông tin của product
             var product = await _context.Products.Where(x=>x.Id==request.Id&&x.IsDeleted==false).FirstOrDefaultAsync();

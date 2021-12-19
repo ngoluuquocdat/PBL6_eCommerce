@@ -34,6 +34,8 @@ namespace ProductAPI.ViewModels.Products
             {
                 return false;
             }
+            //
+            
             // valid product details
             foreach(var detail in Details)
             {
