@@ -191,7 +191,7 @@ namespace UserAPI.Services.Users
             // string emailhash = GetHash(email);
 
             string content = "";
-            string s = "<a href=" + $"https://localhost:5001/api/Users/ConfirmResetPass?email={email}&token={token}" + @">
+            string s = "<a href=" + $"http://localhost:8080/reset-password?email={email}&token={token}" + @">
             <button type='button'>Reset Password</button>
             </a> ";
             string[] readfile = File.ReadAllLines("./wwwroot/index.html");
