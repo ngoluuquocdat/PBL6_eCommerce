@@ -60,6 +60,7 @@ namespace ShopAPI.Services
                     Description = shop.Description,
                     Disable = shop.Disable,
                     DateCreated = shop.DateCreated,
+                    DisableReason = shop.DisableReason,
                     DateModified = shop.DateModified
                 };
                 return new ApiResult<ShopVm>(true, shopInfo);
@@ -138,7 +139,8 @@ namespace ShopAPI.Services
                 Description = x.sh.Description,
                 DateCreated = x.sh.DateCreated,
                 DateModified = x.sh.DateModified,
-                Disable = x.sh.Disable
+                Disable = x.sh.Disable,
+                DisableReason = x.sh.DisableReason
             }).ToListAsync();
 
             return new ApiResult<List<ShopVm>>(true, data);
