@@ -256,6 +256,7 @@ namespace ShopAPI.Services
                 PhoneNumber = shop.PhoneNumber,
                 Address = shop.Address,
                 Disable = shop.Disable,
+                DisableReason = shop.DisableReason,
                 Description = shop.Description,
                 DateCreated = shop.DateCreated,
                 DateModified = shop.DateModified
