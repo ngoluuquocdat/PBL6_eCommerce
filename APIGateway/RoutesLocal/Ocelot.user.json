@@ -1,0 +1,112 @@
+{
+  "Routes": [
+        {
+            "DownstreamPathTemplate": "/api/Users/me",
+            "DownstreamScheme": "https",
+            "DownstreamHostAndPorts": [
+              {
+                "Host": "localhost",
+                "Port": 5005
+              }
+            ],
+            "UpstreamPathTemplate": "/apigateway/Users/me",
+            "UpstreamHttpMethod": [ "GET", "PUT" ]
+        },
+        {
+          "DownstreamPathTemplate": "/api/Users/{userId}",
+          "DownstreamScheme": "https",
+          "DownstreamHostAndPorts": [
+            {
+              "Host": "userapi",
+              "Port": 5005
+            }
+          ],
+          "UpstreamPathTemplate": "/apigateway/Users/{userId}",
+          "UpstreamHttpMethod": [ "GET" ]
+        },
+        {
+            "DownstreamPathTemplate": "/api/Users",
+            "DownstreamScheme": "https",
+            "DownstreamHostAndPorts": [
+              {
+                "Host": "userapi",
+                "Port": 5005
+              }
+            ],
+            "UpstreamPathTemplate": "/apigateway/Users",
+            "UpstreamHttpMethod": [ "GET", "PUT"]
+        },
+        {
+          "DownstreamPathTemplate": "/api/Users/Disable",
+          "DownstreamScheme": "https",
+          "DownstreamHostAndPorts": [
+            {
+              "Host": "userapi",
+              "Port": 5005
+            }
+          ],
+          "UpstreamPathTemplate": "/apigateway/Users/Disable",
+          "UpstreamHttpMethod": [ "GET" , "PATCH" ]
+        },
+        {
+          "DownstreamPathTemplate": "/api/Users/Enable",
+          "DownstreamScheme": "https",
+          "DownstreamHostAndPorts": [
+            {
+              "Host": "userapi",
+              "Port": 5005
+            }
+          ],
+          "UpstreamPathTemplate": "/apigateway/Users/Enable",
+          "UpstreamHttpMethod": [ "PATCH" ]
+        },
+        {
+          "DownstreamPathTemplate": "/api/Users/Password",
+          "DownstreamScheme": "https",
+          "DownstreamHostAndPorts": [
+            {
+              "Host": "userapi",
+              "Port": 5005
+            }
+          ],
+          "UpstreamPathTemplate": "/apigateway/Users/Password",
+          "UpstreamHttpMethod": [ "PATCH" ]
+        },
+        {
+          "DownstreamPathTemplate": "/api/Users/{email}/ForgetPassword",
+          "DownstreamScheme": "https",
+          "DownstreamHostAndPorts": [
+            {
+              "Host": "userapi",
+              "Port": 5005
+            }
+          ],
+          "UpstreamPathTemplate": "/apigateway/Users/{email}/ForgetPassword",
+          "UpstreamHttpMethod": [ "POST" ]
+        },
+        {
+          "DownstreamPathTemplate": "/api/Users/ReSetPassword",
+          "DownstreamScheme": "https",
+          "DownstreamHostAndPorts": [
+            {
+              "Host": "userapi",
+              "Port": 5005
+            }
+          ],
+          "UpstreamPathTemplate": "/apigateway/Users/ReSetPassword",
+          "UpstreamHttpMethod": [ "PATCH" ]
+        },
+        {
+          "DownstreamPathTemplate": "/api/Users/ConfirmResetPass",
+          "DownstreamScheme": "https",
+          "DownstreamHostAndPorts": [
+            {
+              "Host": "userapi",
+              "Port": 5005
+            }
+          ],
+          "UpstreamPathTemplate": "/apigateway/Users/ConfirmResetPass",
+          "UpstreamHttpMethod": [ "GET" ]
+        }
+    ]
+}

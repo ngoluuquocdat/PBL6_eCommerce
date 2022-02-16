@@ -1,0 +1,40 @@
+{
+    "Routes": [
+          {
+          "DownstreamPathTemplate": "/api/Orders/me",
+          "DownstreamScheme": "https",
+          "DownstreamHostAndPorts": [
+              {
+              "Host": "localhost",
+              "Port": 5013
+              }
+          ],
+          "UpstreamPathTemplate": "/apigateway/Orders/me",
+          "UpstreamHttpMethod": [ "GET" , "DELETE" ]
+          },
+          {
+            "DownstreamPathTemplate": "/api/Orders/shop",
+            "DownstreamScheme": "http",
+            "DownstreamHostAndPorts": [
+                {
+                    "Host": "localhost",
+                    "Port": 5013
+                }
+            ],
+            "UpstreamPathTemplate": "/apigateway/Orders/shop",
+            "UpstreamHttpMethod": [ "GET", "PATCH", "DELETE" ]
+        },
+          {
+            "DownstreamPathTemplate": "/api/Orders",
+            "DownstreamScheme": "https",
+            "DownstreamHostAndPorts": [
+                {
+                "Host": "localhost",
+                "Port": 5013
+                }
+            ],
+            "UpstreamPathTemplate": "/apigateway/Orders",
+            "UpstreamHttpMethod": [ "POST" ]
+            }
+      ]
+  }

@@ -1,0 +1,87 @@
+{
+  "Routes": [
+      {
+          "DownstreamPathTemplate": "/storage/{image}",
+          "DownstreamScheme": "https",
+          "DownstreamHostAndPorts": [
+            {
+              "Host": "localhost",
+              "Port": 5003
+            }
+          ],
+          "UpstreamPathTemplate": "/apigateway/Products/storage/{image}"
+      },
+      {
+          "DownstreamPathTemplate": "/api/Products/paging",
+          "DownstreamScheme": "https",
+          "DownstreamHostAndPorts": [
+            {
+              "Host": "localhost",
+              "Port": 5003
+            }
+          ],
+          "UpstreamPathTemplate": "/apigateway/Products/paging",
+          "UpstreamHttpMethod": [ "GET"]
+      },
+      {
+          "DownstreamPathTemplate": "/api/Products/{productId}",
+          "DownstreamScheme": "https",
+          "DownstreamHostAndPorts": [
+            {
+              "Host": "localhost",
+              "Port": 5003
+            }
+          ],
+          "UpstreamPathTemplate": "/apigateway/Products/{productId}",
+          "UpstreamHttpMethod": ["GET"]
+      },
+      {
+        "DownstreamPathTemplate": "/api/Products",
+        "DownstreamScheme": "https",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "localhost",
+            "Port": 5003
+          }
+        ],
+        "UpstreamPathTemplate": "/apigateway/Products",
+        "UpstreamHttpMethod": [ "DELETE", "POST", "PUT", "PATCH" ]
+      },
+      {
+        "DownstreamPathTemplate": "/api/Products/details",
+        "DownstreamScheme": "https",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "localhost",
+            "Port": 5003
+          }
+        ],
+        "UpstreamPathTemplate": "/apigateway/Products/details",
+        "UpstreamHttpMethod": [ "PATCH" ]
+      },
+      {
+          "DownstreamPathTemplate": "/api/Products/{productId}/images",
+          "DownstreamScheme": "https",
+          "DownstreamHostAndPorts": [
+            {
+              "Host": "localhost",
+              "Port": 5003
+            }
+          ],
+          "UpstreamPathTemplate": "/apigateway/Products/{productId}/images",
+          "UpstreamHttpMethod": ["POST"]
+      },
+      {
+          "DownstreamPathTemplate": "/api/Products/{productId}/images/{imageId}",
+          "DownstreamScheme": "https",
+          "DownstreamHostAndPorts": [
+            {
+              "Host": "localhost",
+              "Port": 5003
+            }
+          ],
+          "UpstreamPathTemplate": "/apigateway/Products/{productId}/images/{imageId}",
+          "UpstreamHttpMethod": ["DELETE"]
+      }
+    ]
+}

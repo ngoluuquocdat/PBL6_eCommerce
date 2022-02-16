@@ -1,0 +1,64 @@
+{
+    "Routes": [
+      {
+        "DownstreamPathTemplate": "/api/Authen/login",
+        "DownstreamScheme": "http",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "authenapi",
+            "Port": 80
+          }
+        ],
+        "UpstreamPathTemplate": "/apigateway/Authen/login",
+        "UpstreamHttpMethod": [ "POST" ]
+      },
+      {
+        "DownstreamPathTemplate": "/api/Authen/register",
+        "DownstreamScheme": "http",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "authenapi",
+            "Port": 80
+          }
+        ],
+        "UpstreamPathTemplate": "/apigateway/Authen/register",
+        "UpstreamHttpMethod": [ "POST" ]
+      },
+      {
+        "DownstreamPathTemplate": "/api/Authen/CheckUsername",
+        "DownstreamScheme": "http",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "authenapi",
+            "Port": 80
+          }
+        ],
+        "UpstreamPathTemplate": "/apigateway/Authen/CheckUsername",
+        "UpstreamHttpMethod": [ "GET" ]
+      },
+      {
+        "DownstreamPathTemplate": "/api/Authen/CheckEmail",
+        "DownstreamScheme": "http",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "authenapi",
+            "Port": 80
+          }
+        ],
+        "UpstreamPathTemplate": "/apigateway/Authen/CheckEmail",
+        "UpstreamHttpMethod": [ "GET" ]
+      },
+      {
+        "DownstreamPathTemplate": "/api/Authen/CheckPhone",
+        "DownstreamScheme": "http",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "authenapi",
+            "Port": 80
+          }
+        ],
+        "UpstreamPathTemplate": "/apigateway/Authen/CheckPhone",
+        "UpstreamHttpMethod": [ "GET" ]
+      }
+    ]
+  }

@@ -1,0 +1,94 @@
+version: '3.4'
+
+services:
+  apigateway:
+    image: ${DOCKER_REGISTRY-}apigateway
+    ports:
+      - "55000:80"
+    build:
+      context: .
+      dockerfile: APIGateway/Dockerfile
+    depends_on:
+      - ms-sql-server  
+
+  authenapi:
+    image: ${DOCKER_REGISTRY-}authenapi
+    ports:
+      - "55001:80"
+    build:
+      context: .
+      dockerfile: AuthenAPI/Dockerfile
+    depends_on:
+      - ms-sql-server
+
+  cartapi:
+    image: ${DOCKER_REGISTRY-}cartapi
+    ports:
+      - "55002:80"
+    build:
+      context: .
+      dockerfile: CartAPI/Dockerfile
+    depends_on:
+      - ms-sql-server
+
+  productapi:
+    image: ${DOCKER_REGISTRY-}productapi
+    ports:
+      - "55003:80"
+    build:
+      context: .
+      dockerfile: ProductAPI/Dockerfile
+    depends_on:
+      - ms-sql-server
+
+  shopapi:
+    image: ${DOCKER_REGISTRY-}shopapi
+    ports:
+      - "55004:80"
+    build:
+      context: .
+      dockerfile: ShopAPI/Dockerfile
+    depends_on:
+      - ms-sql-server  
+
+  userapi:
+    image: ${DOCKER_REGISTRY-}userapi
+    ports:
+      - "55005:80"
+    build:
+      context: .
+      dockerfile: UserAPI/Dockerfile
+    depends_on:
+      - ms-sql-server
+
+  historyapi:
+    image: ${DOCKER_REGISTRY-}historyapi
+    ports:
+      - "55006:80"
+    build:
+      context: .
+      dockerfile: HistoryAPI/Dockerfile
+    depends_on:
+      - ms-sql-server
+
+  orderapi:
+    image: ${DOCKER_REGISTRY-}orderapi
+    ports:
+      - "55007:80"
+    build:
+      context: .
+      dockerfile: OrdersAPI/Dockerfile
+    depends_on:
+      - ms-sql-server
+    
+
+  ms-sql-server:
+    image: mcr.microsoft.com/mssql/server:2019-latest
+    volumes: 
+      - /var/opt/mssql
+    environment: 
+      ACCEPT_EULA: "Y"
+      SA_PASSWORD: "Onepiece1810!"
+    ports:
+      - "1433:1433"    
+

@@ -10,9 +10,9 @@
             "request": "launch",
             "preLaunchTask": "build",
             // If you have changed target frameworks, make sure to update the program path.
-            "program": "${workspaceFolder}/eComSolution.API/bin/Debug/net5.0/eComSolution.API.dll",
+            "program": "${workspaceFolder}/AuthenAPI/bin/Debug/net5.0/AuthenAPI.dll",
             "args": [],
-            "cwd": "${workspaceFolder}/eComSolution.API",
+            "cwd": "${workspaceFolder}/AuthenAPI",
             "stopAtEntry": false,
             // Enable launching a web browser when ASP.NET Core starts. For more information: https://aka.ms/VSCode-CS-LaunchJson-WebBrowser
             "serverReadyAction": {

@@ -1,0 +1,75 @@
+{
+  "Routes": [
+      {
+          "DownstreamPathTemplate": "/storage/{image}",
+          "DownstreamScheme": "http",
+          "DownstreamHostAndPorts": [
+            {
+              "Host": "shopapi",
+              "Port": 80
+            }
+          ],
+          "UpstreamPathTemplate": "/apigateway/Shops/storage/{image}"
+      },
+      {
+          "DownstreamPathTemplate": "/api/Shops",
+          "DownstreamScheme": "http",
+          "DownstreamHostAndPorts": [
+            {
+              "Host": "shopapi",
+              "Port": 80
+            }
+          ],
+          "UpstreamPathTemplate": "/apigateway/Shops",
+          "UpstreamHttpMethod": [ "GET", "PUT", "POST" ]
+      },
+      {
+          "DownstreamPathTemplate": "/api/Shops/me",
+          "DownstreamScheme": "http",
+          "DownstreamHostAndPorts": [
+            {
+              "Host": "shopapi",
+              "Port": 80
+            }
+          ],
+          "UpstreamPathTemplate": "/apigateway/Shops/me",
+          "UpstreamHttpMethod": [ "GET" ]
+      },
+      {
+          "DownstreamPathTemplate": "/api/Shops/{userId}",
+          "DownstreamScheme": "http",
+          "DownstreamHostAndPorts": [
+            {
+              "Host": "shopapi",
+              "Port": 80
+            }
+          ],
+          "UpstreamPathTemplate": "/apigateway/Shops/{userId}",
+          "UpstreamHttpMethod": [ "GET" , "DELETE" ]
+      },
+      {
+          "DownstreamPathTemplate": "/api/Shops/Disable",
+          "DownstreamScheme": "http",
+          "DownstreamHostAndPorts": [
+            {
+              "Host": "shopapi",
+              "Port": 80
+            }
+          ],
+          "UpstreamPathTemplate": "/apigateway/Shops/Disable",
+          "UpstreamHttpMethod": [ "PATCH" ]
+      },
+      {
+          "DownstreamPathTemplate": "/api/Shops/Enable",
+          "DownstreamScheme": "http",
+          "DownstreamHostAndPorts": [
+          {
+              "Host": "shopapi",
+              "Port": 80
+          }
+          ],
+          "UpstreamPathTemplate": "/apigateway/Shops/Enable",
+          "UpstreamHttpMethod": [ "PATCH" ]
+      }
+    ]
+}

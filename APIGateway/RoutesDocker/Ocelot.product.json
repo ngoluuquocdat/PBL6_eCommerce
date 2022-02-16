@@ -1,0 +1,99 @@
+{
+  "Routes": [
+      {
+        "DownstreamPathTemplate": "/storage/{image}",
+        "DownstreamScheme": "http",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "productapi",
+            "Port": 80
+          }
+        ],
+        "UpstreamPathTemplate": "/apigateway/Products/storage/{image}"
+      },
+      {
+          "DownstreamPathTemplate": "/api/Products/paging/manage",
+          "DownstreamScheme": "http",
+          "DownstreamHostAndPorts": [
+            {
+              "Host": "productapi",
+              "Port": 80
+            }
+          ],
+          "UpstreamPathTemplate": "/apigateway/Products/paging/manage",
+          "UpstreamHttpMethod": [ "GET"]
+      },
+      {
+        "DownstreamPathTemplate": "/api/Products/paging",
+        "DownstreamScheme": "http",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "productapi",
+            "Port": 80
+          }
+        ],
+        "UpstreamPathTemplate": "/apigateway/Products/paging",
+        "UpstreamHttpMethod": [ "GET"]
+    },
+      {
+          "DownstreamPathTemplate": "/api/Products/{productId}",
+          "DownstreamScheme": "http",
+          "DownstreamHostAndPorts": [
+            {
+              "Host": "productapi",
+              "Port": 80
+            }
+          ],
+          "UpstreamPathTemplate": "/apigateway/Products/{productId}",
+          "UpstreamHttpMethod": ["GET"]
+      },
+      {
+        "DownstreamPathTemplate": "/api/Products",
+        "DownstreamScheme": "http",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "productapi",
+            "Port": 80
+          }
+        ],
+        "UpstreamPathTemplate": "/apigateway/Products",
+        "UpstreamHttpMethod": [ "DELETE", "POST", "PUT", "PATCH" ]
+      },
+      {
+        "DownstreamPathTemplate": "/api/Products/details",
+        "DownstreamScheme": "http",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "productapi",
+            "Port": 80
+          }
+        ],
+        "UpstreamPathTemplate": "/apigateway/Products/details",
+        "UpstreamHttpMethod": [ "PATCH" ]
+      },
+      {
+          "DownstreamPathTemplate": "/api/Products/{productId}/images",
+          "DownstreamScheme": "http",
+          "DownstreamHostAndPorts": [
+            {
+              "Host": "productapi",
+              "Port": 80
+            }
+          ],
+          "UpstreamPathTemplate": "/apigateway/Products/{productId}/images",
+          "UpstreamHttpMethod": ["POST"]
+      },
+      {
+          "DownstreamPathTemplate": "/api/Products/{productId}/images/{imageId}",
+          "DownstreamScheme": "http",
+          "DownstreamHostAndPorts": [
+            {
+              "Host": "productapi",
+              "Port": 80
+            }
+          ],
+          "UpstreamPathTemplate": "/apigateway/Products/{productId}/images/{imageId}",
+          "UpstreamHttpMethod": ["DELETE"]
+      }
+    ]
+}
